@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ByteSavior</title>
+
+<style>
+:root {
+  --blue: #00bfff;
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --panel-dark: #0f172a;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  overflow-y: auto;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px 16px 80px;
+}
+
+/* ===== HEADER / LOGO ===== */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.logo-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--blue);
+  letter-spacing: 0.05em;
+}
+
+.brand-text p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ===== ACCORDION ===== */
+.accordion {
+  background: var(--panel);
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 22px;
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--panel-dark);
+  color: var(--blue);
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-header::after {
+  content: "+";
+  font-size: 1.4rem;
+}
+
+.accordion-header.active::after {
+  content: "−";
+}
+
+.accordion-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+  overflow: hidden;
+}
+
+.accordion-body.open {
+  grid-template-rows: 1fr;
+}
+
+.accordion-body > div {
+  overflow: hidden;
+}
+
+/* ===== INNER CONTENT ===== */
+.accordion-inner {
+  padding: 16px 20px 20px;
+}
+
+.step {
+  background: #1f2933;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.step:hover {
+  background: #253340;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.step-title::before {
+  content: "▸ ";
+  color: var(--blue);
+  margin-right: 6px;
+}
+
+.step.expanded .step-title::before {
+  content: "▾ ";
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.stars {
+  color: #7dd3fc;
+  letter-spacing: 1px;
+}
+
+.step-details {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.step.expanded .step-details {
+  display: block;
+}
+
+.sub-step {
+  margin-bottom: 10px;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.sub-step::before {
+  content: "→ ";
+  color: var(--blue);
+  margin-left: -15px;
+  margin-right: 5px;
+}
+
+.code {
+  background: #0f172a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #7dd3fc;
+}
+
+/* ===== DIAGNOSTIC BUTTON ===== */
+.diagnostic-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diagnostic-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6);
+}
+
+.diagnostic-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== POPUP MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--panel);
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 191, 255, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  background: var(--panel-dark);
+  padding: 20px 24px;
+  border-bottom: 2px solid var(--blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--blue);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--blue);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.diagnostic-section {
+  margin-bottom: 24px;
+}
+
+.diagnostic-section h3 {
+  color: var(--blue);
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.info-item {
+  background: #1f2933;
+  padding: 12px 16px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid var(--blue);
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.info-value {
+  color: var(--muted);
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-good {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.status-warning {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.status-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.refresh-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 12px;
+}
+
+.refresh-btn:hover {
+  background: #0099e6;
+  transform: translateY(-1px);
+}
+
+.refresh-btn:active {
+  transform: translateY(0);
+}
+
+.loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .diagnostic-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    top: 15px;
+    right: 15px;
+  }
+  
+  .modal-content {
+    margin: 10px;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Diagnostic Button -->
+<button class="diagnostic-btn" onclick="openDiagnostic()" title="System Diagnostics">
+  🖥️
+</button>
+
+<!-- Diagnostic Modal -->
+<div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🔍 System Diagnostics</h2>
+      <button class="close-btn" onclick="closeDiagnostic()">×</button>
+    </div>
+    <div class="modal-body" id="diagnosticContent">
+      <div class="loading">🔄 Running diagnostics...</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<header class="site-header">
+  <img
+    class="logo-img"
+    src="fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png"
+    alt="ByteSavior Logo"
+  />
+
+  <div class="brand-text">
+    <h1>ByteSavior</h1>
+    <p class="tagline">Rescue performance. Reduce exposure.</p>
+  </div>
+</header>
+
+
+<!-- ===== SECTIONS ===== -->
+
+<section class="accordion">
+  <button class="accordion-header">1. 🧬 BIOS Tweaks (Essential)</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Enable Memory Profile (XMP/EXPO)</span>
+          <span class="meta"><span class="stars">★★★★★</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Restart your computer and enter BIOS (press <span class="code">F2</span> or <span class="code">DEL</span> repeatedly during boot)</div>
+          <div class="sub-step">Navigate to memory/overclocking settings (varies by motherboard)</div>
+          <div class="sub-step">For Intel: Enable <span class="code">XMP</span></div>
+          <div class="sub-step">For AMD: Enable <span class="code">EXPO</span> or <span class="code">DOCP</span></div>
+          <div class="sub-step">Select Profile 1 (usually the default)</div>
+          <div class="sub-step">Save settings and exit (press <span class="code">F10</span>)</div>
+          <div class="sub-step">System will reboot with optimized RAM speeds</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Enable Resizable BAR</span>
+          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Enter BIOS (press <span class="code">F2</span> or <span class="code">DEL</span> during boot)</div>
+          <div class="sub-step">Find "Above 4G Decoding" setting and enable it</div>
+          <div class="sub-step">Find "Resizable BAR" or "Smart Access Memory" and enable it</div>
+          <div class="sub-step">Save and exit (<span class="code">F10</span>)</div>
+          <div class="sub-step">Note: Your GPU must support this feature (RTX 3000+ / RX 6000+)</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable Unused BIOS Features</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Medium risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Enter BIOS settings</div>
+          <div class="sub-step">Disable <span class="code">CSM/Legacy Boot</span> if using UEFI Windows</div>
+          <div class="sub-step">Disable <span class="code">Virtualization (VT-d/SVM)</span> if not using VMs</div>
+          <div class="sub-step">Save and exit</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">2. 🧰 Efficiency Tools</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Win11Debloat by Raphire</span>
+          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Download from GitHub: <span class="code">github.com/Raphire/Win11Debloat</span></div>
+          <div class="sub-step">Run as Administrator</div>
+          <div class="sub-step">Select <span class="code">Recommended</span> preset</div>
+          <div class="sub-step">Review changes before applying</div>
+          <div class="sub-step">Click Apply and restart</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">ShutUp10++</span>
+          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Download from: <span class="code">oo-software.com/shutup10</span></div>
+          <div class="sub-step">Run the portable executable</div>
+          <div class="sub-step">Use <span class="code">Recommended</span> settings</div>
+          <div class="sub-step">Apply all recommended privacy settings</div>
+          <div class="sub-step">No restart required</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">3. 💻 Console Commands & Updates</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Update All Apps (Winget)</span>
+          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal</div>
+          <div class="sub-step">Run: <span class="code">winget upgrade --all</span></div>
+          <div class="sub-step">Press Y to confirm updates</div>
+          <div class="sub-step">Wait for all apps to update</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Network Reset</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+          <div class="sub-step">Run: <span class="code">ipconfig /flushdns</span></div>
+          <div class="sub-step">Run: <span class="code">netsh winsock reset</span></div>
+          <div class="sub-step">Run: <span class="code">netsh int ip reset</span></div>
+          <div class="sub-step">Restart your PC</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<section class="accordion">
+  <button class="accordion-header">4. 🧠 System Maintenance</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">System File Repair (SFC & DISM)</span>
+          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+          <div class="sub-step">Run: <span class="code">sfc /scannow</span></div>
+          <div class="sub-step">Wait for scan to complete (10-15 minutes)</div>
+          <div class="sub-step">Then run: <span class="code">DISM /Online /Cleanup-Image /RestoreHealth</span></div>
+          <div class="sub-step">Wait for completion, then restart PC</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disk Health Check</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+          <div class="sub-step">Run: <span class="code">chkdsk /f /r C:</span></div>
+          <div class="sub-step">Press Y to schedule on next restart</div>
+          <div class="sub-step">Restart your PC</div>
+          <div class="sub-step">Check will run automatically (may take 30+ minutes)</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">RAM Diagnostics</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + R</span></div>
+          <div class="sub-step">Type <span class="code">mdsched.exe</span> and press Enter</div>
+          <div class="sub-step">Select <span class="code">Restart now and check for problems</span></div>
+          <div class="sub-step">PC will restart and run memory test</div>
+          <div class="sub-step">Results will show after reboot</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">5. 🌐 Network & DNS Optimization</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Set Secure DNS (Cloudflare)</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Network & internet</div>
+          <div class="sub-step">Click your connection (Wi-Fi or Ethernet)</div>
+          <div class="sub-step">Click <span class="code">Hardware properties</span></div>
+          <div class="sub-step">Click <span class="code">Edit</span> next to DNS server assignment</div>
+          <div class="sub-step">Set Preferred DNS to: <span class="code">1.1.1.1</span></div>
+          <div class="sub-step">Set Alternate DNS to: <span class="code">1.0.0.1</span></div>
+          <div class="sub-step">Click Save</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Network Adapter Tuning</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + X</span> → Device Manager</div>
+          <div class="sub-step">Expand <span class="code">Network adapters</span></div>
+          <div class="sub-step">Right-click your adapter → Properties</div>
+          <div class="sub-step">Go to Advanced tab</div>
+          <div class="sub-step">Set <span class="code">Speed & Duplex</span> to highest available</div>
+          <div class="sub-step">For Wi-Fi: Set <span class="code">Roaming Aggressiveness</span> to Highest</div>
+          <div class="sub-step">Click OK</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">6. ⚙️ Power & Performance Plan</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Set Correct Refresh Rate</span>
+          <span class="meta"><span class="stars">★★★★★</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Right-click desktop → <span class="code">Display settings</span></div>
+          <div class="sub-step">Scroll down → Click <span class="code">Advanced display</span></div>
+          <div class="sub-step">Find "Refresh rate" dropdown</div>
+          <div class="sub-step">Select your monitor's maximum Hz (144Hz, 165Hz, etc.)</div>
+          <div class="sub-step">Click Apply</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">High Performance Power Plan</span>
+          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + R</span></div>
+          <div class="sub-step">Type <span class="code">powercfg.cpl</span> and press Enter</div>
+          <div class="sub-step">Select <span class="code">High performance</span></div>
+          <div class="sub-step">Optional: For Ultimate Performance, open CMD as admin and run:</div>
+          <div class="sub-step"><span class="code">powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable SysMain (for SSD systems)</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + R</span></div>
+          <div class="sub-step">Type <span class="code">services.msc</span> and press Enter</div>
+          <div class="sub-step">Scroll down to find <span class="code">SysMain</span></div>
+          <div class="sub-step">Right-click → Properties</div>
+          <div class="sub-step">Set Startup type to <span class="code">Disabled</span></div>
+          <div class="sub-step">Click Stop → Apply → OK</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable NDU (Network Data Usage)</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + R</span></div>
+          <div class="sub-step">Type <span class="code">regedit</span> and press Enter</div>
+          <div class="sub-step">Navigate to: <span class="code">HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Ndu</span></div>
+          <div class="sub-step">Double-click <span class="code">Start</span></div>
+          <div class="sub-step">Change value to <span class="code">4</span></div>
+          <div class="sub-step">Click OK and restart PC</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Hardware Accelerated GPU Scheduling</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> to open Settings</div>
+          <div class="sub-step">Go to System → Display</div>
+          <div class="sub-step">Scroll down → Click <span class="code">Graphics</span></div>
+          <div class="sub-step">Click <span class="code">Change default graphics settings</span></div>
+          <div class="sub-step">Toggle ON: <span class="code">Hardware-accelerated GPU scheduling</span></div>
+          <div class="sub-step">Restart your PC</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Enable Game Mode</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span></div>
+          <div class="sub-step">Go to Gaming → Game Mode</div>
+          <div class="sub-step">Toggle <span class="code">Game Mode</span> to ON</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">7. 🖥️ NVIDIA/AMD Control Panel</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Set Maximum Performance Mode</span>
+          <span class="meta"><span class="stars">★★★★★</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Right-click desktop → <span class="code">NVIDIA Control Panel</span></div>
+          <div class="sub-step">Navigate to Manage 3D Settings</div>
+          <div class="sub-step">Find <span class="code">Power management mode</span></div>
+          <div class="sub-step">Set to <span class="code">Prefer maximum performance</span></div>
+          <div class="sub-step">Click Apply</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Enable G-SYNC</span>
+          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Open NVIDIA Control Panel</div>
+          <div class="sub-step">Go to Display → Set up G-SYNC</div>
+          <div class="sub-step">Check <span class="code">Enable G-SYNC, G-SYNC Compatible</span></div>
+          <div class="sub-step">Select your monitor</div>
+          <div class="sub-step">Check <span class="code">Enable for full screen mode</span></div>
+          <div class="sub-step">Click Apply</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Advanced 3D Settings</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Open NVIDIA Control Panel → Manage 3D Settings</div>
+          <div class="sub-step">Set <span class="code">Low Latency Mode</span> to <span class="code">Ultra</span></div>
+          <div class="sub-step">Set <span class="code">Shader Cache Size</span> to <span class="code">Unlimited</span></div>
+          <div class="sub-step">Set <span class="code">Texture filtering - Quality</span> to <span class="code">High performance</span></div>
+          <div class="sub-step">Click Apply</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Graphics App Assignment</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → System → Display</div>
+          <div class="sub-step">Click <span class="code">Graphics</span></div>
+          <div class="sub-step">Click Browse and add your games/apps</div>
+          <div class="sub-step">Click Options → Select <span class="code">High performance</span></div>
+          <div class="sub-step">Click Save</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">8. 🧹 Bloatware Removal</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Remove Preinstalled Apps</span>
+          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Apps → Installed apps</div>
+          <div class="sub-step">Find and uninstall: Cortana, Microsoft Teams (Personal), Clipchamp</div>
+          <div class="sub-step">Find and uninstall: News, Weather, Xbox (if not using)</div>
+          <div class="sub-step">Click the three dots → Uninstall for each</div>
+          <div class="sub-step">Note: Some apps may require PowerShell to remove</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable Startup Apps</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Ctrl + Shift + Esc</span> to open Task Manager</div>
+          <div class="sub-step">Click the <span class="code">Startup apps</span> tab</div>
+          <div class="sub-step">Review the list of programs</div>
+          <div class="sub-step">Right-click non-essential apps → <span class="code">Disable</span></div>
+          <div class="sub-step">Common bloat: Adobe updaters, manufacturer utilities, chat apps</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Stop Background Apps</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Apps</div>
+          <div class="sub-step">Click <span class="code">Installed apps</span></div>
+          <div class="sub-step">Click three dots next to each app → <span class="code">Advanced options</span></div>
+          <div class="sub-step">Set Background app permissions to <span class="code">Never</span></div>
+          <div class="sub-step">Repeat for unnecessary apps</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">9. 🛡️ Privacy & Telemetry</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable Telemetry & Diagnostics</span>
+          <span class="meta"><span class="stars">★★★★★</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span></div>
+          <div class="sub-step">Go to Privacy & security → Diagnostics & feedback</div>
+          <div class="sub-step">Set Diagnostic data to <span class="code">Required only</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Send optional diagnostic data</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Improve inking & typing</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Tailored experiences</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable Consumer Experiences</span>
+          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + R</span></div>
+          <div class="sub-step">Type <span class="code">regedit</span> and press Enter</div>
+          <div class="sub-step">Navigate to: <span class="code">HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent</span></div>
+          <div class="sub-step">Right-click → New → DWORD (32-bit) Value</div>
+          <div class="sub-step">Name it <span class="code">DisableWindowsConsumerFeatures</span></div>
+          <div class="sub-step">Double-click → Set value to <span class="code">1</span></div>
+          <div class="sub-step">Restart PC</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">App Permissions Lockdown</span>
+          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security</div>
+          <div class="sub-step">Click <span class="code">Location</span> → Toggle OFF</div>
+          <div class="sub-step">Click <span class="code">Camera</span> → Toggle OFF (or manage per-app)</div>
+          <div class="sub-step">Click <span class="code">Microphone</span> → Toggle OFF (or manage per-app)</div>
+          <div class="sub-step">Go to App permissions → Background apps → Set to <span class="code">Never</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Edge & Search Tracking</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Open Microsoft Edge</div>
+          <div class="sub-step">Go to Settings → Privacy, search, and services</div>
+          <div class="sub-step">Toggle OFF: <span class="code">Tracking prevention</span> set to Strict</div>
+          <div class="sub-step">Toggle OFF all optional features under Privacy</div>
+          <div class="sub-step">For search: Settings → Search → Toggle OFF <span class="code">Show search highlights</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="accordion">
+  <button class="accordion-header">10. ⚠️ Advanced Tweaks (Optional)</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Disable Animations</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Accessibility</div>
+          <div class="sub-step">Click <span class="code">Visual effects</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Animation effects</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Transparency effects</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Taskbar End Task</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → System → For developers</div>
+          <div class="sub-step">Toggle ON: <span class="code">End Task</span></div>
+          <div class="sub-step">Now you can right-click taskbar apps to force close them</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Core Isolation (Security Tradeoff)</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> Medium risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security → Windows Security</div>
+          <div class="sub-step">Click <span class="code">Device security</span></div>
+          <div class="sub-step">Click <span class="code">Core isolation details</span></div>
+          <div class="sub-step">Toggle OFF: <span class="code">Memory integrity</span></div>
+          <div class="sub-step">Note: Disabling reduces security for minor performance gain</div>
+          <div class="sub-step">Restart required</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <span class="step-title">Background FPS Limits</span>
+          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+        </div>
+        <div class="step-details">
+          <div class="sub-step">Useful for reducing GPU load when alt-tabbed</div>
+          <div class="sub-step">Open NVIDIA Control Panel</div>
+          <div class="sub-step">Manage 3D Settings → Program Settings</div>
+          <div class="sub-step">Select your game</div>
+          <div class="sub-step">Set <span class="code">Max Frame Rate</span> → Enable with limit (30-60 FPS)</div>
+          <div class="sub-step">Apply</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Main accordion toggle
+document.querySelectorAll(".accordion-header").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.classList.toggle("active");
+    btn.nextElementSibling.classList.toggle("open");
+  });
+});
+
+// Step details toggle
+document.querySelectorAll(".step").forEach(step => {
+  step.addEventListener("click", (e) => {
+    // Prevent toggle if clicking on a link or code element
+    if (e.target.tagName === 'A' || e.target.closest('.code')) return;
+    step.classList.toggle("expanded");
+  });
+});
+
+// Diagnostic Functions
+function openDiagnostic() {
+  const modal = document.getElementById('diagnosticModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  runDiagnostics();
+}
+
+function closeDiagnostic() {
+  const modal = document.getElementById('diagnosticModal');
+  modal.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+function closeOnOutsideClick(event) {
+  if (event.target === event.currentTarget) {
+    closeDiagnostic();
+  }
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeDiagnostic();
+  }
+});
+
+function getOS() {
+  const userAgent = navigator.userAgent;
+  const platform = navigator.platform;
+  
+  if (userAgent.indexOf('Win') > -1) {
+    if (userAgent.indexOf('Windows NT 10.0') > -1) return 'Windows 10/11';
+    if (userAgent.indexOf('Windows NT 6.3') > -1) return 'Windows 8.1';
+    if (userAgent.indexOf('Windows NT 6.2') > -1) return 'Windows 8';
+    if (userAgent.indexOf('Windows NT 6.1') > -1) return 'Windows 7';
+    return 'Windows (Unknown Version)';
+  } else if (userAgent.indexOf('Mac') > -1) {
+    return 'macOS';
+  } else if (userAgent.indexOf('Linux') > -1) {
+    return 'Linux';
+  } else if (userAgent.indexOf('Android') > -1) {
+    return 'Android';
+  } else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1 || userAgent.indexOf('iPad') > -1) {
+    return 'iOS';
+  }
+  return 'Unknown OS';
+}
+
+function getBrowser() {
+  const userAgent = navigator.userAgent;
+  
+  if (userAgent.indexOf('Edg') > -1) return 'Microsoft Edge';
+  if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edg') === -1) return 'Google Chrome';
+  if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) return 'Safari';
+  if (userAgent.indexOf('Firefox') > -1) return 'Mozilla Firefox';
+  if (userAgent.indexOf('Opera') > -1 || userAgent.indexOf('OPR') > -1) return 'Opera';
+  
+  return 'Unknown Browser';
+}
+
+async function getGPUInfo() {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    
+    if (!gl) {
+      return { renderer: 'WebGL not supported', vendor: 'N/A' };
+    }
+    
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    
+    if (debugInfo) {
+      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      return { renderer, vendor };
+    }
+    
+    return { renderer: 'Unable to detect', vendor: 'N/A' };
+  } catch (e) {
+    return { renderer: 'Error detecting GPU', vendor: 'N/A' };
+  }
+}
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 GB';
+  const gb = bytes / (1024 * 1024 * 1024);
+  return gb.toFixed(2) + ' GB';
+}
+
+function getCPUCores() {
+  return navigator.hardwareConcurrency || 'Unknown';
+}
+
+function getRAM() {
+  // Note: navigator.deviceMemory is only available in some browsers (Chrome)
+  if (navigator.deviceMemory) {
+    return navigator.deviceMemory + ' GB (approximate)';
+  }
+  return 'Not available in this browser';
+}
+
+function getScreenInfo() {
+  return {
+    resolution: `${screen.width} × ${screen.height}`,
+    colorDepth: `${screen.colorDepth}-bit`,
+    pixelRatio: window.devicePixelRatio || 1
+  };
+}
+
+function getConnectionInfo() {
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (connection) {
+    return {
+      type: connection.effectiveType || 'Unknown',
+      downlink: connection.downlink ? connection.downlink + ' Mbps' : 'Unknown',
+      rtt: connection.rtt ? connection.rtt + ' ms' : 'Unknown'
+    };
+  }
+  return null;
+}
+
+async function runDiagnostics() {
+  const content = document.getElementById('diagnosticContent');
+  
+  // Show loading
+  content.innerHTML = '<div class="loading">🔄 Running diagnostics...</div>';
+  
+  // Small delay for effect
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  const gpuInfo = await getGPUInfo();
+  const screenInfo = getScreenInfo();
+  const connectionInfo = getConnectionInfo();
+  
+  const diagnosticHTML = `
+    <div class="diagnostic-section">
+      <h3>💻 System Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Operating System</span>
+          <span class="info-value">${getOS()}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Browser</span>
+          <span class="info-value">${getBrowser()}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">User Agent</span>
+          <span class="info-value" style="word-break: break-all; font-size: 0.75rem;">${navigator.userAgent}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="diagnostic-section">
+      <h3>🎮 Graphics & Display</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">GPU Renderer</span>
+          <span class="info-value">${gpuInfo.renderer}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">GPU Vendor</span>
+          <span class="info-value">${gpuInfo.vendor}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Screen Resolution</span>
+          <span class="info-value">${screenInfo.resolution}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Color Depth</span>
+          <span class="info-value">${screenInfo.colorDepth}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Device Pixel Ratio</span>
+          <span class="info-value">${screenInfo.pixelRatio}x</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="diagnostic-section">
+      <h3>⚙️ Hardware</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">CPU Cores</span>
+          <span class="info-value">${getCPUCores()} logical processors</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">RAM (Estimated)</span>
+          <span class="info-value">${getRAM()}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Platform</span>
+          <span class="info-value">${navigator.platform}</span>
+        </div>
+      </div>
+    </div>
+    
+    ${connectionInfo ? `
+    <div class="diagnostic-section">
+      <h3>🌐 Network</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Connection Type</span>
+          <span class="info-value">${connectionInfo.type.toUpperCase()}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Download Speed</span>
+          <span class="info-value">${connectionInfo.downlink}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Latency (RTT)</span>
+          <span class="info-value">${connectionInfo.rtt}</span>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+    
+    <div class="diagnostic-section">
+      <h3>📊 Browser Capabilities</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Cookies Enabled</span>
+          <span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">
+            ${navigator.cookieEnabled ? '✓ Yes' : '✗ No'}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Online Status</span>
+          <span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">
+            ${navigator.onLine ? '✓ Online' : '✗ Offline'}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Language</span>
+          <span class="info-value">${navigator.language}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Timezone</span>
+          <span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span>
+        </div>
+      </div>
+    </div>
+    
+    <button class="refresh-btn" onclick="runDiagnostics()">
+      🔄 Refresh Diagnostics
+    </button>
+  `;
+  
+  content.innerHTML = diagnosticHTML;
+}
+
+</script>
+
+</body>
+</html>
