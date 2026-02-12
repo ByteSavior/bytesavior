@@ -40,8 +40,8 @@ html, body {
   align-items: center;
   gap: 16px;
   border-bottom: 1px solid #333;
-  padding-bottom: 16px;
-  margin-bottom: 28px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .logo-img {
@@ -62,6 +62,49 @@ html, body {
   margin: 4px 0 0;
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+/* ===== NAVIGATION ===== */
+.main-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+}
+
+.nav-link {
+  padding: 10px 20px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+  border: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--panel-dark);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.nav-link.active {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+@media (max-width: 600px) {
+  .main-nav {
+    flex-direction: column;
+  }
+  
+  .nav-link {
+    text-align: center;
+  }
 }
 
 /* ===== ACCORDION ===== */
@@ -107,11 +150,16 @@ html, body {
 }
 
 .accordion-body > div {
+  min-height: 0;
   overflow: hidden;
 }
 
 /* ===== INNER CONTENT ===== */
 .accordion-inner {
+  padding: 0 20px;
+}
+
+.accordion-body.open .accordion-inner {
   padding: 16px 20px 20px;
 }
 
@@ -453,6 +501,12 @@ html, body {
     <p class="tagline">Rescue performance. Reduce exposure.</p>
   </div>
 </header>
+
+<nav class="main-nav">
+  <a href="index.html" class="nav-link active">🏠 Home</a>
+  <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
+  <a href="extras.html" class="nav-link">⭐ Extras</a>
+</nav>
 
 
 <!-- ===== SECTIONS ===== -->

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ByteSavior - Extras</title>
+
+<style>
+:root {
+  --blue: #00bfff;
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --panel-dark: #0f172a;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --green: #4ade80;
+  --red: #ef4444;
+  --yellow: #fbbf24;
+  --purple: #a78bfa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  overflow-y: auto;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px 16px 80px;
+}
+
+/* ===== DIAGNOSTIC BUTTON ===== */
+.diagnostic-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diagnostic-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6);
+}
+
+.diagnostic-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== HEADER / LOGO ===== */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.logo-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--blue);
+  letter-spacing: 0.05em;
+}
+
+.brand-text p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ===== NAVIGATION ===== */
+.main-nav {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 12px 0;
+  border-bottom: 1px solid #333;
+}
+
+.nav-link {
+  padding: 10px 20px;
+  background: var(--panel);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+  border: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--panel-dark);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.nav-link.active {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+/* ===== ACCORDION ===== */
+.accordion {
+  background: var(--panel);
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 22px;
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--panel-dark);
+  color: var(--blue);
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-header::after {
+  content: "+";
+  font-size: 1.4rem;
+}
+
+.accordion-header.active::after {
+  content: "−";
+}
+
+.accordion-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s ease;
+  overflow: hidden;
+}
+
+.accordion-body.open {
+  grid-template-rows: 1fr;
+}
+
+.accordion-body > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ===== INNER CONTENT ===== */
+.accordion-inner {
+  padding: 0 20px;
+}
+
+.accordion-body.open .accordion-inner {
+  padding: 16px 20px 20px;
+}
+
+.page-intro {
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  border-left: 4px solid var(--blue);
+}
+
+.page-intro h2 {
+  margin: 0 0 8px 0;
+  color: var(--blue);
+  font-size: 1.4rem;
+}
+
+.page-intro p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.tool-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tool-item {
+  background: #1f2933;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-left: 3px solid var(--blue);
+  transition: background 0.2s;
+}
+
+.tool-item:hover {
+  background: #253340;
+}
+
+.tool-item.useful {
+  border-left-color: var(--green);
+}
+
+.tool-item.piracy {
+  border-left-color: var(--red);
+}
+
+.tool-item.nice {
+  border-left-color: var(--purple);
+}
+
+.tool-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-link {
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.tool-link:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+.tool-description {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.warning-banner {
+  background: rgba(239, 68, 68, 0.15);
+  border: 2px solid var(--red);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.warning-banner .icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.warning-banner .content {
+  flex: 1;
+}
+
+.warning-banner strong {
+  color: var(--red);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.warning-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .diagnostic-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    top: 15px;
+    right: 15px;
+  }
+  
+  .main-nav {
+    flex-direction: column;
+  }
+  
+  .nav-link {
+    text-align: center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Diagnostic Button -->
+<button class="diagnostic-btn" onclick="window.location.href='index.html'" title="Back to Home">
+  🏠
+</button>
+
+<div class="container">
+
+<header class="site-header">
+  <img
+    class="logo-img"
+    src="fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png"
+    alt="ByteSavior Logo"
+  />
+
+  <div class="brand-text">
+    <h1>ByteSavior</h1>
+    <p class="tagline">Rescue performance. Reduce exposure.</p>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
+  <a href="extras.html" class="nav-link active">⭐ Extras</a>
+</nav>
+
+<div class="page-intro">
+  <h2>⭐ Extras & Resources</h2>
+  <p>Additional tools and resources for power users.</p>
+</div>
+
+<!-- USEFUL TOOLS SECTION -->
+<section class="accordion">
+  <button class="accordion-header">🧰 Useful Tools (Optional)</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <ul class="tool-list">
+        <li class="tool-item useful">
+          <div class="tool-name">Everything File Search</div>
+          <a href="https://www.voidtools.com/downloads/" class="tool-link" target="_blank">https://www.voidtools.com/downloads/</a>
+          <div class="tool-description">Instant Windows file indexing and searching.</div>
+        </li>
+        
+        <li class="tool-item useful">
+          <div class="tool-name">Public APIs Directory</div>
+          <a href="https://github.com/public-apis/public-apis" class="tool-link" target="_blank">https://github.com/public-apis/public-apis</a>
+          <div class="tool-description">Large curated list of free APIs.</div>
+        </li>
+        
+        <li class="tool-item useful">
+          <div class="tool-name">MSI Afterburner</div>
+          <a href="https://www.msi.com/Landing/afterburner/graphics-cards" class="tool-link" target="_blank">https://www.msi.com/Landing/afterburner/graphics-cards</a>
+          <div class="tool-description">GPU monitoring and overclocking utility.</div>
+        </li>
+        
+        <li class="tool-item useful">
+          <div class="tool-name">VirusTotal</div>
+          <a href="https://www.virustotal.com/gui/home/upload" class="tool-link" target="_blank">https://www.virustotal.com/gui/home/upload</a>
+          <div class="tool-description">Scan files with multiple antivirus engines.</div>
+        </li>
+        
+        <li class="tool-item useful">
+          <div class="tool-name">WizTree (Disk Analyzer)</div>
+          <a href="https://diskanalyzer.com/download" class="tool-link" target="_blank">https://diskanalyzer.com/download</a>
+          <div class="tool-description">Visual storage usage breakdown tool.</div>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</section>
+
+<!-- PIRACY SITES SECTION -->
+<section class="accordion">
+  <button class="accordion-header">🏴‍☠️ Partially Recommended Piracy Sites</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <div class="warning-banner">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <strong>Warning</strong>
+          <p>These sites may violate copyright laws and carry malware risks. Use strong antivirus and sandboxing if visiting risky sites.</p>
+        </div>
+      </div>
+      
+      <ul class="tool-list">
+        <li class="tool-item piracy">
+          <div class="tool-name">FitGirl Repacks</div>
+          <a href="https://fitgirl-repacks.site/popular-repacks/" class="tool-link" target="_blank">https://fitgirl-repacks.site/popular-repacks/</a>
+          <div class="tool-description">Game repack distribution site.</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">Flixtor</div>
+          <a href="https://flixtor.com/" class="tool-link" target="_blank">https://flixtor.com/</a>
+          <div class="tool-description">Unlicensed streaming content.</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">SteamUnlocked</div>
+          <a href="https://steamunlocked.net/" class="tool-link" target="_blank">https://steamunlocked.net/</a>
+          <div class="tool-description">Unofficial cracked games.</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">LibGen</div>
+          <a href="https://libgen.ac/" class="tool-link" target="_blank">https://libgen.ac/</a>
+          <div class="tool-description">Free academic book archive.</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">GetIntoPC</div>
+          <a href="https://getintopc.com/" class="tool-link" target="_blank">https://getintopc.com/</a>
+          <div class="tool-description">Software downloads (mixed safety).</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">DeepWebNest</div>
+          <a href="https://deepwebnest.com/" class="tool-link" target="_blank">https://deepwebnest.com/</a>
+          <div class="tool-description">Dark web directory.</div>
+        </li>
+        
+        <li class="tool-item piracy">
+          <div class="tool-name">SteamRip</div>
+          <a href="https://steamrip.com/" class="tool-link" target="_blank">https://steamrip.com/</a>
+          <div class="tool-description">Cracked game downloads.</div>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</section>
+
+<!-- NICE TO HAVE SECTION -->
+<section class="accordion">
+  <button class="accordion-header">⭐ Nice To Have</button>
+  <div class="accordion-body">
+    <div class="accordion-inner">
+      
+      <ul class="tool-list">
+        <li class="tool-item nice">
+          <div class="tool-name">Temp-Mail</div>
+          <a href="https://temp-mail.org/" class="tool-link" target="_blank">https://temp-mail.org/</a>
+          <div class="tool-description">Disposable email addresses for signups.</div>
+        </li>
+        
+        <li class="tool-item nice">
+          <div class="tool-name">Have I Been Pwned</div>
+          <a href="https://haveibeenpwned.com/" class="tool-link" target="_blank">https://haveibeenpwned.com/</a>
+          <div class="tool-description">Check if email appears in data breaches.</div>
+        </li>
+        
+        <li class="tool-item nice">
+          <div class="tool-name">SocialEye</div>
+          <a href="https://socialeye.net/" class="tool-link" target="_blank">https://socialeye.net/</a>
+          <div class="tool-description">Scan exposed personal data online.</div>
+        </li>
+        
+        <li class="tool-item nice">
+          <div class="tool-name">Remove Paywall</div>
+          <a href="https://www.removepaywall.com/" class="tool-link" target="_blank">https://www.removepaywall.com/</a>
+          <div class="tool-description">Bypass soft paywalls for articles.</div>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Main accordion toggle
+document.querySelectorAll(".accordion-header").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.classList.toggle("active");
+    btn.nextElementSibling.classList.toggle("open");
+  });
+});
+</script>
+
+</body>
+</html>
