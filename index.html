@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ByteSavior</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 :root {
@@ -235,6 +236,68 @@ html, body {
   font-family: monospace;
   font-size: 0.85rem;
   color: #7dd3fc;
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 40px;
+  text-align: center;
+  border-top: 2px solid var(--blue);
+}
+
+.footer-text {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.social-links {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--panel-dark);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+  border: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.social-link:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+}
+
+.social-link i {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 600px) {
+  .social-links {
+    flex-direction: column;
+  }
+  
+  .social-link {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ===== DIAGNOSTIC BUTTON ===== */
@@ -1071,6 +1134,20 @@ html, body {
     </div>
   </div>
 </section>
+
+<footer class="site-footer">
+  <p class="footer-text">💙 Want to support me? Check out my pages!</p>
+  <div class="social-links">
+    <a href="https://github.com/ByteSavior" class="social-link" target="_blank">
+      <i class="fab fa-github"></i>
+      GitHub
+    </a>
+    <a href="https://www.instagram.com/byte_savior/" class="social-link" target="_blank">
+      <i class="fab fa-instagram"></i>
+      Instagram
+    </a>
+  </div>
+</footer>
 
 </div>
 
