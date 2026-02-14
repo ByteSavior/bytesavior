@@ -108,6 +108,189 @@ html, body {
   }
 }
 
+/* ===== SEARCH & FILTER ===== */
+.search-filter-container {
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--blue);
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 16px 8px 36px;
+  background: var(--bg);
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
+  cursor: text;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.filter-section {
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+.filter-section.active {
+  display: flex;
+}
+
+.filter-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.filter-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.filter-btn {
+  padding: 4px 10px;
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.filter-btn.active {
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+}
+
+.clear-filters-btn {
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.clear-filters-btn:hover {
+  background: var(--blue);
+  color: white;
+}
+
+.search-results-info {
+  background: rgba(0, 191, 255, 0.1);
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: 0.85rem;
+  display: none;
+}
+
+.search-results-info.active {
+  display: block;
+}
+
+.no-results {
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 24px 20px;
+  text-align: center;
+  display: none;
+  margin-bottom: 16px;
+}
+
+.no-results.active {
+  display: block;
+}
+
+.no-results h3 {
+  color: var(--muted);
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+.no-results p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.section-hidden {
+  display: none !important;
+}
+
+.step-hidden {
+  display: none !important;
+}
+
+.highlight {
+  background: rgba(0, 191, 255, 0.3);
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+@media (max-width: 600px) {
+  .filter-section {
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    flex-wrap: wrap;
+  }
+  
+  .clear-filters-btn {
+    margin-left: 0;
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+
 /* ===== ACCORDION ===== */
 .accordion {
   background: var(--panel);
@@ -571,6 +754,43 @@ html, body {
   <a href="extras.html" class="nav-link">⭐ Extras</a>
   <a href="opsec.html" class="nav-link">🔒 OpSec</a>
 </nav>
+
+<!-- SEARCH & FILTER -->
+<div class="search-filter-container">
+  <div class="search-box">
+    <i class="fas fa-search search-icon"></i>
+    <input 
+      type="text" 
+      class="search-input" 
+      id="searchInput" 
+      placeholder="Search tweaks... (e.g., 'disable telemetry', 'GPU', 'faster boot')"
+    />
+  </div>
+  
+  <div class="filter-section" id="filterSection">
+    <span class="filter-label">Impact:</span>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="impact" data-value="5">★★★★★</button>
+      <button class="filter-btn" data-filter="impact" data-value="4">★★★★☆</button>
+      <button class="filter-btn" data-filter="impact" data-value="3">★★★☆☆</button>
+    </div>
+    
+    <span class="filter-label">Risk:</span>
+    <div class="filter-group">
+      <button class="filter-btn" data-filter="risk" data-value="low">Low</button>
+      <button class="filter-btn" data-filter="risk" data-value="medium">Medium</button>
+      <button class="filter-btn" data-filter="risk" data-value="high">High</button>
+    </div>
+    
+    <button class="clear-filters-btn" id="clearFilters">Clear All</button>
+  </div>
+</div>
+
+<div class="search-results-info" id="searchResultsInfo"></div>
+<div class="no-results" id="noResults">
+  <h3>🔍 No results found</h3>
+  <p>Try different keywords or clear your filters</p>
+</div>
 
 
 <!-- ===== SECTIONS ===== -->
@@ -1170,6 +1390,331 @@ document.querySelectorAll(".step").forEach(step => {
   });
 });
 
+// ===== SEARCH & FILTER FUNCTIONALITY =====
+
+const searchInput = document.getElementById('searchInput');
+const filterSection = document.getElementById('filterSection');
+const clearFiltersBtn = document.getElementById('clearFilters');
+const searchResultsInfo = document.getElementById('searchResultsInfo');
+const noResults = document.getElementById('noResults');
+const searchFilterContainer = document.querySelector('.search-filter-container');
+const sections = document.querySelectorAll('.accordion');
+let activeFilters = {
+  impact: [],
+  risk: []
+};
+
+// Show filters when search input is focused or clicked
+searchInput.addEventListener('focus', () => {
+  filterSection.classList.add('active');
+});
+
+searchInput.addEventListener('click', (e) => {
+  e.stopPropagation();
+  filterSection.classList.add('active');
+});
+
+// Prevent filter section from closing when clicking inside it
+filterSection.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// Close filters when clicking outside (only if no filters are active)
+document.addEventListener('click', (e) => {
+  if (!searchFilterContainer.contains(e.target)) {
+    // Only collapse if no filters are active
+    const hasActiveFilters = activeFilters.impact.length > 0 || activeFilters.risk.length > 0;
+    if (!hasActiveFilters) {
+      filterSection.classList.remove('active');
+    }
+  }
+});
+
+// Search functionality
+searchInput.addEventListener('input', (e) => {
+  performSearch(e.target.value);
+});
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const filter = e.target.dataset.filter;
+    const value = e.target.dataset.value;
+    
+    e.target.classList.toggle('active');
+    
+    if (e.target.classList.contains('active')) {
+      if (!activeFilters[filter].includes(value)) {
+        activeFilters[filter].push(value);
+      }
+    } else {
+      activeFilters[filter] = activeFilters[filter].filter(v => v !== value);
+    }
+    
+    applyFilters();
+  });
+});
+
+// Clear filters
+clearFiltersBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  
+  // Clear active filter buttons
+  document.querySelectorAll('.filter-btn.active').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Reset filters
+  activeFilters = { impact: [], risk: [] };
+  
+  // Clear search
+  searchInput.value = '';
+  
+  // Show all content
+  sections.forEach(section => section.classList.remove('section-hidden'));
+  document.querySelectorAll('.step').forEach(step => {
+    step.classList.remove('step-hidden');
+    removeHighlights(step);
+  });
+  
+  // Hide info messages
+  searchResultsInfo.classList.remove('active');
+  noResults.classList.remove('active');
+  
+  // Hide filter section
+  filterSection.classList.remove('active');
+});
+
+function performSearch(query) {
+  const searchTerm = query.toLowerCase().trim();
+  
+  if (searchTerm === '') {
+    // If search is empty, just apply filters
+    applyFilters();
+    return;
+  }
+  
+  let matchCount = 0;
+  let sectionCount = 0;
+  
+  sections.forEach(section => {
+    const sectionHeader = section.querySelector('.accordion-header').textContent.toLowerCase();
+    const steps = section.querySelectorAll('.step');
+    let sectionHasMatch = false;
+    
+    steps.forEach(step => {
+      removeHighlights(step);
+      
+      const title = step.querySelector('.step-title').textContent.toLowerCase();
+      const details = step.querySelector('.step-details');
+      const detailsText = details ? details.textContent.toLowerCase() : '';
+      
+      const titleMatch = title.includes(searchTerm);
+      const detailsMatch = detailsText.includes(searchTerm);
+      const sectionMatch = sectionHeader.includes(searchTerm);
+      
+      if (titleMatch || detailsMatch || sectionMatch) {
+        // Check if step passes filter
+        if (passesFilters(step)) {
+          step.classList.remove('step-hidden');
+          sectionHasMatch = true;
+          matchCount++;
+          
+          // Highlight matching text
+          if (titleMatch) {
+            highlightText(step.querySelector('.step-title'), searchTerm);
+          }
+          if (detailsMatch) {
+            highlightText(details, searchTerm);
+          }
+        } else {
+          step.classList.add('step-hidden');
+        }
+      } else {
+        step.classList.add('step-hidden');
+      }
+    });
+    
+    if (sectionHasMatch) {
+      section.classList.remove('section-hidden');
+      sectionCount++;
+    } else {
+      section.classList.add('section-hidden');
+    }
+  });
+  
+  // Show results info
+  if (matchCount > 0) {
+    searchResultsInfo.textContent = `Found ${matchCount} tweaks across ${sectionCount} sections matching "${query}"`;
+    searchResultsInfo.classList.add('active');
+    noResults.classList.remove('active');
+  } else {
+    searchResultsInfo.classList.remove('active');
+    noResults.classList.add('active');
+  }
+}
+
+function applyFilters() {
+  const hasActiveFilters = activeFilters.impact.length > 0 || activeFilters.risk.length > 0;
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  
+  if (!hasActiveFilters && searchTerm === '') {
+    // No filters or search, show everything
+    sections.forEach(section => section.classList.remove('section-hidden'));
+    document.querySelectorAll('.step').forEach(step => step.classList.remove('step-hidden'));
+    searchResultsInfo.classList.remove('active');
+    noResults.classList.remove('active');
+    return;
+  }
+  
+  // If there's a search term, use search instead
+  if (searchTerm !== '') {
+    performSearch(searchTerm);
+    return;
+  }
+  
+  let matchCount = 0;
+  let sectionCount = 0;
+  
+  sections.forEach(section => {
+    const steps = section.querySelectorAll('.step');
+    let sectionHasMatch = false;
+    
+    steps.forEach(step => {
+      if (passesFilters(step)) {
+        step.classList.remove('step-hidden');
+        sectionHasMatch = true;
+        matchCount++;
+      } else {
+        step.classList.add('step-hidden');
+      }
+    });
+    
+    if (sectionHasMatch) {
+      section.classList.remove('section-hidden');
+      sectionCount++;
+    } else {
+      section.classList.add('section-hidden');
+    }
+  });
+  
+  // Show filter results info
+  if (hasActiveFilters) {
+    if (matchCount > 0) {
+      const filters = [];
+      if (activeFilters.impact.length > 0) {
+        filters.push('Impact: ' + activeFilters.impact.map(v => '★'.repeat(v)).join(', '));
+      }
+      if (activeFilters.risk.length > 0) {
+        filters.push('Risk: ' + activeFilters.risk.join(', '));
+      }
+      searchResultsInfo.textContent = `Found ${matchCount} tweaks with ${filters.join(' | ')}`;
+      searchResultsInfo.classList.add('active');
+      noResults.classList.remove('active');
+    } else {
+      searchResultsInfo.classList.remove('active');
+      noResults.classList.add('active');
+    }
+  }
+}
+
+function passesFilters(step) {
+  // If no filters active, everything passes
+  if (activeFilters.impact.length === 0 && activeFilters.risk.length === 0) {
+    return true;
+  }
+  
+  let passesImpact = true;
+  let passesRisk = true;
+  
+  // Check impact filter
+  if (activeFilters.impact.length > 0) {
+    const stars = step.querySelector('.stars');
+    if (stars) {
+      const starCount = (stars.textContent.match(/★/g) || []).length;
+      passesImpact = activeFilters.impact.includes(starCount.toString());
+    } else {
+      passesImpact = false;
+    }
+  }
+  
+  // Check risk filter
+  if (activeFilters.risk.length > 0) {
+    const meta = step.querySelector('.meta');
+    if (meta) {
+      const metaText = meta.textContent.toLowerCase();
+      passesRisk = activeFilters.risk.some(risk => {
+        if (risk === 'low') return metaText.includes('low risk') || metaText.includes('no risk');
+        if (risk === 'medium') return metaText.includes('medium risk');
+        if (risk === 'high') return metaText.includes('high risk');
+        return false;
+      });
+    } else {
+      passesRisk = false;
+    }
+  }
+  
+  return passesImpact && passesRisk;
+}
+
+function highlightText(element, searchTerm) {
+  const walker = document.createTreeWalker(
+    element,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+  
+  const nodesToReplace = [];
+  let node;
+  
+  while (node = walker.nextNode()) {
+    if (node.textContent.toLowerCase().includes(searchTerm)) {
+      nodesToReplace.push(node);
+    }
+  }
+  
+  nodesToReplace.forEach(node => {
+    const parent = node.parentNode;
+    if (parent.classList && parent.classList.contains('code')) return; // Don't highlight code blocks
+    
+    const text = node.textContent;
+    const lowerText = text.toLowerCase();
+    const index = lowerText.indexOf(searchTerm);
+    
+    if (index !== -1) {
+      const before = text.substring(0, index);
+      const match = text.substring(index, index + searchTerm.length);
+      const after = text.substring(index + searchTerm.length);
+      
+      const fragment = document.createDocumentFragment();
+      
+      if (before) fragment.appendChild(document.createTextNode(before));
+      
+      const highlight = document.createElement('span');
+      highlight.className = 'highlight';
+      highlight.textContent = match;
+      fragment.appendChild(highlight);
+      
+      if (after) fragment.appendChild(document.createTextNode(after));
+      
+      parent.replaceChild(fragment, node);
+    }
+  });
+}
+
+function removeHighlights(element) {
+  const highlights = element.querySelectorAll('.highlight');
+  highlights.forEach(highlight => {
+    const text = highlight.textContent;
+    highlight.replaceWith(document.createTextNode(text));
+  });
+  
+  // Normalize text nodes
+  element.normalize();
+}
+
 // Diagnostic Functions
 function openDiagnostic() {
   const modal = document.getElementById('diagnosticModal');
@@ -1252,12 +1797,6 @@ async function getGPUInfo() {
   } catch (e) {
     return { renderer: 'Error detecting GPU', vendor: 'N/A' };
   }
-}
-
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 GB';
-  const gb = bytes / (1024 * 1024 * 1024);
-  return gb.toFixed(2) + ' GB';
 }
 
 function getCPUCores() {
