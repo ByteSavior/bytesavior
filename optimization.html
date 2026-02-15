@@ -150,6 +150,7 @@
     /* ===== ACCORDION ===== */
     .accordion { background: var(--panel); border-radius: 8px; border: 1px solid #333; margin-bottom: 22px; }
     .accordion-header { width: 100%; padding: 16px 20px; background: var(--panel-dark); color: var(--blue); font-size: 1.05rem; font-weight: 600; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .accordion-header i { margin-right: 10px; }
     .accordion-header::after { content: "+"; font-size: 1.4rem; }
     .accordion-header.active::after { content: "−"; }
     .accordion-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s ease; overflow: hidden; }
@@ -242,20 +243,79 @@
       .modal-content { margin: 10px; }
       .info-item { flex-direction: column; align-items: flex-start; gap: 6px; }
     }
+  
+    /* ========================================
+       BACKGROUND ANIMATION
+       Triangles/Hexagons — Constant Linear Movement
+       ======================================== */
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(0, 191, 255, 0.09) 0%, transparent 50%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 40px,
+          rgba(0, 191, 255, 0.05) 40px,
+          rgba(0, 191, 255, 0.05) 41px
+        ),
+        repeating-linear-gradient(
+          60deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        ),
+        repeating-linear-gradient(
+          120deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        );
+      animation: hexFlow 20s linear infinite;
+    }
+
+    @keyframes hexFlow {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(80px, 80px); }
+    }
+
   </style>
 </head>
 <body>
   <!-- Diagnostic and Performance Buttons -->
   <div class="diagnostic-buttons">
-    <button class="diagnostic-btn" onclick="openDiagnostic()" title="System Diagnostics">🖥️</button>
-    <button class="diagnostic-btn perf-btn" id="perfMonitorBtn" onclick="togglePerformanceMonitor()" title="Performance Monitor">⚡</button>
+    <button class="diagnostic-btn" onclick="openDiagnostic()" title="System Diagnostics"><i class="fas fa-desktop"></i></button>
+    <button class="diagnostic-btn perf-btn" id="perfMonitorBtn" onclick="togglePerformanceMonitor()" title="Performance Monitor"><i class="fas fa-chart-bar"></i></button>
   </div>
 
   <!-- Submit Tweak Modal -->
   <div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
     <div class="submit-modal-content" onclick="event.stopPropagation()">
       <div class="submit-modal-header">
-        <h2>💡 Give Suggestions</h2>
+        <h2><i class="fas fa-lightbulb"></i> Give Suggestions</h2>
         <button class="close-btn" onclick="closeSubmitTweakModal()">×</button>
       </div>
       <div class="submit-modal-body" id="submitModalBody">
@@ -310,11 +370,11 @@
   <div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2>🔍 System Diagnostics</h2>
+        <h2><i class="fas fa-search"></i> System Diagnostics</h2>
         <button class="close-btn" onclick="closeDiagnostic()">×</button>
       </div>
       <div class="modal-body" id="diagnosticContent">
-        <div class="loading">🔄 Running diagnostics...</div>
+        <div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>
       </div>
     </div>
   </div>
@@ -329,11 +389,11 @@
     </header>
 
     <nav class="main-nav">
-      <a href="index.html" class="nav-link">🏠 Home</a>
-      <a href="optimization.html" class="nav-link active">⚡ Optimization</a>
-      <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
-      <a href="extras.html" class="nav-link">⭐ Extras</a>
-      <a href="opsec.html" class="nav-link">🔒 OpSec</a>
+      <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+      <a href="optimization.html" class="nav-link active"><i class="fas fa-bolt"></i> Optimization</a>
+      <a href="anonymity.html" class="nav-link"><i class="fas fa-shield-alt"></i> Anonymity</a>
+      <a href="extras.html" class="nav-link"><i class="fas fa-star"></i> Extras</a>
+      <a href="opsec.html" class="nav-link"><i class="fas fa-lock"></i> OpSec</a>
     </nav>
 
     <!-- SEARCH & FILTER -->
@@ -361,13 +421,13 @@
 
     <div class="search-results-info" id="searchResultsInfo"></div>
     <div class="no-results" id="noResults">
-      <h3>🔍 No results found</h3>
+      <h3><i class="fas fa-search"></i> No results found</h3>
       <p>Try different keywords or clear your filters</p>
     </div>
 
     <!-- ===== SECTIONS ===== -->
     <section class="accordion">
-      <button class="accordion-header">1. 🧬 BIOS Tweaks (Essential)</button>
+      <button class="accordion-header"><i class="fas fa-microchip"></i> BIOS Tweaks (Essential)</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -415,7 +475,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">2. 🧰 Efficiency Tools</button>
+      <button class="accordion-header"><i class="fas fa-toolbox"></i> Efficiency Tools</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -449,7 +509,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">3. 💻 Console Commands & Updates</button>
+      <button class="accordion-header"><i class="fas fa-laptop"></i> Console Commands & Updates</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -458,7 +518,7 @@
               <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal</div>
+              <div class="sub-step">Press <span class="code">Windows + X</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Terminal</div>
               <div class="sub-step">Run: <span class="code">winget upgrade --all</span></div>
               <div class="sub-step">Press Y to confirm updates</div>
               <div class="sub-step">Wait for all apps to update</div>
@@ -470,7 +530,7 @@
               <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+              <div class="sub-step">Press <span class="code">Windows + X</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Terminal (Admin)</div>
               <div class="sub-step">Run: <span class="code">ipconfig /flushdns</span></div>
               <div class="sub-step">Run: <span class="code">netsh winsock reset</span></div>
               <div class="sub-step">Run: <span class="code">netsh int ip reset</span></div>
@@ -482,7 +542,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">4. 🧠 System Maintenance</button>
+      <button class="accordion-header"><i class="fas fa-wrench"></i> System Maintenance</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -491,7 +551,7 @@
               <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+              <div class="sub-step">Press <span class="code">Windows + X</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Terminal (Admin)</div>
               <div class="sub-step">Run: <span class="code">sfc /scannow</span></div>
               <div class="sub-step">Wait for scan to complete (10-15 minutes)</div>
               <div class="sub-step">Then run: <span class="code">DISM /Online /Cleanup-Image /RestoreHealth</span></div>
@@ -504,7 +564,7 @@
               <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
+              <div class="sub-step">Press <span class="code">Windows + X</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Terminal (Admin)</div>
               <div class="sub-step">Run: <span class="code">chkdsk /f /r C:\</span></div>
               <div class="sub-step">Press Y to schedule on next restart</div>
               <div class="sub-step">Restart your PC</div>
@@ -529,7 +589,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">5. 🌐 Network & DNS Optimization</button>
+      <button class="accordion-header"><i class="fas fa-globe"></i> Network & DNS Optimization</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -538,7 +598,7 @@
               <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Network & internet</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Network & internet</div>
               <div class="sub-step">Click your connection (Wi-Fi or Ethernet)</div>
               <div class="sub-step">Click <span class="code">Hardware properties</span></div>
               <div class="sub-step">Click <span class="code">Edit</span> next to DNS server assignment</div>
@@ -553,9 +613,9 @@
               <span class="meta"><span class="stars">★★☆☆☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + X</span> → Device Manager</div>
+              <div class="sub-step">Press <span class="code">Windows + X</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Device Manager</div>
               <div class="sub-step">Expand <span class="code">Network adapters</span></div>
-              <div class="sub-step">Right-click your adapter → Properties</div>
+              <div class="sub-step">Right-click your adapter <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Properties</div>
               <div class="sub-step">Go to Advanced tab</div>
               <div class="sub-step">Set <span class="code">Speed & Duplex</span> to highest available</div>
               <div class="sub-step">For Wi-Fi: Set <span class="code">Roaming Aggressiveness</span> to Highest</div>
@@ -567,7 +627,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">6. ⚙️ Power & Performance Plan</button>
+      <button class="accordion-header"><i class="fas fa-sliders-h"></i> Power & Performance Plan</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -576,8 +636,8 @@
               <span class="meta"><span class="stars">★★★★★</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Right-click desktop → <span class="code">Display settings</span></div>
-              <div class="sub-step">Scroll down → Click <span class="code">Advanced display</span></div>
+              <div class="sub-step">Right-click desktop <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> <span class="code">Display settings</span></div>
+              <div class="sub-step">Scroll down <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Click <span class="code">Advanced display</span></div>
               <div class="sub-step">Find "Refresh rate" dropdown</div>
               <div class="sub-step">Select your monitor's maximum Hz (144Hz, 165Hz, etc.)</div>
               <div class="sub-step">Click Apply</div>
@@ -605,9 +665,9 @@
               <div class="sub-step">Press <span class="code">Windows + R</span></div>
               <div class="sub-step">Type <span class="code">services.msc</span> and press Enter</div>
               <div class="sub-step">Scroll down to find <span class="code">SysMain</span></div>
-              <div class="sub-step">Right-click → Properties</div>
+              <div class="sub-step">Right-click <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Properties</div>
               <div class="sub-step">Set Startup type to <span class="code">Disabled</span></div>
-              <div class="sub-step">Click Stop → Apply → OK</div>
+              <div class="sub-step">Click Stop <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Apply <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> OK</div>
             </div>
           </div>
           <div class="step">
@@ -631,8 +691,8 @@
             </div>
             <div class="step-details">
               <div class="sub-step">Press <span class="code">Windows + I</span> to open Settings</div>
-              <div class="sub-step">Go to System → Display</div>
-              <div class="sub-step">Scroll down → Click <span class="code">Graphics</span></div>
+              <div class="sub-step">Go to System <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Display</div>
+              <div class="sub-step">Scroll down <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Click <span class="code">Graphics</span></div>
               <div class="sub-step">Click <span class="code">Change default graphics settings</span></div>
               <div class="sub-step">Toggle ON: <span class="code">Hardware-accelerated GPU scheduling</span></div>
               <div class="sub-step">Restart your PC</div>
@@ -645,7 +705,7 @@
             </div>
             <div class="step-details">
               <div class="sub-step">Press <span class="code">Windows + I</span></div>
-              <div class="sub-step">Go to Gaming → Game Mode</div>
+              <div class="sub-step">Go to Gaming <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Game Mode</div>
               <div class="sub-step">Toggle <span class="code">Game Mode</span> to ON</div>
             </div>
           </div>
@@ -654,7 +714,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">7. 🖥️ NVIDIA/AMD Control Panel</button>
+      <button class="accordion-header"><i class="fas fa-desktop"></i> NVIDIA/AMD Control Panel</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -663,7 +723,7 @@
               <span class="meta"><span class="stars">★★★★★</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Right-click desktop → <span class="code">NVIDIA Control Panel</span></div>
+              <div class="sub-step">Right-click desktop <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> <span class="code">NVIDIA Control Panel</span></div>
               <div class="sub-step">Navigate to Manage 3D Settings</div>
               <div class="sub-step">Find <span class="code">Power management mode</span></div>
               <div class="sub-step">Set to <span class="code">Prefer maximum performance</span></div>
@@ -677,7 +737,7 @@
             </div>
             <div class="step-details">
               <div class="sub-step">Open NVIDIA Control Panel</div>
-              <div class="sub-step">Go to Display → Set up G-SYNC</div>
+              <div class="sub-step">Go to Display <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Set up G-SYNC</div>
               <div class="sub-step">Check <span class="code">Enable G-SYNC, G-SYNC Compatible</span></div>
               <div class="sub-step">Select your monitor</div>
               <div class="sub-step">Check <span class="code">Enable for full screen mode</span></div>
@@ -690,7 +750,7 @@
               <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Open NVIDIA Control Panel → Manage 3D Settings</div>
+              <div class="sub-step">Open NVIDIA Control Panel <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Manage 3D Settings</div>
               <div class="sub-step">Set <span class="code">Low Latency Mode</span> to <span class="code">Ultra</span></div>
               <div class="sub-step">Set <span class="code">Shader Cache Size</span> to <span class="code">Unlimited</span></div>
               <div class="sub-step">Set <span class="code">Texture filtering - Quality</span> to <span class="code">High performance</span></div>
@@ -703,10 +763,10 @@
               <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → System → Display</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> System <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Display</div>
               <div class="sub-step">Click <span class="code">Graphics</span></div>
               <div class="sub-step">Click Browse and add your games/apps</div>
-              <div class="sub-step">Click Options → Select <span class="code">High performance</span></div>
+              <div class="sub-step">Click Options <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Select <span class="code">High performance</span></div>
               <div class="sub-step">Click Save</div>
             </div>
           </div>
@@ -715,7 +775,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">8. 🧹 Bloatware Removal</button>
+      <button class="accordion-header"><i class="fas fa-broom"></i> Bloatware Removal</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -724,10 +784,10 @@
               <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Apps → Installed apps</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Apps <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Installed apps</div>
               <div class="sub-step">Find and uninstall: Cortana, Microsoft Teams (Personal), Clipchamp</div>
               <div class="sub-step">Find and uninstall: News, Weather, Xbox (if not using)</div>
-              <div class="sub-step">Click the three dots → Uninstall for each</div>
+              <div class="sub-step">Click the three dots <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Uninstall for each</div>
               <div class="sub-step">Note: Some apps may require PowerShell to remove</div>
             </div>
           </div>
@@ -740,7 +800,7 @@
               <div class="sub-step">Press <span class="code">Ctrl + Shift + Esc</span> to open Task Manager</div>
               <div class="sub-step">Click the <span class="code">Startup apps</span> tab</div>
               <div class="sub-step">Review the list of programs</div>
-              <div class="sub-step">Right-click non-essential apps → <span class="code">Disable</span></div>
+              <div class="sub-step">Right-click non-essential apps <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> <span class="code">Disable</span></div>
               <div class="sub-step">Common bloat: Adobe updaters, manufacturer utilities, chat apps</div>
             </div>
           </div>
@@ -750,9 +810,9 @@
               <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Apps</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Apps</div>
               <div class="sub-step">Click <span class="code">Installed apps</span></div>
-              <div class="sub-step">Click three dots next to each app → <span class="code">Advanced options</span></div>
+              <div class="sub-step">Click three dots next to each app <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> <span class="code">Advanced options</span></div>
               <div class="sub-step">Set Background app permissions to <span class="code">Never</span></div>
               <div class="sub-step">Repeat for unnecessary apps</div>
             </div>
@@ -762,7 +822,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">9. 🛡️ Privacy & Telemetry</button>
+      <button class="accordion-header"><i class="fas fa-shield-alt"></i> Privacy & Telemetry</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -772,7 +832,7 @@
             </div>
             <div class="step-details">
               <div class="sub-step">Press <span class="code">Windows + I</span></div>
-              <div class="sub-step">Go to Privacy & security → Diagnostics & feedback</div>
+              <div class="sub-step">Go to Privacy & security <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Diagnostics & feedback</div>
               <div class="sub-step">Set Diagnostic data to <span class="code">Required only</span></div>
               <div class="sub-step">Toggle OFF: <span class="code">Send optional diagnostic data</span></div>
               <div class="sub-step">Toggle OFF: <span class="code">Improve inking & typing</span></div>
@@ -788,9 +848,9 @@
               <div class="sub-step">Press <span class="code">Windows + R</span></div>
               <div class="sub-step">Type <span class="code">regedit</span> and press Enter</div>
               <div class="sub-step">Navigate to: <span class="code">HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent</span></div>
-              <div class="sub-step">Right-click → New → DWORD (32-bit) Value</div>
+              <div class="sub-step">Right-click <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> New <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> DWORD (32-bit) Value</div>
               <div class="sub-step">Name it <span class="code">DisableWindowsConsumerFeatures</span></div>
-              <div class="sub-step">Double-click → Set value to <span class="code">1</span></div>
+              <div class="sub-step">Double-click <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Set value to <span class="code">1</span></div>
               <div class="sub-step">Restart PC</div>
             </div>
           </div>
@@ -800,11 +860,11 @@
               <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security</div>
-              <div class="sub-step">Click <span class="code">Location</span> → Toggle OFF</div>
-              <div class="sub-step">Click <span class="code">Camera</span> → Toggle OFF (or manage per-app)</div>
-              <div class="sub-step">Click <span class="code">Microphone</span> → Toggle OFF (or manage per-app)</div>
-              <div class="sub-step">Go to App permissions → Background apps → Set to <span class="code">Never</span></div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Privacy & security</div>
+              <div class="sub-step">Click <span class="code">Location</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Toggle OFF</div>
+              <div class="sub-step">Click <span class="code">Camera</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Toggle OFF (or manage per-app)</div>
+              <div class="sub-step">Click <span class="code">Microphone</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Toggle OFF (or manage per-app)</div>
+              <div class="sub-step">Go to App permissions <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Background apps <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Set to <span class="code">Never</span></div>
             </div>
           </div>
           <div class="step">
@@ -814,10 +874,10 @@
             </div>
             <div class="step-details">
               <div class="sub-step">Open Microsoft Edge</div>
-              <div class="sub-step">Go to Settings → Privacy, search, and services</div>
+              <div class="sub-step">Go to Settings <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Privacy, search, and services</div>
               <div class="sub-step">Toggle OFF: <span class="code">Tracking prevention</span> set to Strict</div>
               <div class="sub-step">Toggle OFF all optional features under Privacy</div>
-              <div class="sub-step">For search: Settings → Search → Toggle OFF <span class="code">Show search highlights</span></div>
+              <div class="sub-step">For search: Settings <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Search <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Toggle OFF <span class="code">Show search highlights</span></div>
             </div>
           </div>
         </div>
@@ -825,7 +885,7 @@
     </section>
 
     <section class="accordion">
-      <button class="accordion-header">10. ⚠️ Advanced Tweaks (Optional)</button>
+      <button class="accordion-header"><i class="fas fa-exclamation-triangle"></i> Advanced Tweaks (Optional)</button>
       <div class="accordion-body">
         <div class="accordion-inner">
           <div class="step">
@@ -834,7 +894,7 @@
               <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Accessibility</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Accessibility</div>
               <div class="sub-step">Click <span class="code">Visual effects</span></div>
               <div class="sub-step">Toggle OFF: <span class="code">Animation effects</span></div>
               <div class="sub-step">Toggle OFF: <span class="code">Transparency effects</span></div>
@@ -846,7 +906,7 @@
               <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → System → For developers</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> System <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> For developers</div>
               <div class="sub-step">Toggle ON: <span class="code">End Task</span></div>
               <div class="sub-step">Now you can right-click taskbar apps to force close them</div>
             </div>
@@ -857,7 +917,7 @@
               <span class="meta"><span class="stars">★★☆☆☆</span> Medium risk</span>
             </div>
             <div class="step-details">
-              <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security → Windows Security</div>
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Privacy & security <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Windows Security</div>
               <div class="sub-step">Click <span class="code">Device security</span></div>
               <div class="sub-step">Click <span class="code">Core isolation details</span></div>
               <div class="sub-step">Toggle OFF: <span class="code">Memory integrity</span></div>
@@ -873,9 +933,9 @@
             <div class="step-details">
               <div class="sub-step">Useful for reducing GPU load when alt-tabbed</div>
               <div class="sub-step">Open NVIDIA Control Panel</div>
-              <div class="sub-step">Manage 3D Settings → Program Settings</div>
+              <div class="sub-step">Manage 3D Settings <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Program Settings</div>
               <div class="sub-step">Select your game</div>
-              <div class="sub-step">Set <span class="code">Max Frame Rate</span> → Enable with limit (30-60 FPS)</div>
+              <div class="sub-step">Set <span class="code">Max Frame Rate</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Enable with limit (30-60 FPS)</div>
               <div class="sub-step">Apply</div>
             </div>
           </div>
@@ -884,7 +944,7 @@
     </section>
 
     <footer class="site-footer">
-      <p class="footer-text">💙 Want to support me? Check out my pages!</p>
+      <p class="footer-text"><i class="fas fa-heart"></i> Want to support me? Check out my pages!</p>
       <div class="social-links">
         <a href="https://github.com/ByteSavior" class="social-link" target="_blank">
           <i class="fab fa-github"></i> GitHub
@@ -1196,14 +1256,14 @@
 
     async function runDiagnostics() {
       const content = document.getElementById('diagnosticContent');
-      content.innerHTML = '<div class="loading">🔄 Running diagnostics...</div>';
+      content.innerHTML = '<div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>';
       await new Promise(resolve => setTimeout(resolve, 800));
       const gpuInfo = await getGPUInfo();
       const screenInfo = getScreenInfo();
       const connectionInfo = getConnectionInfo();
       const diagnosticHTML = `
         <div class="diagnostic-section">
-          <h3>💻 System Information</h3>
+          <h3><i class="fas fa-laptop"></i> System Information</h3>
           <div class="info-grid">
             <div class="info-item"><span class="info-label">Operating System</span><span class="info-value">${getOS()}</span></div>
             <div class="info-item"><span class="info-label">Browser</span><span class="info-value">${getBrowser()}</span></div>
@@ -1211,7 +1271,7 @@
           </div>
         </div>
         <div class="diagnostic-section">
-          <h3>🎮 Graphics & Display</h3>
+          <h3><i class="fas fa-gamepad"></i> Graphics & Display</h3>
           <div class="info-grid">
             <div class="info-item"><span class="info-label">GPU Renderer</span><span class="info-value">${gpuInfo.renderer}</span></div>
             <div class="info-item"><span class="info-label">GPU Vendor</span><span class="info-value">${gpuInfo.vendor}</span></div>
@@ -1221,7 +1281,7 @@
           </div>
         </div>
         <div class="diagnostic-section">
-          <h3>⚙️ Hardware</h3>
+          <h3><i class="fas fa-sliders-h"></i> Hardware</h3>
           <div class="info-grid">
             <div class="info-item"><span class="info-label">CPU Cores</span><span class="info-value">${getCPUCores()} logical processors</span></div>
             <div class="info-item"><span class="info-label">RAM (Estimated)</span><span class="info-value">${getRAM()}</span></div>
@@ -1230,7 +1290,7 @@
         </div>
         ${connectionInfo ? `
         <div class="diagnostic-section">
-          <h3>🌐 Network</h3>
+          <h3><i class="fas fa-globe"></i> Network</h3>
           <div class="info-grid">
             <div class="info-item"><span class="info-label">Connection Type</span><span class="info-value">${connectionInfo.type.toUpperCase()}</span></div>
             <div class="info-item"><span class="info-label">Download Speed</span><span class="info-value">${connectionInfo.downlink}</span></div>
@@ -1238,15 +1298,15 @@
           </div>
         </div>` : ''}
         <div class="diagnostic-section">
-          <h3>📊 Browser Capabilities</h3>
+          <h3><i class="fas fa-chart-bar"></i> Browser Capabilities</h3>
           <div class="info-grid">
-            <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '✓ Yes' : '✗ No'}</span></div>
-            <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '✓ Online' : '✗ Offline'}</span></div>
+            <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '<i class="fas fa-check"></i> Yes' : '<i class="fas fa-times"></i> No'}</span></div>
+            <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '<i class="fas fa-check"></i> Online' : '<i class="fas fa-times"></i> Offline'}</span></div>
             <div class="info-item"><span class="info-label">Language</span><span class="info-value">${navigator.language}</span></div>
             <div class="info-item"><span class="info-label">Timezone</span><span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span></div>
           </div>
         </div>
-        <button class="refresh-btn" onclick="runDiagnostics()">🔄 Refresh Diagnostics</button>
+        <button class="refresh-btn" onclick="runDiagnostics()"><i class="fas fa-sync-alt"></i> Refresh Diagnostics</button>
       `;
 
       // First inject diagnostics without Chrome note
@@ -1316,7 +1376,7 @@
       if (score >= 80) { recommendations.unshift({ text: '🎉 Your system is in great shape! Focus on software optimizations', priority: 'info' }); }
       else if (score >= 60) { recommendations.unshift({ text: 'Your system is decent. Apply the tweaks in this guide for better performance', priority: 'info' }); }
       else if (score >= 40) { recommendations.unshift({ text: 'Your system needs attention. Start with Essential tweaks and consider hardware upgrades', priority: 'info' }); }
-      else { recommendations.unshift({ text: '⚠️ Your system needs significant upgrades. Focus on RAM and CPU first', priority: 'info' }); }
+      else { recommendations.unshift({ text: '<i class="fas fa-exclamation-triangle"></i> Your system needs significant upgrades. Focus on RAM and CPU first', priority: 'info' }); }
 
       displayHealthScore(score, metrics, recommendations);
     }
@@ -1330,7 +1390,7 @@
       const circumference = 2 * Math.PI * 65; const offset = circumference - (score / 100) * circumference;
       const healthHTML = `
         <div class="health-score-container">
-          <div class="health-score-header"><h3>💊 System Health Score</h3></div>
+          <div class="health-score-header"><h3><i class="fas fa-pills"></i> System Health Score</h3></div>
           <div class="score-display">
             <div class="score-circle">
               <svg width="150" height="150">
@@ -1351,7 +1411,7 @@
             `).join('')}
           </div>
           <div class="health-recommendations">
-            <h4>📋 Recommendations</h4>
+            <h4><i class="fas fa-clipboard-list"></i> Recommendations</h4>
             ${recommendations.map(rec => `<div class="recommendation-item">${rec.text}</div>`).join('')}
           </div>
         </div>
@@ -1403,13 +1463,13 @@
       content.innerHTML = `
         <div class="perf-test-container" style="border: none; padding: 0;">
           <div class="perf-test-header">
-            <h3>⚡ Live Performance Monitor</h3>
+            <h3><i class="fas fa-bolt"></i> Live Performance Monitor</h3>
             <div style="display: flex; gap: 8px;">
               <button class="perf-test-btn" onclick="stopAndSavePerformance()" style="background: #ef4444;">Save</button>
             </div>
           </div>
           <div id="perfTestResults">
-            <div class="perf-status">⚡ Monitoring performance... Collecting data for 5-second average</div>
+            <div class="perf-status"><i class="fas fa-bolt"></i> Monitoring performance... Collecting data for 5-second average</div>
           </div>
         </div>
       `;
@@ -1449,7 +1509,7 @@
           { value: current.renderTest, prev: previous ? previous.renderTest : null },
           { value: current.storageTest, prev: previous ? previous.storageTest : null }
         ];
-        cards.forEach((card, i) => { if (i < metrics.length) { const m = metrics[i]; const el = card.querySelector('.perf-comparison:first-of-type .perf-value'); if (el) el.textContent = m.value + 'ms'; const imp = card.querySelector('.perf-improvement'); if (imp && m.prev !== null) { const diff = m.value - m.prev; const pct = ((diff / m.prev) * 100).toFixed(1); const improved = diff < 0; const sign = diff > 0 ? '+' : ''; imp.className = `perf-improvement ${improved ? 'positive' : 'negative'}`; imp.innerHTML = `${improved ? '📈' : '📉'} ${sign}${pct}% ${improved ? 'Better' : 'Worse'}`; } } });
+        cards.forEach((card, i) => { if (i < metrics.length) { const m = metrics[i]; const el = card.querySelector('.perf-comparison:first-of-type .perf-value'); if (el) el.textContent = m.value + 'ms'; const imp = card.querySelector('.perf-improvement'); if (imp && m.prev !== null) { const diff = m.value - m.prev; const pct = ((diff / m.prev) * 100).toFixed(1); const improved = diff < 0; const sign = diff > 0 ? '+' : ''; imp.className = `perf-improvement ${improved ? 'positive' : 'negative'}`; imp.innerHTML = `${improved ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved ? 'Better' : 'Worse'}`; } } });
         if (performanceChart) { performanceChart.data.datasets[performanceChart.data.datasets.length - 1].data = [current.memoryTest, current.renderTest, current.storageTest]; performanceChart.update('none'); }
       }
     }
@@ -1482,7 +1542,7 @@
       if (previous !== null && previous !== undefined) {
         const diff = current - previous; const pct = ((diff / previous) * 100).toFixed(1);
         const improved = lowerIsBetter ? diff < 0 : diff > 0; const sign = diff > 0 ? '+' : '';
-        improvHTML = `<div class="perf-improvement ${improved ? 'positive' : 'negative'}">${improved ? '📈' : '📉'} ${sign}${pct}% ${improved ? 'Better' : 'Worse'}</div>`;
+        improvHTML = `<div class="perf-improvement ${improved ? 'positive' : 'negative'}">${improved ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved ? 'Better' : 'Worse'}</div>`;
       }
       const prevRow = previous !== null && previous !== undefined ? `<div class="perf-comparison"><span class="perf-label">Previous:</span><span class="perf-value">${previous}${unit}</span></div>` : '';
       const olderRow = older !== null && older !== undefined ? `<div class="perf-comparison"><span class="perf-label">Older:</span><span class="perf-value">${older}${unit}</span></div>` : '';
@@ -1580,7 +1640,7 @@
       
       const issueTitle = `[Suggestion] ${title}`;
       const issueBody = `
-## 💡 New Suggestion
+## <i class="fas fa-lightbulb"></i> New Suggestion
 
 **Submitted by:** ${author}
 **Category:** ${categoryNames[category]}
@@ -1599,7 +1659,7 @@ ${source ? `### Source/Reference\n${source}` : ''}
       const modalBody = document.getElementById('submitModalBody');
       modalBody.innerHTML = `
         <div class="success-message">
-          <div class="icon">✅</div>
+          <div class="icon"><i class="fas fa-check-circle"></i></div>
           <h3>Ready to Submit!</h3>
           <p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p>
           <p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p>

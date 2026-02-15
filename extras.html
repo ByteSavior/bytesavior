@@ -557,14 +557,73 @@ html, body {
   line-height: 1.6;
 }
 
-</style>
+
+    /* ========================================
+       BACKGROUND ANIMATION
+       Triangles/Hexagons — Constant Linear Movement
+       ======================================== */
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(0, 191, 255, 0.09) 0%, transparent 50%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 40px,
+          rgba(0, 191, 255, 0.05) 40px,
+          rgba(0, 191, 255, 0.05) 41px
+        ),
+        repeating-linear-gradient(
+          60deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        ),
+        repeating-linear-gradient(
+          120deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        );
+      animation: hexFlow 20s linear infinite;
+    }
+
+    @keyframes hexFlow {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(80px, 80px); }
+    }
+
+  </style>
 </head>
 
 <body>
 
 <!-- Diagnostic Button -->
 <button class="diagnostic-btn" onclick="window.location.href='index.html'" title="Back to Home">
-  🏠
+  <i class="fas fa-home"></i>
 </button>
 
 <div class="container">
@@ -583,21 +642,21 @@ html, body {
 </header>
 
 <nav class="main-nav">
-  <a href="index.html" class="nav-link">🏠 Home</a>
-  <a href="optimization.html" class="nav-link">⚡ Optimization</a>
-  <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
-  <a href="extras.html" class="nav-link active">⭐ Extras</a>
-  <a href="opsec.html" class="nav-link">🔒 OpSec</a>
+  <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+  <a href="optimization.html" class="nav-link"><i class="fas fa-bolt"></i> Optimization</a>
+  <a href="anonymity.html" class="nav-link"><i class="fas fa-shield-alt"></i> Anonymity</a>
+  <a href="extras.html" class="nav-link active"><i class="fas fa-star"></i> Extras</a>
+  <a href="opsec.html" class="nav-link"><i class="fas fa-lock"></i> OpSec</a>
 </nav>
 
 <div class="page-intro">
-  <h2>⭐ Extras & Resources</h2>
+  <h2><i class="fas fa-star"></i> Extras & Resources</h2>
   <p>Additional tools and resources for power users.</p>
 </div>
 
 <!-- USEFUL TOOLS SECTION -->
 <section class="accordion">
-  <button class="accordion-header">🧰 Useful Tools (Optional)</button>
+  <button class="accordion-header"><i class="fas fa-toolbox"></i> Useful Tools (Optional)</button>
   <div class="accordion-body">
     <div class="accordion-inner">
       
@@ -639,12 +698,12 @@ html, body {
 
 <!-- PIRACY SITES SECTION -->
 <section class="accordion">
-  <button class="accordion-header">🏴‍☠️ Partially Recommended Piracy Sites</button>
+  <button class="accordion-header"><i class="fas fa-skull-crossbones"></i> Partially Recommended Piracy Sites</button>
   <div class="accordion-body">
     <div class="accordion-inner">
       
       <div class="warning-banner">
-        <div class="icon">⚠️</div>
+        <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="content">
           <strong>Warning</strong>
           <p>These sites may violate copyright laws and carry malware risks. Use strong antivirus and sandboxing if visiting risky sites.</p>
@@ -701,7 +760,7 @@ html, body {
 
 <!-- NICE TO HAVE SECTION -->
 <section class="accordion">
-  <button class="accordion-header">⭐ Nice To Have</button>
+  <button class="accordion-header"><i class="fas fa-star"></i> Nice To Have</button>
   <div class="accordion-body">
     <div class="accordion-inner">
       
@@ -739,7 +798,7 @@ html, body {
 <div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
   <div class="submit-modal-content" onclick="event.stopPropagation()">
     <div class="submit-modal-header">
-      <h2>💡 Give Suggestions</h2>
+      <h2><i class="fas fa-lightbulb"></i> Give Suggestions</h2>
       <button class="close-btn" onclick="closeSubmitTweakModal()">×</button>
     </div>
     <div class="submit-modal-body" id="submitModalBody">
@@ -791,7 +850,7 @@ html, body {
 </div>
 
 <footer class="site-footer">
-  <p class="footer-text">💙 Want to support me? Check out my pages!</p>
+  <p class="footer-text"><i class="fas fa-heart"></i> Want to support me? Check out my pages!</p>
   <div class="social-links">
     <a href="https://github.com/ByteSavior" class="social-link" target="_blank">
       <i class="fab fa-github"></i>
@@ -890,7 +949,7 @@ function submitTweak() {
   
   const issueTitle = `[Suggestion] ${title}`;
   const issueBody = `
-## 💡 New Suggestion
+## <i class="fas fa-lightbulb"></i> New Suggestion
 
 **Submitted by:** ${author}
 **Category:** ${categoryNames[category]}
@@ -909,7 +968,7 @@ ${source ? `### Source/Reference\n${source}` : ''}
   const modalBody = document.getElementById('submitModalBody');
   modalBody.innerHTML = `
     <div class="success-message">
-      <div class="icon">✅</div>
+      <div class="icon"><i class="fas fa-check-circle"></i></div>
       <h3>Ready to Submit!</h3>
       <p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p>
       <p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p>

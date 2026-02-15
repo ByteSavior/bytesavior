@@ -10,20 +10,17 @@
   <style>
     :root { --blue: #00bfff; --bg: #121212; --panel: #1e1e1e; --panel-dark: #0f172a; --text: #e5e7eb; --muted: #9ca3af; --green: #4ade80; --orange: #fb923c; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; overflow-y: auto; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; overflow-y: auto; }
 
     /* ===== Landing / Hero (from original index) ===== */
-    .landing-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px 120px; position: relative; }
-    .landing-container::before { content: ''; position: fixed; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(0, 191, 255, 0.03) 50%, transparent 100%), repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 191, 255, 0.03) 50px, rgba(0, 191, 255, 0.03) 51px); animation: wave 20s linear infinite; pointer-events: none; z-index: 0; }
-    .landing-container::after { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(0, 191, 255, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(0, 191, 255, 0.05) 0%, transparent 60%); pointer-events: none; z-index: 0; }
-    @keyframes wave { 0% { transform: translateX(0) translateY(0); } 100% { transform: translateX(-50px) translateY(20px);} }
-    .hero-section { text-align: center; z-index: 1; max-width: 800px; animation: fadeIn 1s ease; }
+    .landing-container { min-height: 100vh; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px 120px; position: relative; }
+    .hero-section { text-align: center; z-index: 1; max-width: 800px; animation: fadeIn 1s ease; display: flex; flex-direction: column; align-items: center; width: 100%; }
     @keyframes fadeIn { from{opacity:0; transform: translateY(20px);} to{opacity:1; transform: translateY(0);} }
-    .logo-container { margin-bottom: 30px; animation: fadeIn 1s ease 0.2s backwards; }
+    .logo-container { margin-bottom: 30px; animation: fadeIn 1s ease 0.2s backwards; display: flex; justify-content: center; width: 100%; }
     .logo-img { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 8px 24px rgba(0, 191, 255, 0.3)); transition: transform 0.3s ease; }
     .logo-img:hover { transform: scale(1.05) rotate(5deg); }
-    .brand-title { font-size: 3.5rem; font-weight: 700; color: var(--blue); margin-bottom: 16px; letter-spacing: 0.02em; text-shadow: 0 4px 20px rgba(0, 191, 255, 0.3); animation: fadeIn 1s ease 0.4s backwards; }
-    .tagline { font-size: 1.3rem; color: var(--muted); margin-bottom: 60px; font-weight: 400; animation: fadeIn 1s ease 0.6s backwards; }
+    .brand-title { font-size: 3.5rem; font-weight: 700; color: var(--blue); margin-bottom: 16px; letter-spacing: 0.02em; text-shadow: 0 4px 20px rgba(0, 191, 255, 0.3); animation: fadeIn 1s ease 0.4s backwards; width: 100%; text-align: center; }
+    .tagline { font-size: 1.3rem; color: var(--muted); margin-bottom: 60px; font-weight: 400; animation: fadeIn 1s ease 0.6s backwards; width: 100%; text-align: center; }
 
     /* Global Search */
     .global-search-container { width: 100%; max-width: 700px; margin-bottom: 50px; animation: fadeIn 1s ease 0.7s backwards; }
@@ -50,6 +47,7 @@
     .nav-card:hover { transform: translateY(-8px); border-color: var(--blue); box-shadow: 0 12px 40px rgba(0, 191, 255, 0.2); }
     .nav-card:hover::before { opacity: 1; }
     .nav-card-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; transition: transform 0.3s ease; }
+    .nav-card-icon i { display: inline-block; }
     .nav-card:hover .nav-card-icon { transform: scale(1.1); }
     .nav-card-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
     .nav-card-desc { display: none; }
@@ -57,6 +55,7 @@
     /* Diagnostic Tools Section (matching optimization.html style) */
     .tools-section { display: flex; gap: 16px; justify-content: center; animation: fadeIn 1s ease 1s backwards; }
     .tool-btn { background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; text-decoration: none; position: relative; }
+    .tool-btn i { font-size: inherit; }
     .tool-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6); }
     .tool-btn:active { transform: scale(0.95); }
     .tools-label { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 12px; font-weight: 500; }
@@ -190,6 +189,65 @@
     .success-message p { margin: 0; color: var(--muted); line-height: 1.6; }
 
     @media (max-height: 700px) { .landing-container { padding: 60px 20px 80px; } }
+  
+    /* ========================================
+       BACKGROUND ANIMATION
+       Triangles/Hexagons — Constant Linear Movement
+       ======================================== */
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0, 191, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(0, 191, 255, 0.09) 0%, transparent 50%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 40px,
+          rgba(0, 191, 255, 0.05) 40px,
+          rgba(0, 191, 255, 0.05) 41px
+        ),
+        repeating-linear-gradient(
+          60deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        ),
+        repeating-linear-gradient(
+          120deg,
+          transparent,
+          transparent 80px,
+          rgba(0, 191, 255, 0.04) 80px,
+          rgba(0, 191, 255, 0.04) 81px
+        );
+      animation: hexFlow 20s linear infinite;
+    }
+
+    @keyframes hexFlow {
+      0%   { transform: translate(0, 0); }
+      100% { transform: translate(80px, 80px); }
+    }
+
   </style>
 </head>
 <body>
@@ -216,27 +274,27 @@
       <!-- Main Navigation Grid -->
       <div class="nav-grid">
         <a href="optimization.html" class="nav-card">
-          <span class="nav-card-icon">⚙️</span>
+          <span class="nav-card-icon"><i class="fas fa-sliders-h"></i></span>
           <h2 class="nav-card-title">Optimization</h2>
         </a>
         <a href="anonymity.html" class="nav-card">
-          <span class="nav-card-icon">🔐</span>
+          <span class="nav-card-icon"><i class="fas fa-user-shield"></i></span>
           <h2 class="nav-card-title">Anonymity</h2>
         </a>
         <a href="extras.html" class="nav-card">
-          <span class="nav-card-icon">🔧</span>
+          <span class="nav-card-icon"><i class="fas fa-tools"></i></span>
           <h2 class="nav-card-title">Extras</h2>
         </a>
         <a href="opsec.html" class="nav-card">
-          <span class="nav-card-icon">🛡️</span>
+          <span class="nav-card-icon"><i class="fas fa-shield-alt"></i></span>
           <h2 class="nav-card-title">OpSec</h2>
         </a>
       </div>
 
       <!-- Diagnostic Tools: rewired to run in-page -->
       <div class="tools-section">
-        <a href="javascript:void(0)" class="tool-btn diagnostic" title="System Diagnostics" onclick="openDiagnostic()">💻</a>
-        <a href="javascript:void(0)" class="tool-btn performance" title="Performance Monitor" onclick="togglePerformanceMonitor()">📊</a>
+        <a href="javascript:void(0)" class="tool-btn diagnostic" title="System Diagnostics" onclick="openDiagnostic()"><i class="fas fa-laptop"></i></a>
+        <a href="javascript:void(0)" class="tool-btn performance" title="Performance Monitor" onclick="togglePerformanceMonitor()"><i class="fas fa-chart-bar"></i></a>
       </div>
 
     </div>
@@ -259,7 +317,7 @@
   <div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
     <div class="submit-modal-content" onclick="event.stopPropagation()">
       <div class="submit-modal-header">
-        <h2>💡 Give Suggestions</h2>
+        <h2><i class="fas fa-lightbulb"></i> Give Suggestions</h2>
         <button class="close-btn" onclick="closeSubmitTweakModal()">×</button>
       </div>
       <div class="submit-modal-body" id="submitModalBody">
@@ -310,11 +368,11 @@
   <div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2>🔍 System Diagnostics</h2>
+        <h2><i class="fas fa-search"></i> System Diagnostics</h2>
         <button class="close-btn" onclick="closeDiagnostic()">×</button>
       </div>
       <div class="modal-body" id="diagnosticContent">
-        <div class="loading">🔄 Running diagnostics...</div>
+        <div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>
       </div>
     </div>
   </div>
@@ -326,7 +384,7 @@
     function openSubmitTweakModal() { const modal = document.getElementById('submitTweakModal'); modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
     function closeSubmitTweakModal() { const modal = document.getElementById('submitTweakModal'); modal.classList.remove('active'); document.body.style.overflow = 'auto'; document.getElementById('submitTweakForm').reset(); document.querySelectorAll('.form-error').forEach(err => err.classList.remove('active')); }
     function validateTweakForm() { let isValid = true; const author = document.getElementById('tweakAuthor').value.trim(); if (author.length < 2) { document.getElementById('authorError').classList.add('active'); isValid = false; } else { document.getElementById('authorError').classList.remove('active'); } const title = document.getElementById('tweakTitle').value.trim(); if (title.length < 5) { document.getElementById('titleError').classList.add('active'); isValid = false; } else { document.getElementById('titleError').classList.remove('active'); } const category = document.getElementById('tweakCategory').value; if (!category) { document.getElementById('categoryError').classList.add('active'); isValid = false; } else { document.getElementById('categoryError').classList.remove('active'); } const description = document.getElementById('tweakDescription').value.trim(); if (description.length < 50) { document.getElementById('descriptionError').classList.add('active'); isValid = false; } else { document.getElementById('descriptionError').classList.remove('active'); } return isValid; }
-    function submitTweak() { if (!validateTweakForm()) { return; } const author = document.getElementById('tweakAuthor').value.trim(); const title = document.getElementById('tweakTitle').value.trim(); const category = document.getElementById('tweakCategory').value; const description = document.getElementById('tweakDescription').value.trim(); const source = document.getElementById('tweakSource').value.trim(); const categoryNames = { optimization: 'Optimization', anonymity: 'Anonymity', extras: 'Extras', opsec: 'OpSec', general: 'General Suggestion' }; const issueTitle = `[Suggestion] ${title}`; const issueBody = `\n## 💡 New Suggestion\n**Submitted by:** ${author}\n**Category:** ${categoryNames[category]}\n### Description\n${description}\n${source ? `### Source/Reference\\n${source}` : ''}\n---\n*This suggestion was submitted via the ByteSavior website.*`.trim(); const githubUrl = `https://github.com/ByteSavior/ByteSavior/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=suggestion`; const modalBody = document.getElementById('submitModalBody'); modalBody.innerHTML = `<div class="success-message"><div class="icon">✅</div><h3>Ready to Submit!</h3><p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p><p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p></div>`; const footer = document.querySelector('.submit-modal-footer'); footer.innerHTML = `<button class="btn-secondary" onclick="closeSubmitTweakModal()">Close</button><button class="btn-primary" onclick="window.open('${githubUrl}', '_blank')"><i class="fab fa-github"></i> Open GitHub Issue</button>`; }
+    function submitTweak() { if (!validateTweakForm()) { return; } const author = document.getElementById('tweakAuthor').value.trim(); const title = document.getElementById('tweakTitle').value.trim(); const category = document.getElementById('tweakCategory').value; const description = document.getElementById('tweakDescription').value.trim(); const source = document.getElementById('tweakSource').value.trim(); const categoryNames = { optimization: 'Optimization', anonymity: 'Anonymity', extras: 'Extras', opsec: 'OpSec', general: 'General Suggestion' }; const issueTitle = `[Suggestion] ${title}`; const issueBody = `\n## <i class="fas fa-lightbulb"></i> New Suggestion\n**Submitted by:** ${author}\n**Category:** ${categoryNames[category]}\n### Description\n${description}\n${source ? `### Source/Reference\\n${source}` : ''}\n---\n*This suggestion was submitted via the ByteSavior website.*`.trim(); const githubUrl = `https://github.com/ByteSavior/ByteSavior/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=suggestion`; const modalBody = document.getElementById('submitModalBody'); modalBody.innerHTML = `<div class="success-message"><div class="icon"><i class="fas fa-check-circle"></i></div><h3>Ready to Submit!</h3><p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p><p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p></div>`; const footer = document.querySelector('.submit-modal-footer'); footer.innerHTML = `<button class="btn-secondary" onclick="closeSubmitTweakModal()">Close</button><button class="btn-primary" onclick="window.open('${githubUrl}', '_blank')"><i class="fab fa-github"></i> Open GitHub Issue</button>`; }
 
     // ===== GLOBAL SEARCH SYSTEM (from original index) =====
     const globalSearchInput = document.getElementById('globalSearch');
@@ -391,9 +449,9 @@
     function getScreenInfo(){ return { resolution: `${screen.width} × ${screen.height}`, colorDepth: `${screen.colorDepth}-bit`, pixelRatio: window.devicePixelRatio || 1 }; }
     function getConnectionInfo(){ const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection; return c ? { type: c.effectiveType || 'Unknown', downlink: c.downlink ? c.downlink + ' Mbps' : 'Unknown', rtt: c.rtt ? c.rtt + ' ms' : 'Unknown' } : null; }
 
-    async function runDiagnostics(){ const content = document.getElementById('diagnosticContent'); content.innerHTML = '<div class="loading">🔄 Running diagnostics...</div>'; await new Promise(r=>setTimeout(r,800)); const gpuInfo = await getGPUInfo(); const screenInfo = getScreenInfo(); const connectionInfo = getConnectionInfo(); const diagnosticHTML = `
+    async function runDiagnostics(){ const content = document.getElementById('diagnosticContent'); content.innerHTML = '<div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>'; await new Promise(r=>setTimeout(r,800)); const gpuInfo = await getGPUInfo(); const screenInfo = getScreenInfo(); const connectionInfo = getConnectionInfo(); const diagnosticHTML = `
       <div class="diagnostic-section">
-        <h3>💻 System Information</h3>
+        <h3><i class="fas fa-laptop"></i> System Information</h3>
         <div class="info-grid">
           <div class="info-item"><span class="info-label">Operating System</span><span class="info-value">${getOS()}</span></div>
           <div class="info-item"><span class="info-label">Browser</span><span class="info-value">${getBrowser()}</span></div>
@@ -401,7 +459,7 @@
         </div>
       </div>
       <div class="diagnostic-section">
-        <h3>🎮 Graphics & Display</h3>
+        <h3><i class="fas fa-gamepad"></i> Graphics & Display</h3>
         <div class="info-grid">
           <div class="info-item"><span class="info-label">GPU Renderer</span><span class="info-value">${gpuInfo.renderer}</span></div>
           <div class="info-item"><span class="info-label">GPU Vendor</span><span class="info-value">${gpuInfo.vendor}</span></div>
@@ -411,7 +469,7 @@
         </div>
       </div>
       <div class="diagnostic-section">
-        <h3>⚙️ Hardware</h3>
+        <h3><i class="fas fa-sliders-h"></i> Hardware</h3>
         <div class="info-grid">
           <div class="info-item"><span class="info-label">CPU Cores</span><span class="info-value">${getCPUCores()} logical processors</span></div>
           <div class="info-item"><span class="info-label">RAM (Estimated)</span><span class="info-value">${getRAM()}</span></div>
@@ -420,7 +478,7 @@
       </div>
       ${connectionInfo ? `
       <div class="diagnostic-section">
-        <h3>🌐 Network</h3>
+        <h3><i class="fas fa-globe"></i> Network</h3>
         <div class="info-grid">
           <div class="info-item"><span class="info-label">Connection Type</span><span class="info-value">${connectionInfo.type.toUpperCase()}</span></div>
           <div class="info-item"><span class="info-label">Download Speed</span><span class="info-value">${connectionInfo.downlink}</span></div>
@@ -428,22 +486,22 @@
         </div>
       </div>` : ''}
       <div class="diagnostic-section">
-        <h3>📊 Browser Capabilities</h3>
+        <h3><i class="fas fa-chart-bar"></i> Browser Capabilities</h3>
         <div class="info-grid">
-          <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '✓ Yes' : '✗ No'}</span></div>
-          <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '✓ Online' : '✗ Offline'}</span></div>
+          <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '<i class="fas fa-check"></i> Yes' : '<i class="fas fa-times"></i> No'}</span></div>
+          <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '<i class="fas fa-check"></i> Online' : '<i class="fas fa-times"></i> Offline'}</span></div>
           <div class="info-item"><span class="info-label">Language</span><span class="info-value">${navigator.language}</span></div>
           <div class="info-item"><span class="info-label">Timezone</span><span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span></div>
         </div>
       </div>
-      <button class="refresh-btn" onclick="runDiagnostics()">🔄 Refresh Diagnostics</button>
+      <button class="refresh-btn" onclick="runDiagnostics()"><i class="fas fa-sync-alt"></i> Refresh Diagnostics</button>
     `; content.innerHTML = diagnosticHTML; calculateHealthScore(gpuInfo, screenInfo, connectionInfo); content.insertAdjacentHTML('afterbegin', `<div class="diagnostic-note"><i class="fas fa-info-circle"></i><span>Chrome is recommended to see all diagnostics</span></div>`); }
 
-    function calculateHealthScore(gpuInfo, screenInfo, connectionInfo){ let score=0; const recommendations=[]; const metrics={}; const ramGB = navigator.deviceMemory || 0; if (ramGB>=16){ score+=20; metrics.ram={value:ramGB+' GB', score:100, status:'excellent'}; } else if (ramGB>=8){ score+=15; metrics.ram={value:ramGB+' GB', score:75, status:'good'}; recommendations.push({text:'Consider upgrading to 16GB RAM for better multitasking'}); } else if (ramGB>=4){ score+=10; metrics.ram={value:ramGB+' GB', score:50, status:'fair'}; recommendations.push({text:'<strong>Upgrade RAM:</strong> 4GB is minimal. Upgrade to 8GB or 16GB for significant improvement'}); } else { score+=5; metrics.ram={value:ramGB+' GB', score:25, status:'poor'}; recommendations.push({text:'<strong>Critical:</strong> RAM is very low. Upgrade to at least 8GB immediately'}); } const cpuCores = navigator.hardwareConcurrency || 0; if (cpuCores>=8){ score+=20; metrics.cpu={value:cpuCores+' cores', score:100, status:'excellent'}; } else if (cpuCores>=4){ score+=15; metrics.cpu={value:cpuCores+' cores', score:75, status:'good'}; } else if (cpuCores>=2){ score+=10; metrics.cpu={value:cpuCores+' cores', score:50, status:'fair'}; recommendations.push({text:'CPU has limited cores. Consider upgrading for better performance'}); } else { score+=5; metrics.cpu={value:cpuCores+' cores', score:25, status:'poor'}; recommendations.push({text:'<strong>Upgrade CPU:</strong> Single/dual-core CPUs are outdated'}); } const rLower = (gpuInfo.renderer||'').toLowerCase(); if (rLower.includes('nvidia') || rLower.includes('amd') || rLower.includes('radeon')){ score+=20; metrics.gpu={value:'Dedicated GPU', score:100, status:'excellent'}; } else if (rLower.includes('intel')) { score+=10; metrics.gpu={value:'Integrated GPU', score:50, status:'fair'}; recommendations.push({text:'<strong>GPU Optimization:</strong> Enable Hardware-Accelerated GPU Scheduling in Display Settings'}); } else { score+=5; metrics.gpu={value:'Basic GPU', score:25, status:'poor'}; recommendations.push({text:'Consider a dedicated GPU for gaming/graphics work'}); } if (connectionInfo){ const downlink=parseFloat(connectionInfo.downlink)||0; if (downlink>=10){ score+=15; metrics.connection={value:downlink+' Mbps', score:100, status:'excellent'}; } else if (downlink>=5){ score+=10; metrics.connection={value:downlink+' Mbps', score:67, status:'good'}; } else if (downlink>=1){ score+=5; metrics.connection={value:downlink+' Mbps', score:33, status:'fair'}; recommendations.push({text:'Slow internet detected. Check Network & DNS Optimization section'}); } else { score+=2; metrics.connection={value:'Poor', score:13, status:'poor'}; recommendations.push({text:'<strong>Network Issues:</strong> Very slow connection. Contact your ISP'}); } } else { score+=10; metrics.connection={value:'Unknown', score:67, status:'good'}; } const pixels = screen.width*screen.height; if (pixels>=3840*2160){ score+=15; metrics.display={value:'4K+', score:100, status:'excellent'}; } else if (pixels>=1920*1080){ score+=12; metrics.display={value:'1080p+', score:80, status:'good'}; } else if (pixels>=1280*720){ score+=8; metrics.display={value:'720p+', score:53, status:'fair'}; } else { score+=4; metrics.display={value:'Low Res', score:27, status:'poor'}; } const os=getOS(); if (os.includes('Windows 10') || os.includes('Windows 11')){ score+=10; recommendations.push({text:'Apply Windows tweaks from BIOS and Performance sections'}); } else if (os.includes('Windows')){ score+=5; recommendations.push({text:'<strong>Upgrade OS:</strong> Consider upgrading to Windows 10/11'}); } else if (os.includes('Linux') || os.includes('macOS')){ score+=10; } else { score+=5; } if (score>=80){ recommendations.unshift({text:'🎉 Your system is in great shape! Focus on software optimizations'}); } else if (score>=60){ recommendations.unshift({text:'Your system is decent. Apply the tweaks in this guide for better performance'}); } else if (score>=40){ recommendations.unshift({text:'Your system needs attention. Start with Essential tweaks and consider hardware upgrades'}); } else { recommendations.unshift({text:'⚠️ Your system needs significant upgrades. Focus on RAM and CPU first'}); } displayHealthScore(score, metrics, recommendations); }
+    function calculateHealthScore(gpuInfo, screenInfo, connectionInfo){ let score=0; const recommendations=[]; const metrics={}; const ramGB = navigator.deviceMemory || 0; if (ramGB>=16){ score+=20; metrics.ram={value:ramGB+' GB', score:100, status:'excellent'}; } else if (ramGB>=8){ score+=15; metrics.ram={value:ramGB+' GB', score:75, status:'good'}; recommendations.push({text:'Consider upgrading to 16GB RAM for better multitasking'}); } else if (ramGB>=4){ score+=10; metrics.ram={value:ramGB+' GB', score:50, status:'fair'}; recommendations.push({text:'<strong>Upgrade RAM:</strong> 4GB is minimal. Upgrade to 8GB or 16GB for significant improvement'}); } else { score+=5; metrics.ram={value:ramGB+' GB', score:25, status:'poor'}; recommendations.push({text:'<strong>Critical:</strong> RAM is very low. Upgrade to at least 8GB immediately'}); } const cpuCores = navigator.hardwareConcurrency || 0; if (cpuCores>=8){ score+=20; metrics.cpu={value:cpuCores+' cores', score:100, status:'excellent'}; } else if (cpuCores>=4){ score+=15; metrics.cpu={value:cpuCores+' cores', score:75, status:'good'}; } else if (cpuCores>=2){ score+=10; metrics.cpu={value:cpuCores+' cores', score:50, status:'fair'}; recommendations.push({text:'CPU has limited cores. Consider upgrading for better performance'}); } else { score+=5; metrics.cpu={value:cpuCores+' cores', score:25, status:'poor'}; recommendations.push({text:'<strong>Upgrade CPU:</strong> Single/dual-core CPUs are outdated'}); } const rLower = (gpuInfo.renderer||'').toLowerCase(); if (rLower.includes('nvidia') || rLower.includes('amd') || rLower.includes('radeon')){ score+=20; metrics.gpu={value:'Dedicated GPU', score:100, status:'excellent'}; } else if (rLower.includes('intel')) { score+=10; metrics.gpu={value:'Integrated GPU', score:50, status:'fair'}; recommendations.push({text:'<strong>GPU Optimization:</strong> Enable Hardware-Accelerated GPU Scheduling in Display Settings'}); } else { score+=5; metrics.gpu={value:'Basic GPU', score:25, status:'poor'}; recommendations.push({text:'Consider a dedicated GPU for gaming/graphics work'}); } if (connectionInfo){ const downlink=parseFloat(connectionInfo.downlink)||0; if (downlink>=10){ score+=15; metrics.connection={value:downlink+' Mbps', score:100, status:'excellent'}; } else if (downlink>=5){ score+=10; metrics.connection={value:downlink+' Mbps', score:67, status:'good'}; } else if (downlink>=1){ score+=5; metrics.connection={value:downlink+' Mbps', score:33, status:'fair'}; recommendations.push({text:'Slow internet detected. Check Network & DNS Optimization section'}); } else { score+=2; metrics.connection={value:'Poor', score:13, status:'poor'}; recommendations.push({text:'<strong>Network Issues:</strong> Very slow connection. Contact your ISP'}); } } else { score+=10; metrics.connection={value:'Unknown', score:67, status:'good'}; } const pixels = screen.width*screen.height; if (pixels>=3840*2160){ score+=15; metrics.display={value:'4K+', score:100, status:'excellent'}; } else if (pixels>=1920*1080){ score+=12; metrics.display={value:'1080p+', score:80, status:'good'}; } else if (pixels>=1280*720){ score+=8; metrics.display={value:'720p+', score:53, status:'fair'}; } else { score+=4; metrics.display={value:'Low Res', score:27, status:'poor'}; } const os=getOS(); if (os.includes('Windows 10') || os.includes('Windows 11')){ score+=10; recommendations.push({text:'Apply Windows tweaks from BIOS and Performance sections'}); } else if (os.includes('Windows')){ score+=5; recommendations.push({text:'<strong>Upgrade OS:</strong> Consider upgrading to Windows 10/11'}); } else if (os.includes('Linux') || os.includes('macOS')){ score+=10; } else { score+=5; } if (score>=80){ recommendations.unshift({text:'🎉 Your system is in great shape! Focus on software optimizations'}); } else if (score>=60){ recommendations.unshift({text:'Your system is decent. Apply the tweaks in this guide for better performance'}); } else if (score>=40){ recommendations.unshift({text:'Your system needs attention. Start with Essential tweaks and consider hardware upgrades'}); } else { recommendations.unshift({text:'<i class="fas fa-exclamation-triangle"></i> Your system needs significant upgrades. Focus on RAM and CPU first'}); } displayHealthScore(score, metrics, recommendations); }
 
     function displayHealthScore(score, metrics, recommendations){ const content=document.getElementById('diagnosticContent'); let scoreStatus='poor', scoreLabel='Needs Work'; if (score>=80){ scoreStatus='excellent'; scoreLabel='Excellent'; } else if (score>=60){ scoreStatus='good'; scoreLabel='Good'; } else if (score>=40){ scoreStatus='fair'; scoreLabel='Fair'; } const C=2*Math.PI*65; const off=C-(score/100)*C; const healthHTML = `
       <div class="health-score-container">
-        <div class="health-score-header"><h3>💊 System Health Score</h3></div>
+        <div class="health-score-header"><h3><i class="fas fa-pills"></i> System Health Score</h3></div>
         <div class="score-display">
           <div class="score-circle">
             <svg width="150" height="150">
@@ -458,7 +516,7 @@
           ${Object.entries(metrics).map(([k,d]) => `<div class="metric-card"><h5>${k.toUpperCase()}</h5><div class="metric-value">${d.value}</div><div class="metric-bar"><div class="metric-bar-fill ${d.status}" style="width:${d.score}%"></div></div></div>`).join('')}
         </div>
         <div class="health-recommendations">
-          <h4>📋 Recommendations</h4>
+          <h4><i class="fas fa-clipboard-list"></i> Recommendations</h4>
           ${recommendations.map(r => `<div class="recommendation-item">${r.text}</div>`).join('')}
         </div>
       </div>`; content.insertAdjacentHTML('afterbegin', healthHTML); }
@@ -476,13 +534,13 @@
     function openPerformanceModal(){ const modal=document.getElementById('diagnosticModal'); modal.classList.add('active'); document.body.style.overflow='hidden'; const content=document.getElementById('diagnosticContent'); content.innerHTML = `
         <div class="perf-test-container" style="border:none; padding:0;">
           <div class="perf-test-header">
-            <h3>⚡ Live Performance Monitor</h3>
+            <h3><i class="fas fa-bolt"></i> Live Performance Monitor</h3>
             <div style="display:flex; gap:8px;">
               <button class="perf-test-btn" onclick="stopAndSavePerformance()" style="background:#ef4444;">Save</button>
             </div>
           </div>
           <div id="perfTestResults">
-            <div class="perf-status">⚡ Monitoring performance... Collecting data for 5-second average</div>
+            <div class="perf-status"><i class="fas fa-bolt"></i> Monitoring performance... Collecting data for 5-second average</div>
           </div>
         </div>`; updatePerformanceDisplay(); }
     function stopAndSavePerformance(){ stopPerformanceMonitor(); }
@@ -505,14 +563,14 @@
         const statusEl=document.getElementById('perfStatus'); if(statusEl) statusEl.textContent=statusText;
         const cards=container.querySelectorAll('.perf-result-card');
         const metrics=[{value:current.memoryTest,prev:previous?previous.memoryTest:null},{value:current.renderTest,prev:previous?previous.renderTest:null},{value:current.storageTest,prev:previous?previous.storageTest:null}];
-        cards.forEach((card,i)=>{ if(i<metrics.length){ const m=metrics[i]; const el=card.querySelector('.perf-comparison:first-of-type .perf-value'); if(el) el.textContent=m.value+'ms'; const imp=card.querySelector('.perf-improvement'); if(imp&&m.prev!==null){ const diff=m.value-m.prev; const pct=((diff/m.prev)*100).toFixed(1); const improved=diff<0; const sign=diff>0?'+':''; imp.className=`perf-improvement ${improved?'positive':'negative'}`; imp.innerHTML=`${improved?'📈':'📉'} ${sign}${pct}% ${improved?'Better':'Worse'}`; } } });
+        cards.forEach((card,i)=>{ if(i<metrics.length){ const m=metrics[i]; const el=card.querySelector('.perf-comparison:first-of-type .perf-value'); if(el) el.textContent=m.value+'ms'; const imp=card.querySelector('.perf-improvement'); if(imp&&m.prev!==null){ const diff=m.value-m.prev; const pct=((diff/m.prev)*100).toFixed(1); const improved=diff<0; const sign=diff>0?'+':''; imp.className=`perf-improvement ${improved?'positive':'negative'}`; imp.innerHTML=`${improved?'<i class="fas fa-arrow-up"></i>':'<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved?'Better':'Worse'}`; } } });
         if(performanceChart){ performanceChart.data.datasets[performanceChart.data.datasets.length-1].data=[current.memoryTest,current.renderTest,current.storageTest]; performanceChart.update('none'); }
       }
     }
     async function testMemoryPerformance(){ const start=performance.now(); const arrays=[]; for(let i=0;i<1000;i++) arrays.push(new Array(1000).fill(Math.random())); let sum=0; for(let a of arrays) sum+=a[0]; const end=performance.now(); return Math.round(end-start); }
     async function testRenderPerformance(){ const start=performance.now(); const testDiv=document.createElement('div'); testDiv.style.position='absolute'; testDiv.style.left='-9999px'; document.body.appendChild(testDiv); for(let i=0;i<500;i++){ const el=document.createElement('div'); el.textContent='Test '+i; el.style.padding='10px'; testDiv.appendChild(el); } testDiv.offsetHeight; document.body.removeChild(testDiv); const end=performance.now(); return Math.round(end-start); }
     async function testStoragePerformance(){ const start=performance.now(); for(let i=0;i<100;i++) localStorage.setItem('perf_test_'+i,'x'.repeat(100)); for(let i=0;i<100;i++) localStorage.getItem('perf_test_'+i); for(let i=0;i<100;i++) localStorage.removeItem('perf_test_'+i); const end=performance.now(); return Math.round(end-start); }
-    function createPerfCard(title,current,previous,older,unit,lowerIsBetter){ let improvHTML=''; if(previous!==null&&previous!==undefined){ const diff=current-previous; const pct=((diff/previous)*100).toFixed(1); const improved=lowerIsBetter?diff<0:diff>0; const sign=diff>0?'+':''; improvHTML=`<div class="perf-improvement ${improved?'positive':'negative'}">${improved?'📈':'📉'} ${sign}${pct}% ${improved?'Better':'Worse'}</div>`; } const prevRow=previous!==null&&previous!==undefined?`<div class="perf-comparison"><span class="perf-label">Previous:</span><span class="perf-value">${previous}${unit}</span></div>`:''; const olderRow=older!==null&&older!==undefined?`<div class="perf-comparison"><span class="perf-label">Older:</span><span class="perf-value">${older}${unit}</span></div>`:''; return `<div class="perf-result-card"><h4>${title}</h4><div class="perf-comparison"><span class="perf-label">Current:</span><span class="perf-value">${current}${unit}</span></div>${prevRow}${olderRow}${improvHTML}</div>`; }
+    function createPerfCard(title,current,previous,older,unit,lowerIsBetter){ let improvHTML=''; if(previous!==null&&previous!==undefined){ const diff=current-previous; const pct=((diff/previous)*100).toFixed(1); const improved=lowerIsBetter?diff<0:diff>0; const sign=diff>0?'+':''; improvHTML=`<div class="perf-improvement ${improved?'positive':'negative'}">${improved?'<i class="fas fa-arrow-up"></i>':'<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved?'Better':'Worse'}</div>`; } const prevRow=previous!==null&&previous!==undefined?`<div class="perf-comparison"><span class="perf-label">Previous:</span><span class="perf-value">${previous}${unit}</span></div>`:''; const olderRow=older!==null&&older!==undefined?`<div class="perf-comparison"><span class="perf-label">Older:</span><span class="perf-value">${older}${unit}</span></div>`:''; return `<div class="perf-result-card"><h4>${title}</h4><div class="perf-comparison"><span class="perf-label">Current:</span><span class="perf-value">${current}${unit}</span></div>${prevRow}${olderRow}${improvHTML}</div>`; }
     function createPerformanceChart(results){
       const ctx=document.getElementById('perfChart'); if(!ctx) return;
       if(performanceChart) performanceChart.destroy();
