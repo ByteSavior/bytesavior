@@ -1,1967 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ByteSavior</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<style>
-:root {
-  --blue: #00bfff;
-  --bg: #121212;
-  --panel: #1e1e1e;
-  --panel-dark: #0f172a;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
-  overflow-y: auto;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 24px 16px 80px;
-}
-
-/* ===== HEADER / LOGO ===== */
-.site-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border-bottom: 1px solid #333;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-}
-
-.logo-img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.brand-text h1 {
-  margin: 0;
-  font-size: 1.6rem;
-  color: var(--blue);
-  letter-spacing: 0.05em;
-}
-
-.brand-text p {
-  margin: 4px 0 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-/* ===== NAVIGATION ===== */
-.main-nav {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 8px 0;
-  border-bottom: 1px solid #333;
-}
-
-.nav-link {
-  padding: 10px 20px;
-  background: var(--panel);
-  color: var(--text);
-  text-decoration: none;
-  border-radius: 6px;
-  border: 1px solid #333;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-}
-
-.nav-link:hover {
-  background: var(--panel-dark);
-  border-color: var(--blue);
-  color: var(--blue);
-}
-
-.nav-link.active {
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
-}
-
-@media (max-width: 600px) {
-  .main-nav {
-    flex-direction: column;
-  }
-  
-  .nav-link {
-    text-align: center;
-  }
-}
-
-/* ===== SEARCH & FILTER ===== */
-.search-filter-container {
-  background: var(--panel);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  border-left: 3px solid var(--blue);
-}
-
-.search-box {
-  position: relative;
-  margin-bottom: 0;
-}
-
-.search-input {
-  width: 100%;
-  padding: 8px 16px 8px 36px;
-  background: var(--bg);
-  border: 1px solid #333;
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 0.9rem;
-  transition: border-color 0.2s;
-  cursor: pointer;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
-  cursor: text;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  font-size: 0.95rem;
-  pointer-events: none;
-}
-
-.filter-section {
-  display: none;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #333;
-}
-
-.filter-section.active {
-  display: flex;
-}
-
-.filter-label {
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.filter-group {
-  display: flex;
-  gap: 6px;
-  flex-wrap: nowrap;
-}
-
-.filter-btn {
-  padding: 4px 10px;
-  background: var(--bg);
-  color: var(--muted);
-  border: 1px solid #333;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.filter-btn:hover {
-  border-color: var(--blue);
-  color: var(--blue);
-}
-
-.filter-btn.active {
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
-}
-
-.clear-filters-btn {
-  padding: 4px 10px;
-  background: transparent;
-  color: var(--blue);
-  border: 1px solid var(--blue);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-left: auto;
-  white-space: nowrap;
-}
-
-.clear-filters-btn:hover {
-  background: var(--blue);
-  color: white;
-}
-
-.search-results-info {
-  background: rgba(0, 191, 255, 0.1);
-  border: 1px solid var(--blue);
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 16px;
-  color: var(--text);
-  font-size: 0.85rem;
-  display: none;
-}
-
-.search-results-info.active {
-  display: block;
-}
-
-.no-results {
-  background: var(--panel);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 24px 20px;
-  text-align: center;
-  display: none;
-  margin-bottom: 16px;
-}
-
-.no-results.active {
-  display: block;
-}
-
-.no-results h3 {
-  color: var(--muted);
-  margin: 0 0 6px 0;
-  font-size: 1rem;
-}
-
-.no-results p {
-  color: var(--muted);
-  margin: 0;
-  font-size: 0.85rem;
-}
-
-.section-hidden {
-  display: none !important;
-}
-
-.step-hidden {
-  display: none !important;
-}
-
-.highlight {
-  background: rgba(0, 191, 255, 0.3);
-  padding: 2px 4px;
-  border-radius: 2px;
-}
-
-@media (max-width: 600px) {
-  .filter-section {
-    flex-wrap: wrap;
-  }
-  
-  .filter-group {
-    flex-wrap: wrap;
-  }
-  
-  .clear-filters-btn {
-    margin-left: 0;
-    width: 100%;
-    margin-top: 4px;
-  }
-}
-
-/* ===== ACCORDION ===== */
-.accordion {
-  background: var(--panel);
-  border-radius: 8px;
-  border: 1px solid #333;
-  margin-bottom: 22px;
-}
-
-.accordion-header {
-  width: 100%;
-  padding: 16px 20px;
-  background: var(--panel-dark);
-  color: var(--blue);
-  font-size: 1.05rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.accordion-header::after {
-  content: "+";
-  font-size: 1.4rem;
-}
-
-.accordion-header.active::after {
-  content: "−";
-}
-
-.accordion-body {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.35s ease;
-  overflow: hidden;
-}
-
-.accordion-body.open {
-  grid-template-rows: 1fr;
-}
-
-.accordion-body > div {
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* ===== INNER CONTENT ===== */
-.accordion-inner {
-  padding: 0 20px;
-}
-
-.accordion-body.open .accordion-inner {
-  padding: 16px 20px 20px;
-}
-
-.step {
-  background: #1f2933;
-  border-radius: 6px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.step:hover {
-  background: #253340;
-}
-
-.step-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-}
-
-.step-title::before {
-  content: "▸ ";
-  color: var(--blue);
-  margin-right: 6px;
-}
-
-.step.expanded .step-title::before {
-  content: "▾ ";
-}
-
-.meta {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.stars {
-  color: #7dd3fc;
-  letter-spacing: 1px;
-}
-
-.step-details {
-  display: none;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #333;
-}
-
-.step.expanded .step-details {
-  display: block;
-}
-
-.sub-step {
-  margin-bottom: 10px;
-  padding-left: 20px;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-.sub-step::before {
-  content: "→ ";
-  color: var(--blue);
-  margin-left: -15px;
-  margin-right: 5px;
-}
-
-.code {
-  background: #0f172a;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #7dd3fc;
-}
-
-/* ===== FOOTER ===== */
-.site-footer {
-  background: var(--panel);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 24px;
-  margin-top: 40px;
-  text-align: center;
-  border-top: 2px solid var(--blue);
-}
-
-.footer-text {
-  color: var(--muted);
-  font-size: 1rem;
-  margin-bottom: 16px;
-}
-
-.social-links {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--panel-dark);
-  color: var(--text);
-  text-decoration: none;
-  border-radius: 6px;
-  border: 1px solid #333;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-}
-
-.social-link:hover {
-  background: var(--blue);
-  border-color: var(--blue);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
-}
-
-.social-link i {
-  font-size: 1.3rem;
-}
-
-@media (max-width: 600px) {
-  .social-links {
-    flex-direction: column;
-  }
-  
-  .social-link {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* ===== DIAGNOSTIC BUTTON ===== */
-.diagnostic-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 56px;
-  height: 56px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.diagnostic-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6);
-}
-
-.diagnostic-btn:active {
-  transform: scale(0.95);
-}
-
-/* ===== POPUP MODAL ===== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 20px;
-}
-
-.modal-overlay.active {
-  display: flex;
-}
-
-.modal-content {
-  background: var(--panel);
-  border: 2px solid var(--blue);
-  border-radius: 12px;
-  max-width: 600px;
-  width: 100%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0, 191, 255, 0.3);
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-header {
-  background: var(--panel-dark);
-  padding: 20px 24px;
-  border-bottom: 2px solid var(--blue);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: var(--blue);
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--blue);
-}
-
-.modal-body {
-  padding: 24px;
-}
-
-.diagnostic-section {
-  margin-bottom: 24px;
-}
-
-.diagnostic-section h3 {
-  color: var(--blue);
-  font-size: 1.1rem;
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.info-grid {
-  display: grid;
-  gap: 10px;
-}
-
-.info-item {
-  background: #1f2933;
-  padding: 12px 16px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 3px solid var(--blue);
-}
-
-.info-label {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.info-value {
-  color: var(--muted);
-  font-family: monospace;
-  font-size: 0.9rem;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.status-good {
-  background: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
-}
-
-.status-warning {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-}
-
-.status-info {
-  background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
-}
-
-.refresh-btn {
-  width: 100%;
-  padding: 12px;
-  background: var(--blue);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  margin-top: 12px;
-}
-
-.refresh-btn:hover {
-  background: #0099e6;
-  transform: translateY(-1px);
-}
-
-.refresh-btn:active {
-  transform: translateY(0);
-}
-
-.loading {
-  text-align: center;
-  color: var(--muted);
-  padding: 20px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .diagnostic-btn {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-    top: 15px;
-    right: 15px;
-  }
-  
-  .modal-content {
-    margin: 10px;
-  }
-  
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ByteSavior - Rescue Performance. Reduce Exposure.</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Diagnostics/performance charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root { --blue: #00bfff; --bg: #121212; --panel: #1e1e1e; --panel-dark: #0f172a; --text: #e5e7eb; --muted: #9ca3af; --green: #4ade80; --orange: #fb923c; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; overflow-y: auto; }
+
+    /* ===== Landing / Hero (from original index) ===== */
+    .landing-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px 120px; position: relative; }
+    .landing-container::before { content: ''; position: fixed; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(0, 191, 255, 0.03) 50%, transparent 100%), repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 191, 255, 0.03) 50px, rgba(0, 191, 255, 0.03) 51px); animation: wave 20s linear infinite; pointer-events: none; z-index: 0; }
+    .landing-container::after { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(0, 191, 255, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(0, 191, 255, 0.05) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    @keyframes wave { 0% { transform: translateX(0) translateY(0); } 100% { transform: translateX(-50px) translateY(20px);} }
+    .hero-section { text-align: center; z-index: 1; max-width: 800px; animation: fadeIn 1s ease; }
+    @keyframes fadeIn { from{opacity:0; transform: translateY(20px);} to{opacity:1; transform: translateY(0);} }
+    .logo-container { margin-bottom: 30px; animation: fadeIn 1s ease 0.2s backwards; }
+    .logo-img { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 8px 24px rgba(0, 191, 255, 0.3)); transition: transform 0.3s ease; }
+    .logo-img:hover { transform: scale(1.05) rotate(5deg); }
+    .brand-title { font-size: 3.5rem; font-weight: 700; color: var(--blue); margin-bottom: 16px; letter-spacing: 0.02em; text-shadow: 0 4px 20px rgba(0, 191, 255, 0.3); animation: fadeIn 1s ease 0.4s backwards; }
+    .tagline { font-size: 1.3rem; color: var(--muted); margin-bottom: 60px; font-weight: 400; animation: fadeIn 1s ease 0.6s backwards; }
+
+    /* Global Search */
+    .global-search-container { width: 100%; max-width: 700px; margin-bottom: 50px; animation: fadeIn 1s ease 0.7s backwards; }
+    .search-wrapper { background: var(--panel); border: 2px solid transparent; border-radius: 12px; padding: 12px 16px; transition: all 0.3s ease; }
+    .search-wrapper:focus-within { border-color: var(--blue); box-shadow: 0 8px 24px rgba(0, 191, 255, 0.2); }
+    .search-box-global { position: relative; }
+    .search-input-global { width: 100%; padding: 12px 16px 12px 44px; background: var(--bg); border: 1px solid #333; border-radius: 8px; color: var(--text); font-size: 1rem; transition: border-color 0.2s; }
+    .search-input-global:focus { outline: none; border-color: var(--blue); }
+    .search-icon-global { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem; }
+    .search-results-global { margin-top: 16px; max-height: 400px; overflow-y: auto; display: none; }
+    .search-results-global.active { display: block; }
+    .search-result-item { background: var(--bg); border: 1px solid #333; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+    .search-result-item:hover { border-color: var(--blue); transform: translateX(4px); }
+    .result-category { font-size: 0.75rem; color: var(--blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .result-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .result-preview { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+    .result-highlight { background: rgba(0, 191, 255, 0.3); padding: 2px 4px; border-radius: 2px; }
+    .no-results-global { text-align: center; padding: 30px 20px; color: var(--muted); font-size: 0.9rem; }
+
+    /* Main Navigation Buttons */
+    .nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; width: 100%; max-width: 800px; margin-bottom: 60px; animation: fadeIn 1s ease 0.8s backwards; }
+    .nav-card { background: var(--panel); border: 2px solid transparent; border-radius: 12px; padding: 28px 20px; text-decoration: none; color: var(--text); transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; text-align: center; }
+    .nav-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 0%, rgba(0, 191, 255, 0.05) 100%); opacity: 0; transition: opacity 0.3s ease; }
+    .nav-card:hover { transform: translateY(-8px); border-color: var(--blue); box-shadow: 0 12px 40px rgba(0, 191, 255, 0.2); }
+    .nav-card:hover::before { opacity: 1; }
+    .nav-card-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; transition: transform 0.3s ease; }
+    .nav-card:hover .nav-card-icon { transform: scale(1.1); }
+    .nav-card-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+    .nav-card-desc { display: none; }
+
+    /* Diagnostic Tools Section (matching optimization.html style) */
+    .tools-section { display: flex; gap: 16px; justify-content: center; animation: fadeIn 1s ease 1s backwards; }
+    .tool-btn { background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; text-decoration: none; position: relative; }
+    .tool-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6); }
+    .tool-btn:active { transform: scale(0.95); }
+    .tools-label { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 12px; font-weight: 500; }
+    @media (max-width: 600px) { .tool-btn { width: 48px; height: 48px; font-size: 20px; } }
+
+    /* Footer */
+    .landing-footer { margin-top: 60px; display: flex; gap: 24px; animation: fadeIn 1s ease 1.2s backwards; }
+    .footer-link { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s ease; display: flex; align-items: center; gap: 8px; }
+    .footer-link:hover { color: var(--blue); }
+
+    /* Mobile Responsive Tweaks */
+    @media (max-width: 768px) {
+      .brand-title { font-size: 2.5rem; }
+      .tagline { font-size: 1.1rem; margin-bottom: 40px; }
+      .nav-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 400px; }
+      .nav-card { padding: 24px 16px; }
+      .nav-card-icon { font-size: 2rem; }
+      .nav-card-title { font-size: 1rem; }
+      .tools-section { gap: 12px; }
+      .landing-footer { flex-direction: column; gap: 12px; margin-top: 40px; }
+    }
+    @media (max-width: 480px) {
+      .brand-title { font-size: 2rem; }
+      .logo-img { width: 100px; height: 100px; }
+      .tagline { font-size: 1rem; }
+      .nav-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== Diagnostics & Performance (copied from optimization) ===== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: var(--panel); border: 2px solid var(--blue); border-radius: 12px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,191,255,0.3); animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from{opacity:0; transform: translateY(-30px);} to{opacity:1; transform: translateY(0);} }
+    .modal-header { background: var(--panel-dark); padding: 20px 24px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h2 { margin: 0; color: var(--blue); font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .close-btn { background: none; border: none; color: var(--text); font-size: 28px; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+    .close-btn:hover { background: rgba(255,255,255,0.1); color: var(--blue); }
+    .modal-body { padding: 24px; }
+    .diagnostic-section { margin-bottom: 24px; }
+    .diagnostic-section h3 { color: var(--blue); font-size: 1.1rem; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; }
+    .info-grid { display: grid; gap: 10px; }
+    .info-item { background: #1f2933; padding: 12px 16px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--blue); }
+    .info-label { font-weight: 600; color: var(--text); }
+    .info-value { color: var(--muted); font-family: monospace; font-size: 0.9rem; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+    .status-good { background: rgba(34,197,94,0.2); color: #4ade80; }
+    .status-warning { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .status-info { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .refresh-btn { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 12px; }
+    .refresh-btn:hover { background: #0099e6; transform: translateY(-1px); }
+    .refresh-btn:active { transform: translateY(0); }
+    .loading { text-align: center; color: var(--muted); padding: 20px; }
+    .diagnostic-note { background: rgba(0,191,255,0.08); border: 1px solid rgba(0,191,255,0.35); color: var(--text); border-radius: 6px; padding: 10px 12px; margin: 0 0 16px 0; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+    .diagnostic-note i { color: var(--blue); }
+
+    /* Health score & metrics (from optimization) */
+    .health-score-container { background: var(--panel); border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 20px; border-left: 4px solid var(--blue); }
+    .health-score-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .health-score-header h3 { margin: 0; color: var(--blue); font-size: 1.2rem; }
+    .score-display { text-align: center; margin: 20px 0; }
+    .score-circle { position: relative; width: 150px; height: 150px; margin: 0 auto 20px; }
+    .score-circle svg { transform: rotate(-90deg); }
+    .score-circle-bg { fill: none; stroke: #333; stroke-width: 12; }
+    .score-circle-progress { fill: none; stroke: var(--blue); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+    .score-circle-progress.excellent { stroke: #4ade80; }
+    .score-circle-progress.good { stroke: var(--blue); }
+    .score-circle-progress.fair { stroke: #fbbf24; }
+    .score-circle-progress.poor { stroke: #ef4444; }
+    .score-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; font-weight: 700; color: var(--text); }
+    .score-label { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+    .health-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
+    .metric-card { background: var(--bg); border: 1px solid #333; border-radius: 6px; padding: 12px; }
+    .metric-card h5 { margin: 0 0 8px 0; color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+    .metric-value { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .metric-bar { height: 6px; background: #333; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    .metric-bar-fill { height: 100%; background: var(--blue); border-radius: 3px; transition: width 0.5s ease; }
+    .metric-bar-fill.excellent { background: #4ade80; }
+    .metric-bar-fill.good { background: var(--blue); }
+    .metric-bar-fill.fair { background: #fbbf24; }
+    .metric-bar-fill.poor { background: #ef4444; }
+    .health-recommendations { background: rgba(0,191,255,0.05); border: 1px solid rgba(0,191,255,0.2); border-radius: 6px; padding: 16px; margin-top: 20px; }
+    .health-recommendations h4 { margin: 0 0 12px 0; color: var(--blue); font-size: 1rem; }
+    .recommendation-item { background: var(--bg); border-left: 3px solid var(--blue); padding: 10px 12px; margin-bottom: 10px; border-radius: 4px; font-size: 0.9rem; line-height: 1.5; }
+    .recommendation-item:last-child { margin-bottom: 0; }
+    .recommendation-item strong { color: var(--blue); }
+
+    /* Performance monitor (from optimization) */
+    .perf-test-container { background: var(--panel); border: 1px solid #333; border-radius: 8px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #4ade80; }
+    .perf-test-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .perf-test-header h3 { margin: 0; color: #4ade80; font-size: 1.2rem; }
+    .perf-test-btn { padding: 8px 16px; background: #4ade80; color: #121212; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .perf-test-btn:hover { background: #22c55e; transform: translateY(-1px); }
+    .perf-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+    .perf-result-card { background: var(--bg); border: 1px solid #333; border-radius: 6px; padding: 16px; }
+    .perf-result-card h4 { margin: 0 0 12px 0; color: var(--text); font-size: 1rem; }
+    .perf-comparison { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .perf-label { font-size: 0.85rem; color: var(--muted); }
+    .perf-value { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .perf-improvement { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-top: 8px; }
+    .perf-improvement.positive { background: rgba(74,222,128,0.2); color: #4ade80; }
+    .perf-improvement.negative { background: rgba(239,68,68,0.2); color: #ef4444; }
+    .perf-chart-container { margin-top: 20px; background: var(--bg); border: 1px solid #333; border-radius: 6px; padding: 16px; }
+    .perf-chart-container canvas { max-height: 300px; }
+    .perf-status { text-align: center; padding: 20px; color: var(--muted); font-size: 0.9rem; }
+
+    /* Give Suggestions modal (from original index) */
+    .submit-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; overflow-y: auto; padding: 20px; }
+    .submit-modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+    .submit-modal-content { background: var(--panel); border: 1px solid #333; border-radius: 8px; max-width: 600px; width: 100%; margin: 40px auto; animation: slideIn 0.3s ease; }
+    .submit-modal-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+    .submit-modal-header h2 { margin: 0; color: var(--blue); font-size: 1.3rem; }
+    .submit-modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: var(--text); font-weight: 600; font-size: 0.9rem; }
+    .form-group label .required { color: #ef4444; }
+    .form-input, .form-textarea, .form-select { width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid #333; border-radius: 6px; color: var(--text); font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2); }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-helper { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+    .form-error { font-size: 0.8rem; color: #ef4444; margin-top: 4px; display: none; }
+    .form-error.active { display: block; }
+    .submit-modal-footer { padding: 16px 24px; border-top: 1px solid #333; display: flex; justify-content: flex-end; gap: 12px; }
+    .btn-secondary { padding: 10px 20px; background: transparent; border: 1px solid #333; border-radius: 6px; color: var(--text); cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+    .btn-secondary:hover { background: var(--bg); border-color: var(--blue); }
+    .btn-primary { padding: 10px 20px; background: var(--blue); border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+    .btn-primary:hover { background: #0099e6; }
+    .btn-primary:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+    .success-message { text-align: center; padding: 40px 20px; }
+    .success-message .icon { font-size: 4rem; margin-bottom: 16px; }
+    .success-message h3 { margin: 0 0 12px 0; color: var(--blue); }
+    .success-message p { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    @media (max-height: 700px) { .landing-container { padding: 60px 20px 80px; } }
+  </style>
 </head>
-
 <body>
+  <div class="landing-container">
+    <div class="hero-section">
+      <!-- Logo and Branding -->
+      <div class="logo-container">
+        <img src="fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png" alt="ByteSavior Logo" class="logo-img">
+      </div>
+      <h1 class="brand-title">ByteSavior</h1>
+      <p class="tagline">Rescue performance. Reduce exposure.</p>
 
-<!-- Diagnostic Button -->
-<button class="diagnostic-btn" onclick="openDiagnostic()" title="System Diagnostics">
-  🖥️
-</button>
-
-<!-- Diagnostic Modal -->
-<div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <h2>🔍 System Diagnostics</h2>
-      <button class="close-btn" onclick="closeDiagnostic()">×</button>
-    </div>
-    <div class="modal-body" id="diagnosticContent">
-      <div class="loading">🔄 Running diagnostics...</div>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-
-<header class="site-header">
-  <img
-    class="logo-img"
-    src="fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png"
-    alt="ByteSavior Logo"
-  />
-
-  <div class="brand-text">
-    <h1>ByteSavior</h1>
-    <p class="tagline">Rescue performance. Reduce exposure.</p>
-  </div>
-</header>
-
-<nav class="main-nav">
-  <a href="index.html" class="nav-link active">🏠 Home</a>
-  <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
-  <a href="extras.html" class="nav-link">⭐ Extras</a>
-  <a href="opsec.html" class="nav-link">🔒 OpSec</a>
-</nav>
-
-<!-- SEARCH & FILTER -->
-<div class="search-filter-container">
-  <div class="search-box">
-    <i class="fas fa-search search-icon"></i>
-    <input 
-      type="text" 
-      class="search-input" 
-      id="searchInput" 
-      placeholder="Search tweaks... (e.g., 'disable telemetry', 'GPU', 'faster boot')"
-    />
-  </div>
-  
-  <div class="filter-section" id="filterSection">
-    <span class="filter-label">Impact:</span>
-    <div class="filter-group">
-      <button class="filter-btn" data-filter="impact" data-value="5">★★★★★</button>
-      <button class="filter-btn" data-filter="impact" data-value="4">★★★★☆</button>
-      <button class="filter-btn" data-filter="impact" data-value="3">★★★☆☆</button>
-    </div>
-    
-    <span class="filter-label">Risk:</span>
-    <div class="filter-group">
-      <button class="filter-btn" data-filter="risk" data-value="low">Low</button>
-      <button class="filter-btn" data-filter="risk" data-value="medium">Medium</button>
-      <button class="filter-btn" data-filter="risk" data-value="high">High</button>
-    </div>
-    
-    <button class="clear-filters-btn" id="clearFilters">Clear All</button>
-  </div>
-</div>
-
-<div class="search-results-info" id="searchResultsInfo"></div>
-<div class="no-results" id="noResults">
-  <h3>🔍 No results found</h3>
-  <p>Try different keywords or clear your filters</p>
-</div>
-
-
-<!-- ===== SECTIONS ===== -->
-
-<section class="accordion">
-  <button class="accordion-header">1. 🧬 BIOS Tweaks (Essential)</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Enable Memory Profile (XMP/EXPO)</span>
-          <span class="meta"><span class="stars">★★★★★</span> Low risk</span>
+      <!-- Global Search -->
+      <div class="global-search-container">
+        <div class="search-wrapper">
+          <div class="search-box-global">
+            <i class="fas fa-search search-icon-global"></i>
+            <input type="text" class="search-input-global" id="globalSearch" placeholder="Search across all sections..." />
+          </div>
         </div>
-        <div class="step-details">
-          <div class="sub-step">Restart your computer and enter BIOS (press <span class="code">F2</span> or <span class="code">DEL</span> repeatedly during boot)</div>
-          <div class="sub-step">Navigate to memory/overclocking settings (varies by motherboard)</div>
-          <div class="sub-step">For Intel: Enable <span class="code">XMP</span></div>
-          <div class="sub-step">For AMD: Enable <span class="code">EXPO</span> or <span class="code">DOCP</span></div>
-          <div class="sub-step">Select Profile 1 (usually the default)</div>
-          <div class="sub-step">Save settings and exit (press <span class="code">F10</span>)</div>
-          <div class="sub-step">System will reboot with optimized RAM speeds</div>
-        </div>
+        <div class="search-results-global" id="globalResults"></div>
       </div>
 
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Enable Resizable BAR</span>
-          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Enter BIOS (press <span class="code">F2</span> or <span class="code">DEL</span> during boot)</div>
-          <div class="sub-step">Find "Above 4G Decoding" setting and enable it</div>
-          <div class="sub-step">Find "Resizable BAR" or "Smart Access Memory" and enable it</div>
-          <div class="sub-step">Save and exit (<span class="code">F10</span>)</div>
-          <div class="sub-step">Note: Your GPU must support this feature (RTX 3000+ / RX 6000+)</div>
-        </div>
+      <!-- Main Navigation Grid -->
+      <div class="nav-grid">
+        <a href="optimization.html" class="nav-card">
+          <span class="nav-card-icon">⚙️</span>
+          <h2 class="nav-card-title">Optimization</h2>
+        </a>
+        <a href="anonymity.html" class="nav-card">
+          <span class="nav-card-icon">🔐</span>
+          <h2 class="nav-card-title">Anonymity</h2>
+        </a>
+        <a href="extras.html" class="nav-card">
+          <span class="nav-card-icon">🔧</span>
+          <h2 class="nav-card-title">Extras</h2>
+        </a>
+        <a href="opsec.html" class="nav-card">
+          <span class="nav-card-icon">🛡️</span>
+          <h2 class="nav-card-title">OpSec</h2>
+        </a>
       </div>
 
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable Unused BIOS Features</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Medium risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Enter BIOS settings</div>
-          <div class="sub-step">Disable <span class="code">CSM/Legacy Boot</span> if using UEFI Windows</div>
-          <div class="sub-step">Disable <span class="code">Virtualization (VT-d/SVM)</span> if not using VMs</div>
-          <div class="sub-step">Save and exit</div>
-        </div>
+      <!-- Diagnostic Tools: rewired to run in-page -->
+      <div class="tools-section">
+        <a href="javascript:void(0)" class="tool-btn diagnostic" title="System Diagnostics" onclick="openDiagnostic()">💻</a>
+        <a href="javascript:void(0)" class="tool-btn performance" title="Performance Monitor" onclick="togglePerformanceMonitor()">📊</a>
       </div>
 
     </div>
-  </div>
-</section>
 
-<section class="accordion">
-  <button class="accordion-header">2. 🧰 Efficiency Tools</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Win11Debloat by Raphire</span>
-          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Download from GitHub: <span class="code">github.com/Raphire/Win11Debloat</span></div>
-          <div class="sub-step">Run as Administrator</div>
-          <div class="sub-step">Select <span class="code">Recommended</span> preset</div>
-          <div class="sub-step">Review changes before applying</div>
-          <div class="sub-step">Click Apply and restart</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">ShutUp10++</span>
-          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Download from: <span class="code">oo-software.com/shutup10</span></div>
-          <div class="sub-step">Run the portable executable</div>
-          <div class="sub-step">Use <span class="code">Recommended</span> settings</div>
-          <div class="sub-step">Apply all recommended privacy settings</div>
-          <div class="sub-step">No restart required</div>
-        </div>
-      </div>
-
+    <!-- Footer Links -->
+    <div class="landing-footer">
+      <a href="https://github.com/ByteSavior" class="footer-link" target="_blank">
+        <i class="fab fa-github"></i> GitHub
+      </a>
+      <a href="https://www.instagram.com/byte_savior/" class="footer-link" target="_blank">
+        <i class="fab fa-instagram"></i> Instagram
+      </a>
+      <a href="javascript:void(0)" class="footer-link" onclick="openSubmitTweakModal()">
+        <i class="fas fa-plus-circle"></i> Give Suggestions
+      </a>
     </div>
   </div>
-</section>
 
-<section class="accordion">
-  <button class="accordion-header">3. 💻 Console Commands & Updates</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Update All Apps (Winget)</span>
-          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal</div>
-          <div class="sub-step">Run: <span class="code">winget upgrade --all</span></div>
-          <div class="sub-step">Press Y to confirm updates</div>
-          <div class="sub-step">Wait for all apps to update</div>
-        </div>
+  <!-- Give Suggestions Modal (unchanged) -->
+  <div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
+    <div class="submit-modal-content" onclick="event.stopPropagation()">
+      <div class="submit-modal-header">
+        <h2>💡 Give Suggestions</h2>
+        <button class="close-btn" onclick="closeSubmitTweakModal()">×</button>
       </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Network Reset</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
-          <div class="sub-step">Run: <span class="code">ipconfig /flushdns</span></div>
-          <div class="sub-step">Run: <span class="code">netsh winsock reset</span></div>
-          <div class="sub-step">Run: <span class="code">netsh int ip reset</span></div>
-          <div class="sub-step">Restart your PC</div>
-        </div>
+      <div class="submit-modal-body" id="submitModalBody">
+        <form id="submitTweakForm">
+          <div class="form-group">
+            <label>Your Name <span class="required">*</span></label>
+            <input type="text" class="form-input" id="tweakAuthor" required placeholder="e.g., John Doe">
+            <div class="form-error" id="authorError">Please enter your name</div>
+          </div>
+          <div class="form-group">
+            <label>Suggestion Title <span class="required">*</span></label>
+            <input type="text" class="form-input" id="tweakTitle" required placeholder="e.g., Add dark mode toggle">
+            <div class="form-error" id="titleError">Please enter a title</div>
+          </div>
+          <div class="form-group">
+            <label>Category <span class="required">*</span></label>
+            <select class="form-select" id="tweakCategory" required>
+              <option value="">Select a category...</option>
+              <option value="optimization">Optimization</option>
+              <option value="anonymity">Anonymity</option>
+              <option value="extras">Extras</option>
+              <option value="opsec">OpSec</option>
+              <option value="general">General Suggestion</option>
+            </select>
+            <div class="form-error" id="categoryError">Please select a category</div>
+          </div>
+          <div class="form-group">
+            <label>Description <span class="required">*</span></label>
+            <textarea class="form-textarea" id="tweakDescription" required placeholder="Describe your suggestion in detail..."></textarea>
+            <div class="form-helper">Be as detailed as possible. Include any relevant information.</div>
+            <div class="form-error" id="descriptionError">Please enter a description (minimum 50 characters)</div>
+          </div>
+          <div class="form-group">
+            <label>Source/Reference (optional)</label>
+            <input type="url" class="form-input" id="tweakSource" placeholder="https://example.com/article">
+            <div class="form-helper">Link to article, video, or documentation</div>
+          </div>
+        </form>
       </div>
-
+      <div class="submit-modal-footer">
+        <button class="btn-secondary" onclick="closeSubmitTweakModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitTweak()">Submit Suggestion</button>
+      </div>
     </div>
   </div>
-</section>
 
-
-<section class="accordion">
-  <button class="accordion-header">4. 🧠 System Maintenance</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">System File Repair (SFC & DISM)</span>
-          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
-          <div class="sub-step">Run: <span class="code">sfc /scannow</span></div>
-          <div class="sub-step">Wait for scan to complete (10-15 minutes)</div>
-          <div class="sub-step">Then run: <span class="code">DISM /Online /Cleanup-Image /RestoreHealth</span></div>
-          <div class="sub-step">Wait for completion, then restart PC</div>
-        </div>
+  <!-- Diagnostics Modal (copied from optimization) -->
+  <div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>🔍 System Diagnostics</h2>
+        <button class="close-btn" onclick="closeDiagnostic()">×</button>
       </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disk Health Check</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + X</span> → Terminal (Admin)</div>
-          <div class="sub-step">Run: <span class="code">chkdsk /f /r C:</span></div>
-          <div class="sub-step">Press Y to schedule on next restart</div>
-          <div class="sub-step">Restart your PC</div>
-          <div class="sub-step">Check will run automatically (may take 30+ minutes)</div>
-        </div>
+      <div class="modal-body" id="diagnosticContent">
+        <div class="loading">🔄 Running diagnostics...</div>
       </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">RAM Diagnostics</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + R</span></div>
-          <div class="sub-step">Type <span class="code">mdsched.exe</span> and press Enter</div>
-          <div class="sub-step">Select <span class="code">Restart now and check for problems</span></div>
-          <div class="sub-step">PC will restart and run memory test</div>
-          <div class="sub-step">Results will show after reboot</div>
-        </div>
-      </div>
-
     </div>
   </div>
-</section>
 
-<section class="accordion">
-  <button class="accordion-header">5. 🌐 Network & DNS Optimization</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Set Secure DNS (Cloudflare)</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Network & internet</div>
-          <div class="sub-step">Click your connection (Wi-Fi or Ethernet)</div>
-          <div class="sub-step">Click <span class="code">Hardware properties</span></div>
-          <div class="sub-step">Click <span class="code">Edit</span> next to DNS server assignment</div>
-          <div class="sub-step">Set Preferred DNS to: <span class="code">1.1.1.1</span></div>
-          <div class="sub-step">Set Alternate DNS to: <span class="code">1.0.0.1</span></div>
-          <div class="sub-step">Click Save</div>
-        </div>
-      </div>
+  <script>
+    // ===== Toast-free minimal approach per request (no big changes) =====
 
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Network Adapter Tuning</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + X</span> → Device Manager</div>
-          <div class="sub-step">Expand <span class="code">Network adapters</span></div>
-          <div class="sub-step">Right-click your adapter → Properties</div>
-          <div class="sub-step">Go to Advanced tab</div>
-          <div class="sub-step">Set <span class="code">Speed & Duplex</span> to highest available</div>
-          <div class="sub-step">For Wi-Fi: Set <span class="code">Roaming Aggressiveness</span> to Highest</div>
-          <div class="sub-step">Click OK</div>
-        </div>
-      </div>
+    // ===== SUBMIT SUGGESTION SYSTEM (from original index) =====
+    function openSubmitTweakModal() { const modal = document.getElementById('submitTweakModal'); modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeSubmitTweakModal() { const modal = document.getElementById('submitTweakModal'); modal.classList.remove('active'); document.body.style.overflow = 'auto'; document.getElementById('submitTweakForm').reset(); document.querySelectorAll('.form-error').forEach(err => err.classList.remove('active')); }
+    function validateTweakForm() { let isValid = true; const author = document.getElementById('tweakAuthor').value.trim(); if (author.length < 2) { document.getElementById('authorError').classList.add('active'); isValid = false; } else { document.getElementById('authorError').classList.remove('active'); } const title = document.getElementById('tweakTitle').value.trim(); if (title.length < 5) { document.getElementById('titleError').classList.add('active'); isValid = false; } else { document.getElementById('titleError').classList.remove('active'); } const category = document.getElementById('tweakCategory').value; if (!category) { document.getElementById('categoryError').classList.add('active'); isValid = false; } else { document.getElementById('categoryError').classList.remove('active'); } const description = document.getElementById('tweakDescription').value.trim(); if (description.length < 50) { document.getElementById('descriptionError').classList.add('active'); isValid = false; } else { document.getElementById('descriptionError').classList.remove('active'); } return isValid; }
+    function submitTweak() { if (!validateTweakForm()) { return; } const author = document.getElementById('tweakAuthor').value.trim(); const title = document.getElementById('tweakTitle').value.trim(); const category = document.getElementById('tweakCategory').value; const description = document.getElementById('tweakDescription').value.trim(); const source = document.getElementById('tweakSource').value.trim(); const categoryNames = { optimization: 'Optimization', anonymity: 'Anonymity', extras: 'Extras', opsec: 'OpSec', general: 'General Suggestion' }; const issueTitle = `[Suggestion] ${title}`; const issueBody = `\n## 💡 New Suggestion\n**Submitted by:** ${author}\n**Category:** ${categoryNames[category]}\n### Description\n${description}\n${source ? `### Source/Reference\\n${source}` : ''}\n---\n*This suggestion was submitted via the ByteSavior website.*`.trim(); const githubUrl = `https://github.com/ByteSavior/ByteSavior/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=suggestion`; const modalBody = document.getElementById('submitModalBody'); modalBody.innerHTML = `<div class="success-message"><div class="icon">✅</div><h3>Ready to Submit!</h3><p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p><p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p></div>`; const footer = document.querySelector('.submit-modal-footer'); footer.innerHTML = `<button class="btn-secondary" onclick="closeSubmitTweakModal()">Close</button><button class="btn-primary" onclick="window.open('${githubUrl}', '_blank')"><i class="fab fa-github"></i> Open GitHub Issue</button>`; }
 
-    </div>
-  </div>
-</section>
-
-<section class="accordion">
-  <button class="accordion-header">6. ⚙️ Power & Performance Plan</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Set Correct Refresh Rate</span>
-          <span class="meta"><span class="stars">★★★★★</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Right-click desktop → <span class="code">Display settings</span></div>
-          <div class="sub-step">Scroll down → Click <span class="code">Advanced display</span></div>
-          <div class="sub-step">Find "Refresh rate" dropdown</div>
-          <div class="sub-step">Select your monitor's maximum Hz (144Hz, 165Hz, etc.)</div>
-          <div class="sub-step">Click Apply</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">High Performance Power Plan</span>
-          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + R</span></div>
-          <div class="sub-step">Type <span class="code">powercfg.cpl</span> and press Enter</div>
-          <div class="sub-step">Select <span class="code">High performance</span></div>
-          <div class="sub-step">Optional: For Ultimate Performance, open CMD as admin and run:</div>
-          <div class="sub-step"><span class="code">powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61</span></div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable SysMain (for SSD systems)</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + R</span></div>
-          <div class="sub-step">Type <span class="code">services.msc</span> and press Enter</div>
-          <div class="sub-step">Scroll down to find <span class="code">SysMain</span></div>
-          <div class="sub-step">Right-click → Properties</div>
-          <div class="sub-step">Set Startup type to <span class="code">Disabled</span></div>
-          <div class="sub-step">Click Stop → Apply → OK</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable NDU (Network Data Usage)</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + R</span></div>
-          <div class="sub-step">Type <span class="code">regedit</span> and press Enter</div>
-          <div class="sub-step">Navigate to: <span class="code">HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Ndu</span></div>
-          <div class="sub-step">Double-click <span class="code">Start</span></div>
-          <div class="sub-step">Change value to <span class="code">4</span></div>
-          <div class="sub-step">Click OK and restart PC</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Hardware Accelerated GPU Scheduling</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> to open Settings</div>
-          <div class="sub-step">Go to System → Display</div>
-          <div class="sub-step">Scroll down → Click <span class="code">Graphics</span></div>
-          <div class="sub-step">Click <span class="code">Change default graphics settings</span></div>
-          <div class="sub-step">Toggle ON: <span class="code">Hardware-accelerated GPU scheduling</span></div>
-          <div class="sub-step">Restart your PC</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Enable Game Mode</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span></div>
-          <div class="sub-step">Go to Gaming → Game Mode</div>
-          <div class="sub-step">Toggle <span class="code">Game Mode</span> to ON</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="accordion">
-  <button class="accordion-header">7. 🖥️ NVIDIA/AMD Control Panel</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Set Maximum Performance Mode</span>
-          <span class="meta"><span class="stars">★★★★★</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Right-click desktop → <span class="code">NVIDIA Control Panel</span></div>
-          <div class="sub-step">Navigate to Manage 3D Settings</div>
-          <div class="sub-step">Find <span class="code">Power management mode</span></div>
-          <div class="sub-step">Set to <span class="code">Prefer maximum performance</span></div>
-          <div class="sub-step">Click Apply</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Enable G-SYNC</span>
-          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Open NVIDIA Control Panel</div>
-          <div class="sub-step">Go to Display → Set up G-SYNC</div>
-          <div class="sub-step">Check <span class="code">Enable G-SYNC, G-SYNC Compatible</span></div>
-          <div class="sub-step">Select your monitor</div>
-          <div class="sub-step">Check <span class="code">Enable for full screen mode</span></div>
-          <div class="sub-step">Click Apply</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Advanced 3D Settings</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Open NVIDIA Control Panel → Manage 3D Settings</div>
-          <div class="sub-step">Set <span class="code">Low Latency Mode</span> to <span class="code">Ultra</span></div>
-          <div class="sub-step">Set <span class="code">Shader Cache Size</span> to <span class="code">Unlimited</span></div>
-          <div class="sub-step">Set <span class="code">Texture filtering - Quality</span> to <span class="code">High performance</span></div>
-          <div class="sub-step">Click Apply</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Graphics App Assignment</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → System → Display</div>
-          <div class="sub-step">Click <span class="code">Graphics</span></div>
-          <div class="sub-step">Click Browse and add your games/apps</div>
-          <div class="sub-step">Click Options → Select <span class="code">High performance</span></div>
-          <div class="sub-step">Click Save</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="accordion">
-  <button class="accordion-header">8. 🧹 Bloatware Removal</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Remove Preinstalled Apps</span>
-          <span class="meta"><span class="stars">★★★★☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Apps → Installed apps</div>
-          <div class="sub-step">Find and uninstall: Cortana, Microsoft Teams (Personal), Clipchamp</div>
-          <div class="sub-step">Find and uninstall: News, Weather, Xbox (if not using)</div>
-          <div class="sub-step">Click the three dots → Uninstall for each</div>
-          <div class="sub-step">Note: Some apps may require PowerShell to remove</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable Startup Apps</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Ctrl + Shift + Esc</span> to open Task Manager</div>
-          <div class="sub-step">Click the <span class="code">Startup apps</span> tab</div>
-          <div class="sub-step">Review the list of programs</div>
-          <div class="sub-step">Right-click non-essential apps → <span class="code">Disable</span></div>
-          <div class="sub-step">Common bloat: Adobe updaters, manufacturer utilities, chat apps</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Stop Background Apps</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Apps</div>
-          <div class="sub-step">Click <span class="code">Installed apps</span></div>
-          <div class="sub-step">Click three dots next to each app → <span class="code">Advanced options</span></div>
-          <div class="sub-step">Set Background app permissions to <span class="code">Never</span></div>
-          <div class="sub-step">Repeat for unnecessary apps</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="accordion">
-  <button class="accordion-header">9. 🛡️ Privacy & Telemetry</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable Telemetry & Diagnostics</span>
-          <span class="meta"><span class="stars">★★★★★</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span></div>
-          <div class="sub-step">Go to Privacy & security → Diagnostics & feedback</div>
-          <div class="sub-step">Set Diagnostic data to <span class="code">Required only</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Send optional diagnostic data</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Improve inking & typing</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Tailored experiences</span></div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable Consumer Experiences</span>
-          <span class="meta"><span class="stars">★★★★☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + R</span></div>
-          <div class="sub-step">Type <span class="code">regedit</span> and press Enter</div>
-          <div class="sub-step">Navigate to: <span class="code">HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent</span></div>
-          <div class="sub-step">Right-click → New → DWORD (32-bit) Value</div>
-          <div class="sub-step">Name it <span class="code">DisableWindowsConsumerFeatures</span></div>
-          <div class="sub-step">Double-click → Set value to <span class="code">1</span></div>
-          <div class="sub-step">Restart PC</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">App Permissions Lockdown</span>
-          <span class="meta"><span class="stars">★★★☆☆</span> Low risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security</div>
-          <div class="sub-step">Click <span class="code">Location</span> → Toggle OFF</div>
-          <div class="sub-step">Click <span class="code">Camera</span> → Toggle OFF (or manage per-app)</div>
-          <div class="sub-step">Click <span class="code">Microphone</span> → Toggle OFF (or manage per-app)</div>
-          <div class="sub-step">Go to App permissions → Background apps → Set to <span class="code">Never</span></div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Edge & Search Tracking</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Open Microsoft Edge</div>
-          <div class="sub-step">Go to Settings → Privacy, search, and services</div>
-          <div class="sub-step">Toggle OFF: <span class="code">Tracking prevention</span> set to Strict</div>
-          <div class="sub-step">Toggle OFF all optional features under Privacy</div>
-          <div class="sub-step">For search: Settings → Search → Toggle OFF <span class="code">Show search highlights</span></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="accordion">
-  <button class="accordion-header">10. ⚠️ Advanced Tweaks (Optional)</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Disable Animations</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Accessibility</div>
-          <div class="sub-step">Click <span class="code">Visual effects</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Animation effects</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Transparency effects</span></div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Taskbar End Task</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → System → For developers</div>
-          <div class="sub-step">Toggle ON: <span class="code">End Task</span></div>
-          <div class="sub-step">Now you can right-click taskbar apps to force close them</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Core Isolation (Security Tradeoff)</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> Medium risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Press <span class="code">Windows + I</span> → Privacy & security → Windows Security</div>
-          <div class="sub-step">Click <span class="code">Device security</span></div>
-          <div class="sub-step">Click <span class="code">Core isolation details</span></div>
-          <div class="sub-step">Toggle OFF: <span class="code">Memory integrity</span></div>
-          <div class="sub-step">Note: Disabling reduces security for minor performance gain</div>
-          <div class="sub-step">Restart required</div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-header">
-          <span class="step-title">Background FPS Limits</span>
-          <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
-        </div>
-        <div class="step-details">
-          <div class="sub-step">Useful for reducing GPU load when alt-tabbed</div>
-          <div class="sub-step">Open NVIDIA Control Panel</div>
-          <div class="sub-step">Manage 3D Settings → Program Settings</div>
-          <div class="sub-step">Select your game</div>
-          <div class="sub-step">Set <span class="code">Max Frame Rate</span> → Enable with limit (30-60 FPS)</div>
-          <div class="sub-step">Apply</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<footer class="site-footer">
-  <p class="footer-text">💙 Want to support me? Check out my pages!</p>
-  <div class="social-links">
-    <a href="https://github.com/ByteSavior" class="social-link" target="_blank">
-      <i class="fab fa-github"></i>
-      GitHub
-    </a>
-    <a href="https://www.instagram.com/byte_savior/" class="social-link" target="_blank">
-      <i class="fab fa-instagram"></i>
-      Instagram
-    </a>
-  </div>
-</footer>
-
-</div>
-
-<script>
-// Main accordion toggle
-document.querySelectorAll(".accordion-header").forEach(btn => {
-  btn.addEventListener("click", () => {
-    btn.classList.toggle("active");
-    btn.nextElementSibling.classList.toggle("open");
-  });
-});
-
-// Step details toggle
-document.querySelectorAll(".step").forEach(step => {
-  step.addEventListener("click", (e) => {
-    // Prevent toggle if clicking on a link or code element
-    if (e.target.tagName === 'A' || e.target.closest('.code')) return;
-    step.classList.toggle("expanded");
-  });
-});
-
-// ===== SEARCH & FILTER FUNCTIONALITY =====
-
-const searchInput = document.getElementById('searchInput');
-const filterSection = document.getElementById('filterSection');
-const clearFiltersBtn = document.getElementById('clearFilters');
-const searchResultsInfo = document.getElementById('searchResultsInfo');
-const noResults = document.getElementById('noResults');
-const searchFilterContainer = document.querySelector('.search-filter-container');
-const sections = document.querySelectorAll('.accordion');
-let activeFilters = {
-  impact: [],
-  risk: []
-};
-
-// Show filters when search input is focused or clicked
-searchInput.addEventListener('focus', () => {
-  filterSection.classList.add('active');
-});
-
-searchInput.addEventListener('click', (e) => {
-  e.stopPropagation();
-  filterSection.classList.add('active');
-});
-
-// Prevent filter section from closing when clicking inside it
-filterSection.addEventListener('click', (e) => {
-  e.stopPropagation();
-});
-
-// Close filters when clicking outside (only if no filters are active)
-document.addEventListener('click', (e) => {
-  if (!searchFilterContainer.contains(e.target)) {
-    // Only collapse if no filters are active
-    const hasActiveFilters = activeFilters.impact.length > 0 || activeFilters.risk.length > 0;
-    if (!hasActiveFilters) {
-      filterSection.classList.remove('active');
-    }
-  }
-});
-
-// Search functionality
-searchInput.addEventListener('input', (e) => {
-  performSearch(e.target.value);
-});
-
-// Filter buttons
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const filter = e.target.dataset.filter;
-    const value = e.target.dataset.value;
-    
-    e.target.classList.toggle('active');
-    
-    if (e.target.classList.contains('active')) {
-      if (!activeFilters[filter].includes(value)) {
-        activeFilters[filter].push(value);
-      }
-    } else {
-      activeFilters[filter] = activeFilters[filter].filter(v => v !== value);
-    }
-    
-    applyFilters();
-  });
-});
-
-// Clear filters
-clearFiltersBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  
-  // Clear active filter buttons
-  document.querySelectorAll('.filter-btn.active').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  
-  // Reset filters
-  activeFilters = { impact: [], risk: [] };
-  
-  // Clear search
-  searchInput.value = '';
-  
-  // Show all content
-  sections.forEach(section => section.classList.remove('section-hidden'));
-  document.querySelectorAll('.step').forEach(step => {
-    step.classList.remove('step-hidden');
-    removeHighlights(step);
-  });
-  
-  // Hide info messages
-  searchResultsInfo.classList.remove('active');
-  noResults.classList.remove('active');
-  
-  // Hide filter section
-  filterSection.classList.remove('active');
-});
-
-function performSearch(query) {
-  const searchTerm = query.toLowerCase().trim();
-  
-  if (searchTerm === '') {
-    // If search is empty, just apply filters
-    applyFilters();
-    return;
-  }
-  
-  let matchCount = 0;
-  let sectionCount = 0;
-  
-  sections.forEach(section => {
-    const sectionHeader = section.querySelector('.accordion-header').textContent.toLowerCase();
-    const steps = section.querySelectorAll('.step');
-    let sectionHasMatch = false;
-    
-    steps.forEach(step => {
-      removeHighlights(step);
-      
-      const title = step.querySelector('.step-title').textContent.toLowerCase();
-      const details = step.querySelector('.step-details');
-      const detailsText = details ? details.textContent.toLowerCase() : '';
-      
-      const titleMatch = title.includes(searchTerm);
-      const detailsMatch = detailsText.includes(searchTerm);
-      const sectionMatch = sectionHeader.includes(searchTerm);
-      
-      if (titleMatch || detailsMatch || sectionMatch) {
-        // Check if step passes filter
-        if (passesFilters(step)) {
-          step.classList.remove('step-hidden');
-          sectionHasMatch = true;
-          matchCount++;
-          
-          // Highlight matching text
-          if (titleMatch) {
-            highlightText(step.querySelector('.step-title'), searchTerm);
-          }
-          if (detailsMatch) {
-            highlightText(details, searchTerm);
-          }
-        } else {
-          step.classList.add('step-hidden');
-        }
-      } else {
-        step.classList.add('step-hidden');
-      }
-    });
-    
-    if (sectionHasMatch) {
-      section.classList.remove('section-hidden');
-      sectionCount++;
-    } else {
-      section.classList.add('section-hidden');
-    }
-  });
-  
-  // Show results info
-  if (matchCount > 0) {
-    searchResultsInfo.textContent = `Found ${matchCount} tweaks across ${sectionCount} sections matching "${query}"`;
-    searchResultsInfo.classList.add('active');
-    noResults.classList.remove('active');
-  } else {
-    searchResultsInfo.classList.remove('active');
-    noResults.classList.add('active');
-  }
-}
-
-function applyFilters() {
-  const hasActiveFilters = activeFilters.impact.length > 0 || activeFilters.risk.length > 0;
-  const searchTerm = searchInput.value.toLowerCase().trim();
-  
-  if (!hasActiveFilters && searchTerm === '') {
-    // No filters or search, show everything
-    sections.forEach(section => section.classList.remove('section-hidden'));
-    document.querySelectorAll('.step').forEach(step => step.classList.remove('step-hidden'));
-    searchResultsInfo.classList.remove('active');
-    noResults.classList.remove('active');
-    return;
-  }
-  
-  // If there's a search term, use search instead
-  if (searchTerm !== '') {
-    performSearch(searchTerm);
-    return;
-  }
-  
-  let matchCount = 0;
-  let sectionCount = 0;
-  
-  sections.forEach(section => {
-    const steps = section.querySelectorAll('.step');
-    let sectionHasMatch = false;
-    
-    steps.forEach(step => {
-      if (passesFilters(step)) {
-        step.classList.remove('step-hidden');
-        sectionHasMatch = true;
-        matchCount++;
-      } else {
-        step.classList.add('step-hidden');
-      }
-    });
-    
-    if (sectionHasMatch) {
-      section.classList.remove('section-hidden');
-      sectionCount++;
-    } else {
-      section.classList.add('section-hidden');
-    }
-  });
-  
-  // Show filter results info
-  if (hasActiveFilters) {
-    if (matchCount > 0) {
-      const filters = [];
-      if (activeFilters.impact.length > 0) {
-        filters.push('Impact: ' + activeFilters.impact.map(v => '★'.repeat(v)).join(', '));
-      }
-      if (activeFilters.risk.length > 0) {
-        filters.push('Risk: ' + activeFilters.risk.join(', '));
-      }
-      searchResultsInfo.textContent = `Found ${matchCount} tweaks with ${filters.join(' | ')}`;
-      searchResultsInfo.classList.add('active');
-      noResults.classList.remove('active');
-    } else {
-      searchResultsInfo.classList.remove('active');
-      noResults.classList.add('active');
-    }
-  }
-}
-
-function passesFilters(step) {
-  // If no filters active, everything passes
-  if (activeFilters.impact.length === 0 && activeFilters.risk.length === 0) {
-    return true;
-  }
-  
-  let passesImpact = true;
-  let passesRisk = true;
-  
-  // Check impact filter
-  if (activeFilters.impact.length > 0) {
-    const stars = step.querySelector('.stars');
-    if (stars) {
-      const starCount = (stars.textContent.match(/★/g) || []).length;
-      passesImpact = activeFilters.impact.includes(starCount.toString());
-    } else {
-      passesImpact = false;
-    }
-  }
-  
-  // Check risk filter
-  if (activeFilters.risk.length > 0) {
-    const meta = step.querySelector('.meta');
-    if (meta) {
-      const metaText = meta.textContent.toLowerCase();
-      passesRisk = activeFilters.risk.some(risk => {
-        if (risk === 'low') return metaText.includes('low risk') || metaText.includes('no risk');
-        if (risk === 'medium') return metaText.includes('medium risk');
-        if (risk === 'high') return metaText.includes('high risk');
-        return false;
+    // ===== GLOBAL SEARCH SYSTEM (from original index) =====
+    const globalSearchInput = document.getElementById('globalSearch');
+    const globalResults = document.getElementById('globalResults');
+    const searchIndex = [
+      { category: 'Optimization', title: 'Disable Windows Telemetry', preview: 'Disable data collection and improve privacy by turning off Windows telemetry services.', page: 'optimization.html#privacy' },
+      { category: 'Optimization', title: 'Enable Hardware-Accelerated GPU Scheduling', preview: 'Reduce input lag and improve gaming performance with GPU scheduling.', page: 'optimization.html#gpu' },
+      { category: 'Optimization', title: 'Disable Unnecessary Startup Programs', preview: 'Speed up boot time by disabling programs that auto-start with Windows.', page: 'optimization.html#maintenance' },
+      { category: 'Optimization', title: 'Optimize Power Settings', preview: 'Set Windows to High Performance mode for maximum speed.', page: 'optimization.html#performance' },
+      { category: 'Optimization', title: 'Clean Temp Files', preview: 'Remove temporary files to free up disk space and improve performance.', page: 'optimization.html#maintenance' },
+      { category: 'Optimization', title: 'Disable Windows Search Indexing', preview: 'Stop Windows Search from constantly indexing files in the background.', page: 'optimization.html#maintenance' },
+      { category: 'Optimization', title: 'Enable Game Mode', preview: 'Windows Game Mode optimizes system resources for better gaming performance.', page: 'optimization.html#performance' },
+      { category: 'Optimization', title: 'Adjust Virtual Memory', preview: 'Optimize pagefile settings for better system responsiveness.', page: 'optimization.html#performance' },
+      { category: 'Optimization', title: 'Disable Visual Effects', preview: 'Turn off animations and transparency for faster performance.', page: 'optimization.html#performance' },
+      { category: 'Optimization', title: 'Update GPU Drivers', preview: 'Keep graphics drivers up to date for best performance and stability.', page: 'optimization.html#gpu' },
+      { category: 'Anonymity', title: 'Tor Browser', preview: 'Browse the web anonymously with the most secure browser available. Recommended for maximum privacy.', page: 'anonymity.html' },
+      { category: 'Anonymity', title: 'Brave Browser', preview: 'Privacy-focused browser with built-in ad blocking and tracker protection.', page: 'anonymity.html' },
+      { category: 'Anonymity', title: 'Proton Mail', preview: 'End-to-end encrypted email service based in Switzerland. Recommended for private communications.', page: 'anonymity.html' },
+      { category: 'Anonymity', title: 'Proton VPN', preview: 'Secure VPN service with no-logs policy and strong encryption.', page: 'anonymity.html' },
+      { category: 'Anonymity', title: 'Mullvad VPN', preview: 'Anonymous VPN that accepts cryptocurrency and requires no personal information.', page: 'anonymity.html' },
+      { category: 'Anonymity', title: 'LibreWolf', preview: 'Privacy-hardened Firefox fork with enhanced security settings.', page: 'anonymity.html' },
+      { category: 'Extras', title: 'Everything File Search', preview: 'Instantly search for files on your PC - much faster than Windows Search.', page: 'extras.html' },
+      { category: 'Extras', title: 'MSI Afterburner', preview: 'Monitor GPU temperature, usage, and overclock your graphics card.', page: 'extras.html' },
+      { category: 'Extras', title: 'VirusTotal', preview: 'Scan files and URLs with multiple antivirus engines to check for malware.', page: 'extras.html' },
+      { category: 'Extras', title: 'WizTree', preview: 'Find what files and folders are taking up space on your drive.', page: 'extras.html' },
+      { category: 'Extras', title: 'Temp-Mail', preview: 'Generate temporary disposable email addresses for one-time use.', page: 'extras.html' },
+      { category: 'Extras', title: 'Have I Been Pwned', preview: 'Check if your email or password has been compromised in a data breach.', page: 'extras.html' },
+      { category: 'Extras', title: 'FitGirl Repacks', preview: 'Highly compressed game repacks for downloading PC games.', page: 'extras.html' },
+      { category: 'OpSec', title: 'Tails OS', preview: 'Live operating system that routes all traffic through Tor and leaves no trace.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'Whonix', preview: 'Operating system designed for advanced anonymity and privacy using Tor.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'QubesOS', preview: 'Security-focused OS that isolates programs in virtual machines.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'VeraCrypt', preview: 'Free and open-source disk encryption software for protecting sensitive data.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'Compartmentalization', preview: 'Separate different online identities and activities for better security.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'MAC Address Randomization', preview: 'Change your device MAC address to avoid network tracking.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'Burner Emails', preview: 'Use temporary email addresses to protect your real identity.', page: 'opsec.html' },
+      { category: 'OpSec', title: 'Cryptocurrency Privacy', preview: 'Use privacy coins and mixers to anonymize crypto transactions.', page: 'opsec.html' }
+    ];
+    if (globalSearchInput) {
+      globalSearchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) { globalResults.classList.remove('active'); return; }
+        const results = searchIndex.filter(item => item.title.toLowerCase().includes(query) || item.preview.toLowerCase().includes(query) || item.category.toLowerCase().includes(query));
+        displayGlobalResults(results, query);
       });
-    } else {
-      passesRisk = false;
+      document.addEventListener('click', (e) => { if (!e.target.closest('.global-search-container')) { globalResults.classList.remove('active'); } });
     }
-  }
-  
-  return passesImpact && passesRisk;
-}
+    function displayGlobalResults(results, query){ if (results.length === 0) { globalResults.innerHTML = '<div class="no-results-global">No results found. Try different keywords.</div>'; globalResults.classList.add('active'); return; } const html = results.map(r => { const titleHighlighted = highlightMatch(r.title, query); const previewHighlighted = highlightMatch(r.preview, query); return `<div class="search-result-item" onclick="window.location.href='${r.page}'"><div class="result-category">${r.category}</div><div class="result-title">${titleHighlighted}</div><div class="result-preview">${previewHighlighted}</div></div>`; }).join(''); globalResults.innerHTML = html; globalResults.classList.add('active'); }
+    function highlightMatch(text, query){ const regex = new RegExp(`(${escapeRegex(query)})`, 'gi'); return text.replace(regex, '<span class="result-highlight">$1</span>'); }
+    function escapeRegex(string){ return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-function highlightText(element, searchTerm) {
-  const walker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  
-  const nodesToReplace = [];
-  let node;
-  
-  while (node = walker.nextNode()) {
-    if (node.textContent.toLowerCase().includes(searchTerm)) {
-      nodesToReplace.push(node);
-    }
-  }
-  
-  nodesToReplace.forEach(node => {
-    const parent = node.parentNode;
-    if (parent.classList && parent.classList.contains('code')) return; // Don't highlight code blocks
-    
-    const text = node.textContent;
-    const lowerText = text.toLowerCase();
-    const index = lowerText.indexOf(searchTerm);
-    
-    if (index !== -1) {
-      const before = text.substring(0, index);
-      const match = text.substring(index, index + searchTerm.length);
-      const after = text.substring(index + searchTerm.length);
-      
-      const fragment = document.createDocumentFragment();
-      
-      if (before) fragment.appendChild(document.createTextNode(before));
-      
-      const highlight = document.createElement('span');
-      highlight.className = 'highlight';
-      highlight.textContent = match;
-      fragment.appendChild(highlight);
-      
-      if (after) fragment.appendChild(document.createTextNode(after));
-      
-      parent.replaceChild(fragment, node);
-    }
-  });
-}
+    // ===== DIAGNOSTIC FUNCTIONS (copied from optimization) =====
+    function openDiagnostic() { const modal = document.getElementById('diagnosticModal'); modal.classList.add('active'); document.body.style.overflow = 'hidden'; runDiagnostics(); }
+    function closeDiagnostic() { const modal = document.getElementById('diagnosticModal'); modal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+    function closeOnOutsideClick(event) { if (event.target === event.currentTarget) closeDiagnostic(); }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDiagnostic(); });
 
-function removeHighlights(element) {
-  const highlights = element.querySelectorAll('.highlight');
-  highlights.forEach(highlight => {
-    const text = highlight.textContent;
-    highlight.replaceWith(document.createTextNode(text));
-  });
-  
-  // Normalize text nodes
-  element.normalize();
-}
+    function getOS(){ const ua = navigator.userAgent; if (ua.indexOf('Win')>-1){ if (ua.indexOf('Windows NT 10.0')>-1) return 'Windows 10/11'; if (ua.indexOf('Windows NT 6.3')>-1) return 'Windows 8.1'; if (ua.indexOf('Windows NT 6.2')>-1) return 'Windows 8'; if (ua.indexOf('Windows NT 6.1')>-1) return 'Windows 7'; return 'Windows (Unknown Version)'; } else if (ua.indexOf('Mac')>-1) return 'macOS'; else if (ua.indexOf('Linux')>-1) return 'Linux'; else if (ua.indexOf('Android')>-1) return 'Android'; else if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS'; return 'Unknown OS'; }
+    function getBrowser(){ const ua = navigator.userAgent; if (ua.indexOf('Edg')>-1) return 'Microsoft Edge'; if (ua.indexOf('Chrome')>-1 && ua.indexOf('Edg')===-1) return 'Google Chrome'; if (ua.indexOf('Safari')>-1 && ua.indexOf('Chrome')===-1) return 'Safari'; if (ua.indexOf('Firefox')>-1) return 'Mozilla Firefox'; if (ua.indexOf('Opera')>-1 || ua.indexOf('OPR')>-1) return 'Opera'; return 'Unknown Browser'; }
+    async function getGPUInfo(){ try{ const canvas=document.createElement('canvas'); const gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl'); if (!gl) return { renderer: 'WebGL not supported', vendor: 'N/A' }; const info = gl.getExtension('WEBGL_debug_renderer_info'); if (info) { return { renderer: gl.getParameter(info.UNMASKED_RENDERER_WEBGL), vendor: gl.getParameter(info.UNMASKED_VENDOR_WEBGL) }; } return { renderer: 'Unable to detect', vendor: 'N/A' }; } catch(e){ return { renderer: 'Error detecting GPU', vendor: 'N/A' }; } }
+    function getCPUCores(){ return navigator.hardwareConcurrency || 'Unknown'; }
+    function getRAM(){ return navigator.deviceMemory ? navigator.deviceMemory + ' GB (approximate)' : 'Not available in this browser'; }
+    function getScreenInfo(){ return { resolution: `${screen.width} × ${screen.height}`, colorDepth: `${screen.colorDepth}-bit`, pixelRatio: window.devicePixelRatio || 1 }; }
+    function getConnectionInfo(){ const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection; return c ? { type: c.effectiveType || 'Unknown', downlink: c.downlink ? c.downlink + ' Mbps' : 'Unknown', rtt: c.rtt ? c.rtt + ' ms' : 'Unknown' } : null; }
 
-// Diagnostic Functions
-function openDiagnostic() {
-  const modal = document.getElementById('diagnosticModal');
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  runDiagnostics();
-}
-
-function closeDiagnostic() {
-  const modal = document.getElementById('diagnosticModal');
-  modal.classList.remove('active');
-  document.body.style.overflow = 'auto';
-}
-
-function closeOnOutsideClick(event) {
-  if (event.target === event.currentTarget) {
-    closeDiagnostic();
-  }
-}
-
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeDiagnostic();
-  }
-});
-
-function getOS() {
-  const userAgent = navigator.userAgent;
-  const platform = navigator.platform;
-  
-  if (userAgent.indexOf('Win') > -1) {
-    if (userAgent.indexOf('Windows NT 10.0') > -1) return 'Windows 10/11';
-    if (userAgent.indexOf('Windows NT 6.3') > -1) return 'Windows 8.1';
-    if (userAgent.indexOf('Windows NT 6.2') > -1) return 'Windows 8';
-    if (userAgent.indexOf('Windows NT 6.1') > -1) return 'Windows 7';
-    return 'Windows (Unknown Version)';
-  } else if (userAgent.indexOf('Mac') > -1) {
-    return 'macOS';
-  } else if (userAgent.indexOf('Linux') > -1) {
-    return 'Linux';
-  } else if (userAgent.indexOf('Android') > -1) {
-    return 'Android';
-  } else if (userAgent.indexOf('iOS') > -1 || userAgent.indexOf('iPhone') > -1 || userAgent.indexOf('iPad') > -1) {
-    return 'iOS';
-  }
-  return 'Unknown OS';
-}
-
-function getBrowser() {
-  const userAgent = navigator.userAgent;
-  
-  if (userAgent.indexOf('Edg') > -1) return 'Microsoft Edge';
-  if (userAgent.indexOf('Chrome') > -1 && userAgent.indexOf('Edg') === -1) return 'Google Chrome';
-  if (userAgent.indexOf('Safari') > -1 && userAgent.indexOf('Chrome') === -1) return 'Safari';
-  if (userAgent.indexOf('Firefox') > -1) return 'Mozilla Firefox';
-  if (userAgent.indexOf('Opera') > -1 || userAgent.indexOf('OPR') > -1) return 'Opera';
-  
-  return 'Unknown Browser';
-}
-
-async function getGPUInfo() {
-  try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    
-    if (!gl) {
-      return { renderer: 'WebGL not supported', vendor: 'N/A' };
-    }
-    
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-    
-    if (debugInfo) {
-      const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-      const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-      return { renderer, vendor };
-    }
-    
-    return { renderer: 'Unable to detect', vendor: 'N/A' };
-  } catch (e) {
-    return { renderer: 'Error detecting GPU', vendor: 'N/A' };
-  }
-}
-
-function getCPUCores() {
-  return navigator.hardwareConcurrency || 'Unknown';
-}
-
-function getRAM() {
-  // Note: navigator.deviceMemory is only available in some browsers (Chrome)
-  if (navigator.deviceMemory) {
-    return navigator.deviceMemory + ' GB (approximate)';
-  }
-  return 'Not available in this browser';
-}
-
-function getScreenInfo() {
-  return {
-    resolution: `${screen.width} × ${screen.height}`,
-    colorDepth: `${screen.colorDepth}-bit`,
-    pixelRatio: window.devicePixelRatio || 1
-  };
-}
-
-function getConnectionInfo() {
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  if (connection) {
-    return {
-      type: connection.effectiveType || 'Unknown',
-      downlink: connection.downlink ? connection.downlink + ' Mbps' : 'Unknown',
-      rtt: connection.rtt ? connection.rtt + ' ms' : 'Unknown'
-    };
-  }
-  return null;
-}
-
-async function runDiagnostics() {
-  const content = document.getElementById('diagnosticContent');
-  
-  // Show loading
-  content.innerHTML = '<div class="loading">🔄 Running diagnostics...</div>';
-  
-  // Small delay for effect
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  const gpuInfo = await getGPUInfo();
-  const screenInfo = getScreenInfo();
-  const connectionInfo = getConnectionInfo();
-  
-  const diagnosticHTML = `
-    <div class="diagnostic-section">
-      <h3>💻 System Information</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Operating System</span>
-          <span class="info-value">${getOS()}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Browser</span>
-          <span class="info-value">${getBrowser()}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">User Agent</span>
-          <span class="info-value" style="word-break: break-all; font-size: 0.75rem;">${navigator.userAgent}</span>
+    async function runDiagnostics(){ const content = document.getElementById('diagnosticContent'); content.innerHTML = '<div class="loading">🔄 Running diagnostics...</div>'; await new Promise(r=>setTimeout(r,800)); const gpuInfo = await getGPUInfo(); const screenInfo = getScreenInfo(); const connectionInfo = getConnectionInfo(); const diagnosticHTML = `
+      <div class="diagnostic-section">
+        <h3>💻 System Information</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">Operating System</span><span class="info-value">${getOS()}</span></div>
+          <div class="info-item"><span class="info-label">Browser</span><span class="info-value">${getBrowser()}</span></div>
+          <div class="info-item"><span class="info-label">User Agent</span><span class="info-value" style="word-break: break-all; font-size: 0.75rem;">${navigator.userAgent}</span></div>
         </div>
       </div>
-    </div>
-    
-    <div class="diagnostic-section">
-      <h3>🎮 Graphics & Display</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">GPU Renderer</span>
-          <span class="info-value">${gpuInfo.renderer}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">GPU Vendor</span>
-          <span class="info-value">${gpuInfo.vendor}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Screen Resolution</span>
-          <span class="info-value">${screenInfo.resolution}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Color Depth</span>
-          <span class="info-value">${screenInfo.colorDepth}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Device Pixel Ratio</span>
-          <span class="info-value">${screenInfo.pixelRatio}x</span>
+      <div class="diagnostic-section">
+        <h3>🎮 Graphics & Display</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">GPU Renderer</span><span class="info-value">${gpuInfo.renderer}</span></div>
+          <div class="info-item"><span class="info-label">GPU Vendor</span><span class="info-value">${gpuInfo.vendor}</span></div>
+          <div class="info-item"><span class="info-label">Screen Resolution</span><span class="info-value">${screenInfo.resolution}</span></div>
+          <div class="info-item"><span class="info-label">Color Depth</span><span class="info-value">${screenInfo.colorDepth}</span></div>
+          <div class="info-item"><span class="info-label">Device Pixel Ratio</span><span class="info-value">${screenInfo.pixelRatio}x</span></div>
         </div>
       </div>
-    </div>
-    
-    <div class="diagnostic-section">
-      <h3>⚙️ Hardware</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">CPU Cores</span>
-          <span class="info-value">${getCPUCores()} logical processors</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">RAM (Estimated)</span>
-          <span class="info-value">${getRAM()}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Platform</span>
-          <span class="info-value">${navigator.platform}</span>
+      <div class="diagnostic-section">
+        <h3>⚙️ Hardware</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">CPU Cores</span><span class="info-value">${getCPUCores()} logical processors</span></div>
+          <div class="info-item"><span class="info-label">RAM (Estimated)</span><span class="info-value">${getRAM()}</span></div>
+          <div class="info-item"><span class="info-label">Platform</span><span class="info-value">${navigator.platform}</span></div>
         </div>
       </div>
-    </div>
-    
-    ${connectionInfo ? `
-    <div class="diagnostic-section">
-      <h3>🌐 Network</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Connection Type</span>
-          <span class="info-value">${connectionInfo.type.toUpperCase()}</span>
+      ${connectionInfo ? `
+      <div class="diagnostic-section">
+        <h3>🌐 Network</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">Connection Type</span><span class="info-value">${connectionInfo.type.toUpperCase()}</span></div>
+          <div class="info-item"><span class="info-label">Download Speed</span><span class="info-value">${connectionInfo.downlink}</span></div>
+          <div class="info-item"><span class="info-label">Latency (RTT)</span><span class="info-value">${connectionInfo.rtt}</span></div>
         </div>
-        <div class="info-item">
-          <span class="info-label">Download Speed</span>
-          <span class="info-value">${connectionInfo.downlink}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Latency (RTT)</span>
-          <span class="info-value">${connectionInfo.rtt}</span>
-        </div>
-      </div>
-    </div>
-    ` : ''}
-    
-    <div class="diagnostic-section">
-      <h3>📊 Browser Capabilities</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Cookies Enabled</span>
-          <span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">
-            ${navigator.cookieEnabled ? '✓ Yes' : '✗ No'}
-          </span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Online Status</span>
-          <span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">
-            ${navigator.onLine ? '✓ Online' : '✗ Offline'}
-          </span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Language</span>
-          <span class="info-value">${navigator.language}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Timezone</span>
-          <span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span>
+      </div>` : ''}
+      <div class="diagnostic-section">
+        <h3>📊 Browser Capabilities</h3>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '✓ Yes' : '✗ No'}</span></div>
+          <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '✓ Online' : '✗ Offline'}</span></div>
+          <div class="info-item"><span class="info-label">Language</span><span class="info-value">${navigator.language}</span></div>
+          <div class="info-item"><span class="info-label">Timezone</span><span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span></div>
         </div>
       </div>
-    </div>
-    
-    <button class="refresh-btn" onclick="runDiagnostics()">
-      🔄 Refresh Diagnostics
-    </button>
-  `;
-  
-  content.innerHTML = diagnosticHTML;
-}
+      <button class="refresh-btn" onclick="runDiagnostics()">🔄 Refresh Diagnostics</button>
+    `; content.innerHTML = diagnosticHTML; calculateHealthScore(gpuInfo, screenInfo, connectionInfo); content.insertAdjacentHTML('afterbegin', `<div class="diagnostic-note"><i class="fas fa-info-circle"></i><span>Chrome is recommended to see all diagnostics</span></div>`); }
 
-</script>
+    function calculateHealthScore(gpuInfo, screenInfo, connectionInfo){ let score=0; const recommendations=[]; const metrics={}; const ramGB = navigator.deviceMemory || 0; if (ramGB>=16){ score+=20; metrics.ram={value:ramGB+' GB', score:100, status:'excellent'}; } else if (ramGB>=8){ score+=15; metrics.ram={value:ramGB+' GB', score:75, status:'good'}; recommendations.push({text:'Consider upgrading to 16GB RAM for better multitasking'}); } else if (ramGB>=4){ score+=10; metrics.ram={value:ramGB+' GB', score:50, status:'fair'}; recommendations.push({text:'<strong>Upgrade RAM:</strong> 4GB is minimal. Upgrade to 8GB or 16GB for significant improvement'}); } else { score+=5; metrics.ram={value:ramGB+' GB', score:25, status:'poor'}; recommendations.push({text:'<strong>Critical:</strong> RAM is very low. Upgrade to at least 8GB immediately'}); } const cpuCores = navigator.hardwareConcurrency || 0; if (cpuCores>=8){ score+=20; metrics.cpu={value:cpuCores+' cores', score:100, status:'excellent'}; } else if (cpuCores>=4){ score+=15; metrics.cpu={value:cpuCores+' cores', score:75, status:'good'}; } else if (cpuCores>=2){ score+=10; metrics.cpu={value:cpuCores+' cores', score:50, status:'fair'}; recommendations.push({text:'CPU has limited cores. Consider upgrading for better performance'}); } else { score+=5; metrics.cpu={value:cpuCores+' cores', score:25, status:'poor'}; recommendations.push({text:'<strong>Upgrade CPU:</strong> Single/dual-core CPUs are outdated'}); } const rLower = (gpuInfo.renderer||'').toLowerCase(); if (rLower.includes('nvidia') || rLower.includes('amd') || rLower.includes('radeon')){ score+=20; metrics.gpu={value:'Dedicated GPU', score:100, status:'excellent'}; } else if (rLower.includes('intel')) { score+=10; metrics.gpu={value:'Integrated GPU', score:50, status:'fair'}; recommendations.push({text:'<strong>GPU Optimization:</strong> Enable Hardware-Accelerated GPU Scheduling in Display Settings'}); } else { score+=5; metrics.gpu={value:'Basic GPU', score:25, status:'poor'}; recommendations.push({text:'Consider a dedicated GPU for gaming/graphics work'}); } if (connectionInfo){ const downlink=parseFloat(connectionInfo.downlink)||0; if (downlink>=10){ score+=15; metrics.connection={value:downlink+' Mbps', score:100, status:'excellent'}; } else if (downlink>=5){ score+=10; metrics.connection={value:downlink+' Mbps', score:67, status:'good'}; } else if (downlink>=1){ score+=5; metrics.connection={value:downlink+' Mbps', score:33, status:'fair'}; recommendations.push({text:'Slow internet detected. Check Network & DNS Optimization section'}); } else { score+=2; metrics.connection={value:'Poor', score:13, status:'poor'}; recommendations.push({text:'<strong>Network Issues:</strong> Very slow connection. Contact your ISP'}); } } else { score+=10; metrics.connection={value:'Unknown', score:67, status:'good'}; } const pixels = screen.width*screen.height; if (pixels>=3840*2160){ score+=15; metrics.display={value:'4K+', score:100, status:'excellent'}; } else if (pixels>=1920*1080){ score+=12; metrics.display={value:'1080p+', score:80, status:'good'}; } else if (pixels>=1280*720){ score+=8; metrics.display={value:'720p+', score:53, status:'fair'}; } else { score+=4; metrics.display={value:'Low Res', score:27, status:'poor'}; } const os=getOS(); if (os.includes('Windows 10') || os.includes('Windows 11')){ score+=10; recommendations.push({text:'Apply Windows tweaks from BIOS and Performance sections'}); } else if (os.includes('Windows')){ score+=5; recommendations.push({text:'<strong>Upgrade OS:</strong> Consider upgrading to Windows 10/11'}); } else if (os.includes('Linux') || os.includes('macOS')){ score+=10; } else { score+=5; } if (score>=80){ recommendations.unshift({text:'🎉 Your system is in great shape! Focus on software optimizations'}); } else if (score>=60){ recommendations.unshift({text:'Your system is decent. Apply the tweaks in this guide for better performance'}); } else if (score>=40){ recommendations.unshift({text:'Your system needs attention. Start with Essential tweaks and consider hardware upgrades'}); } else { recommendations.unshift({text:'⚠️ Your system needs significant upgrades. Focus on RAM and CPU first'}); } displayHealthScore(score, metrics, recommendations); }
 
+    function displayHealthScore(score, metrics, recommendations){ const content=document.getElementById('diagnosticContent'); let scoreStatus='poor', scoreLabel='Needs Work'; if (score>=80){ scoreStatus='excellent'; scoreLabel='Excellent'; } else if (score>=60){ scoreStatus='good'; scoreLabel='Good'; } else if (score>=40){ scoreStatus='fair'; scoreLabel='Fair'; } const C=2*Math.PI*65; const off=C-(score/100)*C; const healthHTML = `
+      <div class="health-score-container">
+        <div class="health-score-header"><h3>💊 System Health Score</h3></div>
+        <div class="score-display">
+          <div class="score-circle">
+            <svg width="150" height="150">
+              <circle class="score-circle-bg" cx="75" cy="75" r="65"></circle>
+              <circle class="score-circle-progress ${scoreStatus}" cx="75" cy="75" r="65" stroke-dasharray="${C}" stroke-dashoffset="${off}"></circle>
+            </svg>
+            <div class="score-value">${Math.round(score)}</div>
+          </div>
+          <div class="score-label">${scoreLabel}</div>
+        </div>
+        <div class="health-metrics">
+          ${Object.entries(metrics).map(([k,d]) => `<div class="metric-card"><h5>${k.toUpperCase()}</h5><div class="metric-value">${d.value}</div><div class="metric-bar"><div class="metric-bar-fill ${d.status}" style="width:${d.score}%"></div></div></div>`).join('')}
+        </div>
+        <div class="health-recommendations">
+          <h4>📋 Recommendations</h4>
+          ${recommendations.map(r => `<div class="recommendation-item">${r.text}</div>`).join('')}
+        </div>
+      </div>`; content.insertAdjacentHTML('afterbegin', healthHTML); }
+
+    // ===== CONTINUOUS PERFORMANCE MONITOR (copied from optimization) =====
+    let performanceChart = null; let perfMonitorActive = false; let perfMonitorInterval = null; let perfSamples = { memory: [], render: [], storage: [] };
+    function togglePerformanceMonitor(){
+      // Start monitoring and open the modal UI (same behavior as optimization)
+      if (perfMonitorActive) { stopPerformanceMonitor(); openPerformanceModal(); }
+      else { startPerformanceMonitor(); setTimeout(openPerformanceModal, 300); }
+    }
+    function startPerformanceMonitor(){ perfMonitorActive = true; perfSamples = { memory: [], render: [], storage: [] }; perfMonitorInterval = setInterval(async () => { const m=await testMemoryPerformance(); const r=await testRenderPerformance(); const s=await testStoragePerformance(); perfSamples.memory.push(m); perfSamples.render.push(r); perfSamples.storage.push(s); if (perfSamples.memory.length>5){ perfSamples.memory.shift(); perfSamples.render.shift(); perfSamples.storage.shift(); } updatePerformanceDisplay(); }, 1000); }
+    function stopPerformanceMonitor(){ perfMonitorActive=false; if(perfMonitorInterval){ clearInterval(perfMonitorInterval); perfMonitorInterval=null; } if(perfSamples.memory.length>0){ const results={ memoryTest:Math.round(average(perfSamples.memory)), renderTest:Math.round(average(perfSamples.render)), storageTest:Math.round(average(perfSamples.storage)), timestamp:Date.now() }; const prevData=localStorage.getItem('perfTestResults'); if(prevData){ const prev=JSON.parse(prevData); results.previous={memoryTest:prev.memoryTest,renderTest:prev.renderTest,storageTest:prev.storageTest}; if(prev.previous){ results.older={memoryTest:prev.previous.memoryTest,renderTest:prev.previous.renderTest,storageTest:prev.previous.storageTest}; } } localStorage.setItem('perfTestResults',JSON.stringify(results)); } }
+    function average(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
+    function openPerformanceModal(){ const modal=document.getElementById('diagnosticModal'); modal.classList.add('active'); document.body.style.overflow='hidden'; const content=document.getElementById('diagnosticContent'); content.innerHTML = `
+        <div class="perf-test-container" style="border:none; padding:0;">
+          <div class="perf-test-header">
+            <h3>⚡ Live Performance Monitor</h3>
+            <div style="display:flex; gap:8px;">
+              <button class="perf-test-btn" onclick="stopAndSavePerformance()" style="background:#ef4444;">Save</button>
+            </div>
+          </div>
+          <div id="perfTestResults">
+            <div class="perf-status">⚡ Monitoring performance... Collecting data for 5-second average</div>
+          </div>
+        </div>`; updatePerformanceDisplay(); }
+    function stopAndSavePerformance(){ stopPerformanceMonitor(); }
+    function updatePerformanceDisplay(){
+      const container=document.getElementById('perfTestResults'); if(!container||perfSamples.memory.length===0) return;
+      const current={memoryTest:Math.round(average(perfSamples.memory)),renderTest:Math.round(average(perfSamples.render)),storageTest:Math.round(average(perfSamples.storage))};
+      const prevData=localStorage.getItem('perfTestResults'); const previous=prevData?JSON.parse(prevData):null;
+      const older=previous&&previous.older?previous.older:null;
+      const count=perfSamples.memory.length; const statusText=count<5?`Collecting samples... (${count}/5)`:`5-second rolling average (${count} samples)`;
+      const isFirst=!container.querySelector('.perf-results');
+      if(isFirst){
+        let html=`<div class="perf-status" id="perfStatus" style="background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid #4ade80;border-radius:6px;margin-bottom:16px;">${statusText}</div><div class="perf-results">`;
+        html+=createPerfCard('Memory Operations',current.memoryTest,previous?previous.memoryTest:null,older?older.memoryTest:null,'ms',true);
+        html+=createPerfCard('DOM Rendering',current.renderTest,previous?previous.renderTest:null,older?older.renderTest:null,'ms',true);
+        html+=createPerfCard('Storage I/O',current.storageTest,previous?previous.storageTest:null,older?older.storageTest:null,'ms',true);
+        html+='</div><div class="perf-chart-container"><canvas id="perfChart"></canvas></div>';
+        container.innerHTML=html;
+        createPerformanceChart({...current,previous,older});
+      } else {
+        const statusEl=document.getElementById('perfStatus'); if(statusEl) statusEl.textContent=statusText;
+        const cards=container.querySelectorAll('.perf-result-card');
+        const metrics=[{value:current.memoryTest,prev:previous?previous.memoryTest:null},{value:current.renderTest,prev:previous?previous.renderTest:null},{value:current.storageTest,prev:previous?previous.storageTest:null}];
+        cards.forEach((card,i)=>{ if(i<metrics.length){ const m=metrics[i]; const el=card.querySelector('.perf-comparison:first-of-type .perf-value'); if(el) el.textContent=m.value+'ms'; const imp=card.querySelector('.perf-improvement'); if(imp&&m.prev!==null){ const diff=m.value-m.prev; const pct=((diff/m.prev)*100).toFixed(1); const improved=diff<0; const sign=diff>0?'+':''; imp.className=`perf-improvement ${improved?'positive':'negative'}`; imp.innerHTML=`${improved?'📈':'📉'} ${sign}${pct}% ${improved?'Better':'Worse'}`; } } });
+        if(performanceChart){ performanceChart.data.datasets[performanceChart.data.datasets.length-1].data=[current.memoryTest,current.renderTest,current.storageTest]; performanceChart.update('none'); }
+      }
+    }
+    async function testMemoryPerformance(){ const start=performance.now(); const arrays=[]; for(let i=0;i<1000;i++) arrays.push(new Array(1000).fill(Math.random())); let sum=0; for(let a of arrays) sum+=a[0]; const end=performance.now(); return Math.round(end-start); }
+    async function testRenderPerformance(){ const start=performance.now(); const testDiv=document.createElement('div'); testDiv.style.position='absolute'; testDiv.style.left='-9999px'; document.body.appendChild(testDiv); for(let i=0;i<500;i++){ const el=document.createElement('div'); el.textContent='Test '+i; el.style.padding='10px'; testDiv.appendChild(el); } testDiv.offsetHeight; document.body.removeChild(testDiv); const end=performance.now(); return Math.round(end-start); }
+    async function testStoragePerformance(){ const start=performance.now(); for(let i=0;i<100;i++) localStorage.setItem('perf_test_'+i,'x'.repeat(100)); for(let i=0;i<100;i++) localStorage.getItem('perf_test_'+i); for(let i=0;i<100;i++) localStorage.removeItem('perf_test_'+i); const end=performance.now(); return Math.round(end-start); }
+    function createPerfCard(title,current,previous,older,unit,lowerIsBetter){ let improvHTML=''; if(previous!==null&&previous!==undefined){ const diff=current-previous; const pct=((diff/previous)*100).toFixed(1); const improved=lowerIsBetter?diff<0:diff>0; const sign=diff>0?'+':''; improvHTML=`<div class="perf-improvement ${improved?'positive':'negative'}">${improved?'📈':'📉'} ${sign}${pct}% ${improved?'Better':'Worse'}</div>`; } const prevRow=previous!==null&&previous!==undefined?`<div class="perf-comparison"><span class="perf-label">Previous:</span><span class="perf-value">${previous}${unit}</span></div>`:''; const olderRow=older!==null&&older!==undefined?`<div class="perf-comparison"><span class="perf-label">Older:</span><span class="perf-value">${older}${unit}</span></div>`:''; return `<div class="perf-result-card"><h4>${title}</h4><div class="perf-comparison"><span class="perf-label">Current:</span><span class="perf-value">${current}${unit}</span></div>${prevRow}${olderRow}${improvHTML}</div>`; }
+    function createPerformanceChart(results){
+      const ctx=document.getElementById('perfChart'); if(!ctx) return;
+      if(performanceChart) performanceChart.destroy();
+      const datasets=[];
+      if(results.older) datasets.push({label:'Older (ms)',data:[results.older.memoryTest,results.older.renderTest,results.older.storageTest],backgroundColor:'rgba(100,116,139,0.5)',borderColor:'rgba(100,116,139,1)',borderWidth:1});
+      if(results.previous) datasets.push({label:'Previous (ms)',data:[results.previous.memoryTest,results.previous.renderTest,results.previous.storageTest],backgroundColor:'rgba(156,163,175,0.5)',borderColor:'rgba(156,163,175,1)',borderWidth:1});
+      datasets.push({label:'Current (ms)',data:[results.memoryTest,results.renderTest,results.storageTest],backgroundColor:'rgba(74,222,128,0.5)',borderColor:'rgba(74,222,128,1)',borderWidth:1});
+      const barPct=datasets.length>=3?0.6:0.8;
+      datasets.forEach(d=>{d.barPercentage=barPct; d.categoryPercentage=0.85;});
+      performanceChart=new Chart(ctx,{type:'bar',data:{labels:['Memory Ops','DOM Rendering','Storage I/O'],datasets},options:{responsive:true,maintainAspectRatio:true,plugins:{title:{display:true,text:'Performance Comparison (Lower is Better)',color:'#e5e7eb'},legend:{labels:{color:'#e5e7eb'}}},scales:{y:{beginAtZero:true,ticks:{color:'#9ca3af'},grid:{color:'#333'}},x:{ticks:{color:'#9ca3af'},grid:{color:'#333'}}}}});
+    }
+  </script>
 </body>
 </html>

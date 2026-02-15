@@ -37,11 +37,12 @@ html, body {
   max-width: 900px;
   margin: auto;
   padding: 24px 16px 80px;
+  position: relative;
 }
 
 /* ===== DIAGNOSTIC BUTTON ===== */
 .diagnostic-btn {
-  position: fixed;
+  position: absolute;
   top: 20px;
   right: 20px;
   background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%);
@@ -378,6 +379,184 @@ html, body {
     justify-content: center;
   }
 }
+
+/* ===== SUBMIT SUGGESTION MODAL ===== */
+.submit-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 2000;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.submit-modal-overlay.active {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.submit-modal-content {
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+  margin: 40px auto;
+  animation: slideIn 0.3s ease;
+}
+
+.submit-modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-modal-header h2 {
+  margin: 0;
+  color: var(--blue);
+  font-size: 1.3rem;
+}
+
+.submit-modal-body {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-group label .required {
+  color: #ef4444;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-helper {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: #ef4444;
+  margin-top: 4px;
+  display: none;
+}
+
+.form-error.active {
+  display: block;
+}
+
+.submit-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
+  border-color: var(--blue);
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: var(--blue);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #0099e6;
+}
+
+.btn-primary:disabled {
+  background: #333;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.success-message {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.success-message .icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.success-message h3 {
+  margin: 0 0 12px 0;
+  color: var(--blue);
+}
+
+.success-message p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 </style>
 </head>
 
@@ -405,6 +584,7 @@ html, body {
 
 <nav class="main-nav">
   <a href="index.html" class="nav-link">🏠 Home</a>
+  <a href="optimization.html" class="nav-link">⚡ Optimization</a>
   <a href="anonymity.html" class="nav-link">🛡️ Anonymity</a>
   <a href="extras.html" class="nav-link active">⭐ Extras</a>
   <a href="opsec.html" class="nav-link">🔒 OpSec</a>
@@ -555,6 +735,61 @@ html, body {
   </div>
 </section>
 
+<!-- Give Suggestions Modal -->
+<div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
+  <div class="submit-modal-content" onclick="event.stopPropagation()">
+    <div class="submit-modal-header">
+      <h2>💡 Give Suggestions</h2>
+      <button class="close-btn" onclick="closeSubmitTweakModal()">×</button>
+    </div>
+    <div class="submit-modal-body" id="submitModalBody">
+      <form id="submitTweakForm">
+        <div class="form-group">
+          <label>Your Name <span class="required">*</span></label>
+          <input type="text" class="form-input" id="tweakAuthor" required placeholder="e.g., John Doe">
+          <div class="form-error" id="authorError">Please enter your name</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Suggestion Title <span class="required">*</span></label>
+          <input type="text" class="form-input" id="tweakTitle" required placeholder="e.g., Add dark mode toggle">
+          <div class="form-error" id="titleError">Please enter a title</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Category <span class="required">*</span></label>
+          <select class="form-select" id="tweakCategory" required>
+            <option value="">Select a category...</option>
+            <option value="optimization">Optimization</option>
+            <option value="anonymity">Anonymity</option>
+            <option value="extras">Extras</option>
+            <option value="opsec">OpSec</option>
+            <option value="general">General Suggestion</option>
+          </select>
+          <div class="form-error" id="categoryError">Please select a category</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Description <span class="required">*</span></label>
+          <textarea class="form-textarea" id="tweakDescription" required placeholder="Describe your suggestion in detail..."></textarea>
+          <div class="form-helper">Be as detailed as possible. Include any relevant information.</div>
+          <div class="form-error" id="descriptionError">Please enter a description (minimum 50 characters)</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Source/Reference (optional)</label>
+          <input type="url" class="form-input" id="tweakSource" placeholder="https://example.com/article">
+          <div class="form-helper">Link to article, video, or documentation</div>
+        </div>
+      </form>
+    </div>
+    <div class="submit-modal-footer">
+      <button class="btn-secondary" onclick="closeSubmitTweakModal()">Cancel</button>
+      <button class="btn-primary" onclick="submitTweak()">Submit Suggestion</button>
+    </div>
+  </div>
+</div>
+
 <footer class="site-footer">
   <p class="footer-text">💙 Want to support me? Check out my pages!</p>
   <div class="social-links">
@@ -565,6 +800,10 @@ html, body {
     <a href="https://www.instagram.com/byte_savior/" class="social-link" target="_blank">
       <i class="fab fa-instagram"></i>
       Instagram
+    </a>
+    <a href="javascript:void(0)" class="social-link" onclick="openSubmitTweakModal()">
+      <i class="fas fa-plus-circle"></i>
+      Give Suggestions
     </a>
   </div>
 </footer>
@@ -579,6 +818,113 @@ document.querySelectorAll(".accordion-header").forEach(btn => {
     btn.nextElementSibling.classList.toggle("open");
   });
 });
+
+// ===== SUBMIT SUGGESTION SYSTEM =====
+function openSubmitTweakModal() { 
+  const modal = document.getElementById('submitTweakModal'); 
+  modal.classList.add('active'); 
+  document.body.style.overflow = 'hidden'; 
+}
+
+function closeSubmitTweakModal() { 
+  const modal = document.getElementById('submitTweakModal'); 
+  modal.classList.remove('active'); 
+  document.body.style.overflow = 'auto'; 
+  document.getElementById('submitTweakForm').reset(); 
+  document.querySelectorAll('.form-error').forEach(err => err.classList.remove('active')); 
+}
+
+function validateTweakForm() {
+  let isValid = true;
+  const author = document.getElementById('tweakAuthor').value.trim(); 
+  if (author.length < 2) { 
+    document.getElementById('authorError').classList.add('active'); 
+    isValid = false; 
+  } else { 
+    document.getElementById('authorError').classList.remove('active'); 
+  }
+  
+  const title = document.getElementById('tweakTitle').value.trim(); 
+  if (title.length < 5) { 
+    document.getElementById('titleError').classList.add('active'); 
+    isValid = false; 
+  } else { 
+    document.getElementById('titleError').classList.remove('active'); 
+  }
+  
+  const category = document.getElementById('tweakCategory').value; 
+  if (!category) { 
+    document.getElementById('categoryError').classList.add('active'); 
+    isValid = false; 
+  } else { 
+    document.getElementById('categoryError').classList.remove('active'); 
+  }
+  
+  const description = document.getElementById('tweakDescription').value.trim(); 
+  if (description.length < 50) { 
+    document.getElementById('descriptionError').classList.add('active'); 
+    isValid = false; 
+  } else { 
+    document.getElementById('descriptionError').classList.remove('active'); 
+  }
+  
+  return isValid;
+}
+
+function submitTweak() {
+  if (!validateTweakForm()) { return; }
+  
+  const author = document.getElementById('tweakAuthor').value.trim();
+  const title = document.getElementById('tweakTitle').value.trim();
+  const category = document.getElementById('tweakCategory').value;
+  const description = document.getElementById('tweakDescription').value.trim();
+  const source = document.getElementById('tweakSource').value.trim();
+  
+  const categoryNames = { 
+    'optimization': 'Optimization', 
+    'anonymity': 'Anonymity', 
+    'extras': 'Extras', 
+    'opsec': 'OpSec',
+    'general': 'General Suggestion'
+  };
+  
+  const issueTitle = `[Suggestion] ${title}`;
+  const issueBody = `
+## 💡 New Suggestion
+
+**Submitted by:** ${author}
+**Category:** ${categoryNames[category]}
+
+### Description
+${description}
+
+${source ? `### Source/Reference\n${source}` : ''}
+
+---
+*This suggestion was submitted via the ByteSavior website.*
+  `.trim();
+  
+  const githubUrl = `https://github.com/ByteSavior/ByteSavior/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=suggestion`;
+  
+  const modalBody = document.getElementById('submitModalBody');
+  modalBody.innerHTML = `
+    <div class="success-message">
+      <div class="icon">✅</div>
+      <h3>Ready to Submit!</h3>
+      <p>Click the button below to open GitHub and submit your suggestion. You'll need a GitHub account (it's free!).</p>
+      <p style="margin-top: 16px; font-size: 0.9rem;">Thanks for contributing!</p>
+    </div>
+  `;
+  
+  const footer = document.querySelector('.submit-modal-footer');
+  footer.innerHTML = `
+    <button class="btn-secondary" onclick="closeSubmitTweakModal()">Close</button>
+    <button class="btn-primary" onclick="window.open('${githubUrl}', '_blank')">
+      <i class="fab fa-github"></i> Open GitHub Issue
+    </button>
+  `;
+}
+
 </script>
 
 </body>
