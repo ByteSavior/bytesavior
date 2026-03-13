@@ -248,6 +248,25 @@
       100% { transform: translate(80px, 80px); }
     }
 
+
+    /* ===== PIRACY MODAL ===== */
+    .piracy-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+    .piracy-modal.active { display: flex; }
+    .piracy-content { background: var(--panel); border: 2px solid #ef4444; border-radius: 12px; max-width: 700px; width: 100%; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(239,68,68,0.3); animation: slideIn 0.3s ease-out; }
+    .piracy-header { background: var(--panel-dark); padding: 20px 24px; border-bottom: 2px solid #ef4444; display: flex; justify-content: space-between; align-items: center; }
+    .piracy-header h2 { margin: 0; color: #ef4444; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .piracy-body { padding: 24px; }
+    .warning-banner { background: rgba(239,68,68,0.1); border: 1px solid #ef4444; border-radius: 6px; padding: 16px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start; }
+    .warning-banner .icon { font-size: 1.5rem; color: #ef4444; }
+    .warning-banner strong { display: block; color: #ef4444; margin-bottom: 4px; font-size: 1rem; }
+    .warning-banner p { margin: 0; color: var(--text); font-size: 0.9rem; line-height: 1.5; }
+    .piracy-list { list-style: none; padding: 0; margin: 0; }
+    .piracy-item { background: #1f2933; border-left: 3px solid #ef4444; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+    .piracy-name { font-weight: 600; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+    .piracy-link { color: var(--blue); text-decoration: none; font-size: 0.85rem; word-break: break-all; }
+    .piracy-link:hover { text-decoration: underline; }
+    .piracy-desc { color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+    .logo-img.holding { transform: scale(1.1) rotate(10deg); filter: drop-shadow(0 0 20px rgba(239,68,68,0.6)); }
   </style>
 </head>
 <body>
@@ -582,6 +601,105 @@
       datasets.forEach(d=>{d.barPercentage=barPct; d.categoryPercentage=0.85;});
       performanceChart=new Chart(ctx,{type:'bar',data:{labels:['Memory Ops','DOM Rendering','Storage I/O'],datasets},options:{responsive:true,maintainAspectRatio:true,plugins:{title:{display:true,text:'Performance Comparison (Lower is Better)',color:'#e5e7eb'},legend:{labels:{color:'#e5e7eb'}}},scales:{y:{beginAtZero:true,ticks:{color:'#9ca3af'},grid:{color:'#333'}},x:{ticks:{color:'#9ca3af'},grid:{color:'#333'}}}}});
     }
+
+    // ===== LOGO HOLD-DOWN FOR PIRACY MODAL =====
+    let logoHoldTimer = null;
+    const logo = document.querySelector('.logo-img');
+    
+    function startLogoHold() {
+      logo.classList.add('holding');
+      logoHoldTimer = setTimeout(() => {
+        openPiracyModal();
+      }, 3000);
+    }
+    
+    function cancelLogoHold() {
+      logo.classList.remove('holding');
+      if (logoHoldTimer) {
+        clearTimeout(logoHoldTimer);
+        logoHoldTimer = null;
+      }
+    }
+    
+    function openPiracyModal() {
+      document.getElementById('piracyModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      cancelLogoHold();
+    }
+    
+    function closePiracyModal() {
+      document.getElementById('piracyModal').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    
+    // Desktop: mousedown/mouseup
+    logo.addEventListener('mousedown', startLogoHold);
+    logo.addEventListener('mouseup', cancelLogoHold);
+    logo.addEventListener('mouseleave', cancelLogoHold);
+    
+    // Mobile: touchstart/touchend
+    logo.addEventListener('touchstart', startLogoHold);
+    logo.addEventListener('touchend', cancelLogoHold);
+    logo.addEventListener('touchcancel', cancelLogoHold);
+    
+    // Click outside to close
+    document.getElementById('piracyModal').addEventListener('click', closePiracyModal);
   </script>
+
+  <!-- Piracy Sites Modal (3-second logo hold) -->
+  <div class="piracy-modal" id="piracyModal">
+    <div class="piracy-content" onclick="event.stopPropagation()">
+      <div class="piracy-header">
+        <h2><i class="fas fa-skull-crossbones"></i> Partially Recommended Piracy Sites</h2>
+        <button class="close-btn" onclick="closePiracyModal()">×</button>
+      </div>
+      <div class="piracy-body">
+        <div class="warning-banner">
+          <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="content">
+            <strong>Warning</strong>
+            <p>These sites may violate copyright laws and carry malware risks. Use strong antivirus and sandboxing if visiting risky sites.</p>
+          </div>
+        </div>
+        <ul class="piracy-list">
+          <li class="piracy-item">
+            <div class="piracy-name">FitGirl Repacks</div>
+            <a href="https://fitgirl-repacks.site/popular-repacks/" class="piracy-link" target="_blank">https://fitgirl-repacks.site/popular-repacks/</a>
+            <div class="piracy-desc">Game repack distribution site.</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">Flixtor</div>
+            <a href="https://flixer.su/" class="piracy-link" target="_blank">https://flixer.su/</a>
+            <div class="piracy-desc">Unlicensed streaming content.</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">SteamUnlocked</div>
+            <a href="https://steamunlocked.net/" class="piracy-link" target="_blank">https://steamunlocked.net/</a>
+            <div class="piracy-desc">Unofficial cracked games.</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">LibGen</div>
+            <a href="https://libgen.ac/" class="piracy-link" target="_blank">https://libgen.ac/</a>
+            <div class="piracy-desc">Free academic book archive.</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">GetIntoPC</div>
+            <a href="https://getintopc.com/" class="piracy-link" target="_blank">https://getintopc.com/</a>
+            <div class="piracy-desc">Software downloads (mixed safety).</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">DeepWebNest</div>
+            <a href="https://deepwebnest.com/" class="piracy-link" target="_blank">https://deepwebnest.com/</a>
+            <div class="piracy-desc">Dark web directory.</div>
+          </li>
+          <li class="piracy-item">
+            <div class="piracy-name">SteamRip</div>
+            <a href="https://steamrip.com/" class="piracy-link" target="_blank">https://steamrip.com/</a>
+            <div class="piracy-desc">Cracked game downloads.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

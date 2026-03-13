@@ -233,10 +233,6 @@ html, body {
   border-left-color: var(--green);
 }
 
-.tool-item.piracy {
-  border-left-color: var(--red);
-}
-
 .tool-item.nice {
   border-left-color: var(--purple);
 }
@@ -616,7 +612,21 @@ html, body {
       100% { transform: translate(80px, 80px); }
     }
 
-  </style>
+  
+    /* Step styles for Advanced Tweaks accordion */
+    .step { background: #1f2933; border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; cursor: pointer; transition: background 0.2s; }
+    .step:hover { background: #253340; }
+    .step-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+    .step-title::before { content: "▸ "; color: var(--blue); margin-right: 6px; }
+    .step.expanded .step-title::before { content: "▾ "; }
+    .meta { font-size: 0.8rem; color: var(--muted); }
+    .stars { color: #7dd3fc; letter-spacing: 1px; }
+    .step-details { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #333; }
+    .step.expanded .step-details { display: block; }
+    .sub-step { margin-bottom: 10px; padding-left: 20px; font-size: 0.9rem; line-height: 1.6; }
+    .sub-step::before { content: "→ "; color: var(--blue); margin-left: -15px; margin-right: 5px; }
+    .code { background: #0f172a; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; color: #7dd3fc; }
+</style>
 </head>
 
 <body>
@@ -655,6 +665,7 @@ html, body {
 </div>
 
 <!-- USEFUL TOOLS SECTION -->
+<div class="sections-grid">
 <section class="accordion">
   <button class="accordion-header"><i class="fas fa-toolbox"></i> Useful Tools (Optional)</button>
   <div class="accordion-body">
@@ -689,68 +700,6 @@ html, body {
           <div class="tool-name">WizTree (Disk Analyzer)</div>
           <a href="https://diskanalyzer.com/download" class="tool-link" target="_blank">https://diskanalyzer.com/download</a>
           <div class="tool-description">Visual storage usage breakdown tool.</div>
-        </li>
-      </ul>
-      
-    </div>
-  </div>
-</section>
-
-<!-- PIRACY SITES SECTION -->
-<section class="accordion">
-  <button class="accordion-header"><i class="fas fa-skull-crossbones"></i> Partially Recommended Piracy Sites</button>
-  <div class="accordion-body">
-    <div class="accordion-inner">
-      
-      <div class="warning-banner">
-        <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="content">
-          <strong>Warning</strong>
-          <p>These sites may violate copyright laws and carry malware risks. Use strong antivirus and sandboxing if visiting risky sites.</p>
-        </div>
-      </div>
-      
-      <ul class="tool-list">
-        <li class="tool-item piracy">
-          <div class="tool-name">FitGirl Repacks</div>
-          <a href="https://fitgirl-repacks.site/popular-repacks/" class="tool-link" target="_blank">https://fitgirl-repacks.site/popular-repacks/</a>
-          <div class="tool-description">Game repack distribution site.</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">Flixtor</div>
-          <a href="https://flixtor.com/" class="tool-link" target="_blank">https://flixtor.com/</a>
-          <div class="tool-description">Unlicensed streaming content.</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">SteamUnlocked</div>
-          <a href="https://steamunlocked.net/" class="tool-link" target="_blank">https://steamunlocked.net/</a>
-          <div class="tool-description">Unofficial cracked games.</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">LibGen</div>
-          <a href="https://libgen.ac/" class="tool-link" target="_blank">https://libgen.ac/</a>
-          <div class="tool-description">Free academic book archive.</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">GetIntoPC</div>
-          <a href="https://getintopc.com/" class="tool-link" target="_blank">https://getintopc.com/</a>
-          <div class="tool-description">Software downloads (mixed safety).</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">DeepWebNest</div>
-          <a href="https://deepwebnest.com/" class="tool-link" target="_blank">https://deepwebnest.com/</a>
-          <div class="tool-description">Dark web directory.</div>
-        </li>
-        
-        <li class="tool-item piracy">
-          <div class="tool-name">SteamRip</div>
-          <a href="https://steamrip.com/" class="tool-link" target="_blank">https://steamrip.com/</a>
-          <div class="tool-description">Cracked game downloads.</div>
         </li>
       </ul>
       
@@ -793,6 +742,67 @@ html, body {
     </div>
   </div>
 </section>
+
+    <section class="accordion">
+      <button class="accordion-header"><i class="fas fa-exclamation-triangle"></i> Advanced Tweaks (Optional)</button>
+      <div class="accordion-body">
+        <div class="accordion-inner">
+          <div class="step">
+            <div class="step-header">
+              <span class="step-title">Disable Animations</span>
+              <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+            </div>
+            <div class="step-details">
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Accessibility</div>
+              <div class="sub-step">Click <span class="code">Visual effects</span></div>
+              <div class="sub-step">Toggle OFF: <span class="code">Animation effects</span></div>
+              <div class="sub-step">Toggle OFF: <span class="code">Transparency effects</span></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-header">
+              <span class="step-title">Taskbar End Task</span>
+              <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+            </div>
+            <div class="step-details">
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> System <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> For developers</div>
+              <div class="sub-step">Toggle ON: <span class="code">End Task</span></div>
+              <div class="sub-step">Now you can right-click taskbar apps to force close them</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-header">
+              <span class="step-title">Core Isolation (Security Tradeoff)</span>
+              <span class="meta"><span class="stars">★★☆☆☆</span> Medium risk</span>
+            </div>
+            <div class="step-details">
+              <div class="sub-step">Press <span class="code">Windows + I</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Privacy & security <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Windows Security</div>
+              <div class="sub-step">Click <span class="code">Device security</span></div>
+              <div class="sub-step">Click <span class="code">Core isolation details</span></div>
+              <div class="sub-step">Toggle OFF: <span class="code">Memory integrity</span></div>
+              <div class="sub-step">Note: Disabling reduces security for minor performance gain</div>
+              <div class="sub-step">Restart required</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-header">
+              <span class="step-title">Background FPS Limits</span>
+              <span class="meta"><span class="stars">★★☆☆☆</span> No risk</span>
+            </div>
+            <div class="step-details">
+              <div class="sub-step">Useful for reducing GPU load when alt-tabbed</div>
+              <div class="sub-step">Open NVIDIA Control Panel</div>
+              <div class="sub-step">Manage 3D Settings <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Program Settings</div>
+              <div class="sub-step">Select your game</div>
+              <div class="sub-step">Set <span class="code">Max Frame Rate</span> <i class="fas fa-arrow-right" style="margin-right: 5px; margin-left: -15px;"></i> Enable with limit (30-60 FPS)</div>
+              <div class="sub-step">Apply</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+</div>
+
 
 <!-- Give Suggestions Modal -->
 <div class="submit-modal-overlay" id="submitTweakModal" onclick="closeSubmitTweakModal()">
@@ -986,5 +996,16 @@ ${source ? `### Source/Reference\n${source}` : ''}
 
 </script>
 
+
+  <script>
+    // Step details toggle for Advanced Tweaks
+    document.querySelectorAll(".step").forEach(step => {
+      step.addEventListener("click", (e) => {
+        // Prevent toggle if clicking on a link or code element
+        if (e.target.tagName === 'A' || e.target.closest('.code')) return;
+        step.classList.toggle("expanded");
+      });
+    });
+  </script>
 </body>
 </html>
