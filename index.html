@@ -52,14 +52,127 @@
     .nav-card-title { font-size: 1.1rem; font-weight: 600; color: var(--text); }
     .nav-card-desc { display: none; }
 
-    /* Diagnostic Tools Section (matching optimization.html style) */
+    /* Quiz Launch Button */
     .tools-section { display: flex; gap: 16px; justify-content: center; animation: fadeIn 1s ease 1s backwards; }
-    .tool-btn { background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%); color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; text-decoration: none; position: relative; }
-    .tool-btn i { font-size: inherit; }
-    .tool-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6); }
-    .tool-btn:active { transform: scale(0.95); }
-    .tools-label { font-size: 0.85rem; color: var(--muted); text-align: center; margin-top: 12px; font-weight: 500; }
-    @media (max-width: 600px) { .tool-btn { width: 48px; height: 48px; font-size: 20px; } }
+    .quiz-launch-btn { background: linear-gradient(135deg, var(--blue) 0%, #0088cc 100%); color: white; border: none; border-radius: 10px; padding: 14px 32px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 191, 255, 0.4); transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; gap: 10px; letter-spacing: 0.02em; }
+    .quiz-launch-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0, 191, 255, 0.6); }
+    .quiz-launch-btn:active { transform: translateY(0); }
+    .quiz-launch-btn i { font-size: 1.1rem; }
+
+    /* ===== QUIZ MODAL ===== */
+    .quiz-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+    .quiz-overlay.active { display: flex; }
+    .quiz-modal { background: var(--panel); border: 2px solid var(--blue); border-radius: 14px; max-width: 580px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,191,255,0.25); animation: slideIn 0.3s ease-out; }
+    .quiz-header { background: var(--panel-dark); padding: 20px 24px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+    .quiz-header h2 { margin: 0; color: var(--blue); font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+    .quiz-header .close-btn { background: none; border: none; color: var(--muted); font-size: 26px; cursor: pointer; line-height: 1; transition: color 0.2s; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+    .quiz-header .close-btn:hover { color: var(--blue); background: rgba(0,191,255,0.1); }
+    .quiz-login-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; background: rgba(0,191,255,0.06); border-bottom: 1px solid #333; font-size: 0.82rem; color: var(--muted); }
+    .quiz-login-bar a { color: var(--blue); text-decoration: none; font-weight: 600; cursor: pointer; }
+    .quiz-login-bar a:hover { text-decoration: underline; }
+    .quiz-body { padding: 24px; }
+    .quiz-step { display: none; }
+    .quiz-step.active { display: block; }
+    .quiz-step-label { font-size: 0.75rem; color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .quiz-question { font-size: 1.15rem; font-weight: 600; color: var(--text); margin-bottom: 20px; line-height: 1.4; }
+    .quiz-options { display: grid; gap: 10px; }
+    .quiz-option { background: var(--bg); border: 1.5px solid #333; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 12px; color: var(--text); font-size: 0.95rem; }
+    .quiz-option:hover { border-color: var(--blue); background: rgba(0,191,255,0.06); }
+    .quiz-option.selected { border-color: var(--blue); background: rgba(0,191,255,0.12); color: var(--blue); font-weight: 600; }
+    .quiz-option i { width: 20px; text-align: center; color: var(--blue); font-size: 1rem; flex-shrink: 0; }
+    .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+    .quiz-btn-back { background: transparent; border: 1.5px solid #444; border-radius: 8px; color: var(--muted); padding: 10px 20px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+    .quiz-btn-back:hover { border-color: var(--blue); color: var(--blue); }
+    .quiz-btn-next { background: var(--blue); border: none; border-radius: 8px; color: white; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .quiz-btn-next:hover { background: #0099e6; }
+    .quiz-btn-next:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+    .quiz-progress-track { height: 3px; background: #333; border-radius: 2px; margin: 0 24px 0; }
+    .quiz-progress-fill { height: 100%; background: var(--blue); border-radius: 2px; transition: width 0.4s ease; }
+    /* Results */
+    .quiz-results { padding: 4px 0; }
+    .quiz-results-title { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .result-section { margin-bottom: 20px; }
+    .result-section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 10px; }
+    .result-card { background: var(--bg); border: 1.5px solid #333; border-radius: 8px; padding: 13px 16px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; }
+    .result-card i { color: var(--blue); font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+    .result-card-body { flex: 1; }
+    .result-card-name { font-weight: 600; color: var(--text); font-size: 0.95rem; margin-bottom: 2px; }
+    .result-card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+    .result-card-link { display: inline-block; margin-top: 6px; font-size: 0.8rem; color: var(--blue); text-decoration: none; }
+    .result-card-link:hover { text-decoration: underline; }
+    .result-priority { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 8px; background: rgba(0,191,255,0.15); color: var(--blue); vertical-align: middle; }
+    .result-priority.high { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .result-priority.medium { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .quiz-results-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .quiz-results-actions a, .quiz-results-actions button { flex: 1; min-width: 120px; padding: 11px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.2s; border: none; }
+    .btn-go { background: var(--blue); color: white; }
+    .btn-go:hover { background: #0099e6; }
+    .btn-reset { background: transparent; border: 1.5px solid #444 !important; color: var(--muted); }
+    .btn-reset:hover { border-color: var(--blue) !important; color: var(--blue); }
+    /* Login sub-modal */
+    .login-form-wrap { padding: 24px; }
+    .login-form-wrap h3 { color: var(--blue); margin: 0 0 16px 0; font-size: 1.1rem; }
+    .login-input { width: 100%; padding: 10px 12px; background: var(--bg); border: 1.5px solid #333; border-radius: 7px; color: var(--text); font-size: 0.9rem; margin-bottom: 12px; font-family: inherit; transition: border-color 0.2s; }
+    .login-input:focus { outline: none; border-color: var(--blue); }
+    .login-actions { display: flex; gap: 10px; margin-top: 4px; }
+    .login-note { font-size: 0.78rem; color: var(--muted); margin-top: 12px; text-align: center; }
+    @media (max-width: 480px) { .quiz-modal { max-height: 95vh; } .quiz-body { padding: 16px; } .quiz-header { padding: 16px; } .quiz-progress-track { margin: 0 16px; } }
+
+    /* ===== PROFILE BUTTON (top right) ===== */
+    .profile-btn-wrap { position: fixed; top: 16px; right: 16px; z-index: 4000; }
+    .profile-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; color: var(--muted); font-size: 1.1rem; position: relative; }
+    .profile-btn:hover { border-color: var(--blue); box-shadow: 0 0 12px rgba(0,191,255,0.3); color: var(--blue); }
+    .profile-btn.signed-in { border-color: var(--blue); color: var(--blue); }
+    .profile-btn .supporter-ring { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fbbf24; animation: pulse-ring 2s ease-in-out infinite; }
+    @keyframes pulse-ring { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+    /* ===== PROFILE MODAL ===== */
+    .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: flex-start; justify-content: flex-end; z-index: 3500; padding: 68px 16px 0; }
+    .profile-overlay.active { display: flex; }
+    .profile-modal { background: var(--panel); border: 1.5px solid #333; border-radius: 14px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: profileSlideIn 0.22s ease-out; overflow: hidden; max-height: 88vh; overflow-y: auto; }
+    @keyframes profileSlideIn { from{opacity:0; transform:translateY(-12px);} to{opacity:1; transform:translateY(0);} }
+    .profile-auth-wrap { padding: 22px; }
+    .profile-auth-wrap h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 4px; }
+    .profile-auth-wrap p { font-size: 0.82rem; color: var(--muted); margin: 0 0 16px; }
+    .profile-tabs { display: flex; margin-bottom: 16px; border: 1.5px solid #333; border-radius: 8px; overflow: hidden; }
+    .profile-tab { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; border: none; color: var(--muted); transition: all 0.18s; }
+    .profile-tab.active { background: var(--blue); color: white; }
+    .profile-input { width: 100%; padding: 9px 12px; background: var(--bg); border: 1.5px solid #333; border-radius: 7px; color: var(--text); font-size: 0.88rem; margin-bottom: 9px; font-family: inherit; transition: border-color 0.2s; }
+    .profile-input:focus { outline: none; border-color: var(--blue); }
+    .profile-submit-btn { width: 100%; padding: 10px; background: var(--blue); border: none; border-radius: 8px; color: white; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 2px; }
+    .profile-submit-btn:hover { background: #0099e6; }
+    .profile-submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+    .profile-divider { display: flex; align-items: center; gap: 10px; margin: 13px 0; }
+    .profile-divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    .profile-divider::before, .profile-divider::after { content:''; flex:1; height:1px; background:#333; }
+    .profile-google-btn { width: 100%; padding: 9px; background: #fff; border: none; border-radius: 8px; color: #333; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
+    .profile-google-btn:hover { opacity: 0.88; }
+    .profile-error { font-size: 0.78rem; color: #ef4444; margin-top: 6px; min-height: 14px; }
+    /* Logged-in state */
+    .profile-user-header { background: var(--panel-dark); padding: 18px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #333; }
+    .profile-user-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0; }
+    .profile-user-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; }
+    .profile-user-email { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+    .profile-supporter-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); margin-top: 4px; }
+    .profile-menu { padding: 8px 0; }
+    .profile-menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 0.88rem; color: var(--text); cursor: pointer; transition: background 0.15s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
+    .profile-menu-item:hover { background: rgba(255,255,255,0.04); color: var(--blue); }
+    .profile-menu-item i { width: 16px; text-align: center; color: var(--muted); font-size: 0.9rem; transition: color 0.15s; }
+    .profile-menu-item:hover i { color: var(--blue); }
+    .profile-menu-sep { height: 1px; background: #333; margin: 5px 0; }
+    .profile-menu-item.danger { color: #ef4444; }
+    .profile-menu-item.danger i { color: #ef4444; }
+    .profile-menu-item.danger:hover { background: rgba(239,68,68,0.08); }
+    .profile-donate-section { margin: 4px 16px 14px; padding: 12px 14px; background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.25); border-radius: 8px; }
+    .profile-donate-section p { font-size: 0.78rem; color: var(--muted); margin: 0 0 8px; line-height: 1.4; }
+    .profile-donate-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 8px; background: #fbbf24; border: none; border-radius: 7px; color: #1a1100; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .profile-donate-btn:hover { background: #f59e0b; }
+    .profile-loading { padding: 32px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .profile-loading i { font-size: 1.4rem; color: var(--blue); display: block; margin-bottom: 10px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .profile-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e1e1e; border: 1px solid var(--blue); border-radius: 8px; padding: 10px 20px; font-size: 0.88rem; color: var(--text); z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+    .profile-toast.show { opacity: 1; }
+    .profile-toast.error { border-color: #ef4444; color: #ef4444; }
 
     /* Footer */
     .landing-footer { margin-top: 60px; display: flex; gap: 24px; animation: fadeIn 1s ease 1.2s backwards; }
@@ -270,6 +383,26 @@
   </style>
 </head>
 <body>
+  <!-- Profile Button (top right) -->
+  <div class="profile-btn-wrap">
+    <button class="profile-btn" id="profileBtn" onclick="toggleProfileModal()" title="Account">
+      <i class="fas fa-user" id="profileBtnIcon"></i>
+    </button>
+  </div>
+
+  <!-- Profile Modal -->
+  <div class="profile-overlay" id="profileOverlay" onclick="handleProfileOverlayClick(event)">
+    <div class="profile-modal" onclick="event.stopPropagation()" id="profileModal">
+      <div class="profile-loading" id="profileLoading">
+        <i class="fas fa-circle-notch"></i>
+        Loading...
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="profile-toast" id="profileToast"></div>
+
   <div class="landing-container">
     <div class="hero-section">
       <!-- Logo and Branding -->
@@ -310,10 +443,11 @@
         </a>
       </div>
 
-      <!-- Diagnostic Tools: rewired to run in-page -->
+      <!-- Setup Quiz Button -->
       <div class="tools-section">
-        <a href="javascript:void(0)" class="tool-btn diagnostic" title="System Diagnostics" onclick="openDiagnostic()"><i class="fas fa-laptop"></i></a>
-        <a href="javascript:void(0)" class="tool-btn performance" title="Performance Monitor" onclick="togglePerformanceMonitor()"><i class="fas fa-chart-bar"></i></a>
+        <button class="quiz-launch-btn" onclick="openQuizModal()">
+          <i class="fas fa-magic"></i> Build My Setup
+        </button>
       </div>
 
     </div>
@@ -383,20 +517,33 @@
     </div>
   </div>
 
-  <!-- Diagnostics Modal (copied from optimization) -->
-  <div class="modal-overlay" id="diagnosticModal" onclick="closeOnOutsideClick(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2><i class="fas fa-search"></i> System Diagnostics</h2>
-        <button class="close-btn" onclick="closeDiagnostic()">×</button>
-      </div>
-      <div class="modal-body" id="diagnosticContent">
-        <div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>
-      </div>
-    </div>
-  </div>
+
 
   <script>
+    // ===== PROFILE MODAL CONTROLS =====
+    function toggleProfileModal() {
+      const overlay = document.getElementById('profileOverlay');
+      overlay.classList.toggle('active');
+      if (overlay.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    }
+    function closeProfileModal() {
+      document.getElementById('profileOverlay').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    function handleProfileOverlayClick(e) {
+      if (e.target === e.currentTarget) closeProfileModal();
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProfileModal();
+        closeQuizModal();
+      }
+    });
+
     // ===== Toast-free minimal approach per request (no big changes) =====
 
     // ===== SUBMIT SUGGESTION SYSTEM (from original index) =====
@@ -454,153 +601,229 @@
     function highlightMatch(text, query){ const regex = new RegExp(`(${escapeRegex(query)})`, 'gi'); return text.replace(regex, '<span class="result-highlight">$1</span>'); }
     function escapeRegex(string){ return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-    // ===== DIAGNOSTIC FUNCTIONS (copied from optimization) =====
-    function openDiagnostic() { const modal = document.getElementById('diagnosticModal'); modal.classList.add('active'); document.body.style.overflow = 'hidden'; runDiagnostics(); }
-    function closeDiagnostic() { const modal = document.getElementById('diagnosticModal'); modal.classList.remove('active'); document.body.style.overflow = 'auto'; }
-    function closeOnOutsideClick(event) { if (event.target === event.currentTarget) closeDiagnostic(); }
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDiagnostic(); });
+    // ===== QUIZ SYSTEM =====
+    const QUIZ_STEPS = [
+      {
+        label: 'Step 1 of 4', question: 'What is your primary goal?',
+        options: [
+          { icon: 'fas fa-bolt', text: 'Maximize PC performance & speed', value: 'performance' },
+          { icon: 'fas fa-user-shield', text: 'Protect my privacy & stay anonymous', value: 'privacy' },
+          { icon: 'fas fa-shield-alt', text: 'Serious security & operational security', value: 'opsec' },
+          { icon: 'fas fa-layer-group', text: 'All of the above — full setup', value: 'all' }
+        ]
+      },
+      {
+        label: 'Step 2 of 4', question: 'What is your experience level?',
+        options: [
+          { icon: 'fas fa-seedling', text: 'Beginner — keep it simple', value: 'beginner' },
+          { icon: 'fas fa-user', text: 'Intermediate — I know my way around', value: 'intermediate' },
+          { icon: 'fas fa-terminal', text: 'Advanced — show me everything', value: 'advanced' }
+        ]
+      },
+      {
+        label: 'Step 3 of 4', question: 'What are you most concerned about?',
+        options: [
+          { icon: 'fas fa-gamepad', text: 'Gaming performance & low latency', value: 'gaming' },
+          { icon: 'fas fa-eye-slash', text: 'Corporate tracking & data collection', value: 'tracking' },
+          { icon: 'fas fa-globe', text: 'ISP & government surveillance', value: 'surveillance' },
+          { icon: 'fas fa-bug', text: 'Malware, hackers & identity theft', value: 'malware' }
+        ]
+      },
+      {
+        label: 'Step 4 of 4', question: 'How much time do you want to invest?',
+        options: [
+          { icon: 'fas fa-clock', text: '15 minutes — quick wins only', value: 'quick' },
+          { icon: 'fas fa-calendar-day', text: 'An hour — solid improvements', value: 'medium' },
+          { icon: 'fas fa-calendar-week', text: 'As long as it takes — full hardening', value: 'full' }
+        ]
+      }
+    ];
 
-    function getOS(){ const ua = navigator.userAgent; if (ua.indexOf('Win')>-1){ if (ua.indexOf('Windows NT 10.0')>-1) return 'Windows 10/11'; if (ua.indexOf('Windows NT 6.3')>-1) return 'Windows 8.1'; if (ua.indexOf('Windows NT 6.2')>-1) return 'Windows 8'; if (ua.indexOf('Windows NT 6.1')>-1) return 'Windows 7'; return 'Windows (Unknown Version)'; } else if (ua.indexOf('Mac')>-1) return 'macOS'; else if (ua.indexOf('Linux')>-1) return 'Linux'; else if (ua.indexOf('Android')>-1) return 'Android'; else if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS'; return 'Unknown OS'; }
-    function getBrowser(){ const ua = navigator.userAgent; if (ua.indexOf('Edg')>-1) return 'Microsoft Edge'; if (ua.indexOf('Chrome')>-1 && ua.indexOf('Edg')===-1) return 'Google Chrome'; if (ua.indexOf('Safari')>-1 && ua.indexOf('Chrome')===-1) return 'Safari'; if (ua.indexOf('Firefox')>-1) return 'Mozilla Firefox'; if (ua.indexOf('Opera')>-1 || ua.indexOf('OPR')>-1) return 'Opera'; return 'Unknown Browser'; }
-    async function getGPUInfo(){ try{ const canvas=document.createElement('canvas'); const gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl'); if (!gl) return { renderer: 'WebGL not supported', vendor: 'N/A' }; const info = gl.getExtension('WEBGL_debug_renderer_info'); if (info) { return { renderer: gl.getParameter(info.UNMASKED_RENDERER_WEBGL), vendor: gl.getParameter(info.UNMASKED_VENDOR_WEBGL) }; } return { renderer: 'Unable to detect', vendor: 'N/A' }; } catch(e){ return { renderer: 'Error detecting GPU', vendor: 'N/A' }; } }
-    function getCPUCores(){ return navigator.hardwareConcurrency || 'Unknown'; }
-    function getRAM(){ return navigator.deviceMemory ? navigator.deviceMemory + ' GB (approximate)' : 'Not available in this browser'; }
-    function getScreenInfo(){ return { resolution: `${screen.width} × ${screen.height}`, colorDepth: `${screen.colorDepth}-bit`, pixelRatio: window.devicePixelRatio || 1 }; }
-    function getConnectionInfo(){ const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection; return c ? { type: c.effectiveType || 'Unknown', downlink: c.downlink ? c.downlink + ' Mbps' : 'Unknown', rtt: c.rtt ? c.rtt + ' ms' : 'Unknown' } : null; }
+    let quizAnswers = [];
+    let quizCurrentStep = 0;
 
-    async function runDiagnostics(){ const content = document.getElementById('diagnosticContent'); content.innerHTML = '<div class="loading"><i class="fas fa-sync-alt"></i> Running diagnostics...</div>'; await new Promise(r=>setTimeout(r,800)); const gpuInfo = await getGPUInfo(); const screenInfo = getScreenInfo(); const connectionInfo = getConnectionInfo(); const diagnosticHTML = `
-      <div class="diagnostic-section">
-        <h3><i class="fas fa-laptop"></i> System Information</h3>
-        <div class="info-grid">
-          <div class="info-item"><span class="info-label">Operating System</span><span class="info-value">${getOS()}</span></div>
-          <div class="info-item"><span class="info-label">Browser</span><span class="info-value">${getBrowser()}</span></div>
-          <div class="info-item"><span class="info-label">User Agent</span><span class="info-value" style="word-break: break-all; font-size: 0.75rem;">${navigator.userAgent}</span></div>
-        </div>
-      </div>
-      <div class="diagnostic-section">
-        <h3><i class="fas fa-gamepad"></i> Graphics & Display</h3>
-        <div class="info-grid">
-          <div class="info-item"><span class="info-label">GPU Renderer</span><span class="info-value">${gpuInfo.renderer}</span></div>
-          <div class="info-item"><span class="info-label">GPU Vendor</span><span class="info-value">${gpuInfo.vendor}</span></div>
-          <div class="info-item"><span class="info-label">Screen Resolution</span><span class="info-value">${screenInfo.resolution}</span></div>
-          <div class="info-item"><span class="info-label">Color Depth</span><span class="info-value">${screenInfo.colorDepth}</span></div>
-          <div class="info-item"><span class="info-label">Device Pixel Ratio</span><span class="info-value">${screenInfo.pixelRatio}x</span></div>
-        </div>
-      </div>
-      <div class="diagnostic-section">
-        <h3><i class="fas fa-sliders-h"></i> Hardware</h3>
-        <div class="info-grid">
-          <div class="info-item"><span class="info-label">CPU Cores</span><span class="info-value">${getCPUCores()} logical processors</span></div>
-          <div class="info-item"><span class="info-label">RAM (Estimated)</span><span class="info-value">${getRAM()}</span></div>
-          <div class="info-item"><span class="info-label">Platform</span><span class="info-value">${navigator.platform}</span></div>
-        </div>
-      </div>
-      ${connectionInfo ? `
-      <div class="diagnostic-section">
-        <h3><i class="fas fa-globe"></i> Network</h3>
-        <div class="info-grid">
-          <div class="info-item"><span class="info-label">Connection Type</span><span class="info-value">${connectionInfo.type.toUpperCase()}</span></div>
-          <div class="info-item"><span class="info-label">Download Speed</span><span class="info-value">${connectionInfo.downlink}</span></div>
-          <div class="info-item"><span class="info-label">Latency (RTT)</span><span class="info-value">${connectionInfo.rtt}</span></div>
-        </div>
-      </div>` : ''}
-      <div class="diagnostic-section">
-        <h3><i class="fas fa-chart-bar"></i> Browser Capabilities</h3>
-        <div class="info-grid">
-          <div class="info-item"><span class="info-label">Cookies Enabled</span><span class="status-badge ${navigator.cookieEnabled ? 'status-good' : 'status-warning'}">${navigator.cookieEnabled ? '<i class="fas fa-check"></i> Yes' : '<i class="fas fa-times"></i> No'}</span></div>
-          <div class="info-item"><span class="info-label">Online Status</span><span class="status-badge ${navigator.onLine ? 'status-good' : 'status-warning'}">${navigator.onLine ? '<i class="fas fa-check"></i> Online' : '<i class="fas fa-times"></i> Offline'}</span></div>
-          <div class="info-item"><span class="info-label">Language</span><span class="info-value">${navigator.language}</span></div>
-          <div class="info-item"><span class="info-label">Timezone</span><span class="info-value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span></div>
-        </div>
-      </div>
-      <button class="refresh-btn" onclick="runDiagnostics()"><i class="fas fa-sync-alt"></i> Refresh Diagnostics</button>
-    `; content.innerHTML = diagnosticHTML; calculateHealthScore(gpuInfo, screenInfo, connectionInfo); content.insertAdjacentHTML('afterbegin', `<div class="diagnostic-note"><i class="fas fa-info-circle"></i><span>Chrome is recommended to see all diagnostics</span></div>`); }
-
-    function calculateHealthScore(gpuInfo, screenInfo, connectionInfo){ let score=0; const recommendations=[]; const metrics={}; const ramGB = navigator.deviceMemory || 0; if (ramGB>=16){ score+=20; metrics.ram={value:ramGB+' GB', score:100, status:'excellent'}; } else if (ramGB>=8){ score+=15; metrics.ram={value:ramGB+' GB', score:75, status:'good'}; recommendations.push({text:'Consider upgrading to 16GB RAM for better multitasking'}); } else if (ramGB>=4){ score+=10; metrics.ram={value:ramGB+' GB', score:50, status:'fair'}; recommendations.push({text:'<strong>Upgrade RAM:</strong> 4GB is minimal. Upgrade to 8GB or 16GB for significant improvement'}); } else { score+=5; metrics.ram={value:ramGB+' GB', score:25, status:'poor'}; recommendations.push({text:'<strong>Critical:</strong> RAM is very low. Upgrade to at least 8GB immediately'}); } const cpuCores = navigator.hardwareConcurrency || 0; if (cpuCores>=8){ score+=20; metrics.cpu={value:cpuCores+' cores', score:100, status:'excellent'}; } else if (cpuCores>=4){ score+=15; metrics.cpu={value:cpuCores+' cores', score:75, status:'good'}; } else if (cpuCores>=2){ score+=10; metrics.cpu={value:cpuCores+' cores', score:50, status:'fair'}; recommendations.push({text:'CPU has limited cores. Consider upgrading for better performance'}); } else { score+=5; metrics.cpu={value:cpuCores+' cores', score:25, status:'poor'}; recommendations.push({text:'<strong>Upgrade CPU:</strong> Single/dual-core CPUs are outdated'}); } const rLower = (gpuInfo.renderer||'').toLowerCase(); if (rLower.includes('nvidia') || rLower.includes('amd') || rLower.includes('radeon')){ score+=20; metrics.gpu={value:'Dedicated GPU', score:100, status:'excellent'}; } else if (rLower.includes('intel')) { score+=10; metrics.gpu={value:'Integrated GPU', score:50, status:'fair'}; recommendations.push({text:'<strong>GPU Optimization:</strong> Enable Hardware-Accelerated GPU Scheduling in Display Settings'}); } else { score+=5; metrics.gpu={value:'Basic GPU', score:25, status:'poor'}; recommendations.push({text:'Consider a dedicated GPU for gaming/graphics work'}); } if (connectionInfo){ const downlink=parseFloat(connectionInfo.downlink)||0; if (downlink>=10){ score+=15; metrics.connection={value:downlink+' Mbps', score:100, status:'excellent'}; } else if (downlink>=5){ score+=10; metrics.connection={value:downlink+' Mbps', score:67, status:'good'}; } else if (downlink>=1){ score+=5; metrics.connection={value:downlink+' Mbps', score:33, status:'fair'}; recommendations.push({text:'Slow internet detected. Check Network & DNS Optimization section'}); } else { score+=2; metrics.connection={value:'Poor', score:13, status:'poor'}; recommendations.push({text:'<strong>Network Issues:</strong> Very slow connection. Contact your ISP'}); } } else { score+=10; metrics.connection={value:'Unknown', score:67, status:'good'}; } const pixels = screen.width*screen.height; if (pixels>=3840*2160){ score+=15; metrics.display={value:'4K+', score:100, status:'excellent'}; } else if (pixels>=1920*1080){ score+=12; metrics.display={value:'1080p+', score:80, status:'good'}; } else if (pixels>=1280*720){ score+=8; metrics.display={value:'720p+', score:53, status:'fair'}; } else { score+=4; metrics.display={value:'Low Res', score:27, status:'poor'}; } const os=getOS(); if (os.includes('Windows 10') || os.includes('Windows 11')){ score+=10; recommendations.push({text:'Apply Windows tweaks from BIOS and Performance sections'}); } else if (os.includes('Windows')){ score+=5; recommendations.push({text:'<strong>Upgrade OS:</strong> Consider upgrading to Windows 10/11'}); } else if (os.includes('Linux') || os.includes('macOS')){ score+=10; } else { score+=5; } if (score>=80){ recommendations.unshift({text:'🎉 Your system is in great shape! Focus on software optimizations'}); } else if (score>=60){ recommendations.unshift({text:'Your system is decent. Apply the tweaks in this guide for better performance'}); } else if (score>=40){ recommendations.unshift({text:'Your system needs attention. Start with Essential tweaks and consider hardware upgrades'}); } else { recommendations.unshift({text:'<i class="fas fa-exclamation-triangle"></i> Your system needs significant upgrades. Focus on RAM and CPU first'}); } displayHealthScore(score, metrics, recommendations); }
-
-    function displayHealthScore(score, metrics, recommendations){ const content=document.getElementById('diagnosticContent'); let scoreStatus='poor', scoreLabel='Needs Work'; if (score>=80){ scoreStatus='excellent'; scoreLabel='Excellent'; } else if (score>=60){ scoreStatus='good'; scoreLabel='Good'; } else if (score>=40){ scoreStatus='fair'; scoreLabel='Fair'; } const C=2*Math.PI*65; const off=C-(score/100)*C; const healthHTML = `
-      <div class="health-score-container">
-        <div class="health-score-header"><h3><i class="fas fa-pills"></i> System Health Score</h3></div>
-        <div class="score-display">
-          <div class="score-circle">
-            <svg width="150" height="150">
-              <circle class="score-circle-bg" cx="75" cy="75" r="65"></circle>
-              <circle class="score-circle-progress ${scoreStatus}" cx="75" cy="75" r="65" stroke-dasharray="${C}" stroke-dashoffset="${off}"></circle>
-            </svg>
-            <div class="score-value">${Math.round(score)}</div>
-          </div>
-          <div class="score-label">${scoreLabel}</div>
-        </div>
-        <div class="health-metrics">
-          ${Object.entries(metrics).map(([k,d]) => `<div class="metric-card"><h5>${k.toUpperCase()}</h5><div class="metric-value">${d.value}</div><div class="metric-bar"><div class="metric-bar-fill ${d.status}" style="width:${d.score}%"></div></div></div>`).join('')}
-        </div>
-        <div class="health-recommendations">
-          <h4><i class="fas fa-clipboard-list"></i> Recommendations</h4>
-          ${recommendations.map(r => `<div class="recommendation-item">${r.text}</div>`).join('')}
-        </div>
-      </div>`; content.insertAdjacentHTML('afterbegin', healthHTML); }
-
-    // ===== CONTINUOUS PERFORMANCE MONITOR (copied from optimization) =====
-    let performanceChart = null; let perfMonitorActive = false; let perfMonitorInterval = null; let perfSamples = { memory: [], render: [], storage: [] };
-    function togglePerformanceMonitor(){
-      // Start monitoring and open the modal UI (same behavior as optimization)
-      if (perfMonitorActive) { stopPerformanceMonitor(); openPerformanceModal(); }
-      else { startPerformanceMonitor(); setTimeout(openPerformanceModal, 300); }
+    function openQuizModal() {
+      quizAnswers = [];
+      quizCurrentStep = 0;
+      document.getElementById('quizOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      const track = document.getElementById('quizProgressTrack');
+      track.style.display = 'block';
+      renderQuizStep();
     }
-    function startPerformanceMonitor(){ perfMonitorActive = true; perfSamples = { memory: [], render: [], storage: [] }; perfMonitorInterval = setInterval(async () => { const m=await testMemoryPerformance(); const r=await testRenderPerformance(); const s=await testStoragePerformance(); perfSamples.memory.push(m); perfSamples.render.push(r); perfSamples.storage.push(s); if (perfSamples.memory.length>5){ perfSamples.memory.shift(); perfSamples.render.shift(); perfSamples.storage.shift(); } updatePerformanceDisplay(); }, 1000); }
-    function stopPerformanceMonitor(){ perfMonitorActive=false; if(perfMonitorInterval){ clearInterval(perfMonitorInterval); perfMonitorInterval=null; } if(perfSamples.memory.length>0){ const results={ memoryTest:Math.round(average(perfSamples.memory)), renderTest:Math.round(average(perfSamples.render)), storageTest:Math.round(average(perfSamples.storage)), timestamp:Date.now() }; const prevData=localStorage.getItem('perfTestResults'); if(prevData){ const prev=JSON.parse(prevData); results.previous={memoryTest:prev.memoryTest,renderTest:prev.renderTest,storageTest:prev.storageTest}; if(prev.previous){ results.older={memoryTest:prev.previous.memoryTest,renderTest:prev.previous.renderTest,storageTest:prev.previous.storageTest}; } } localStorage.setItem('perfTestResults',JSON.stringify(results)); } }
-    function average(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
-    function openPerformanceModal(){ const modal=document.getElementById('diagnosticModal'); modal.classList.add('active'); document.body.style.overflow='hidden'; const content=document.getElementById('diagnosticContent'); content.innerHTML = `
-        <div class="perf-test-container" style="border:none; padding:0;">
-          <div class="perf-test-header">
-            <h3><i class="fas fa-bolt"></i> Live Performance Monitor</h3>
-            <div style="display:flex; gap:8px;">
-              <button class="perf-test-btn" onclick="stopAndSavePerformance()" style="background:#ef4444;">Save</button>
-            </div>
+
+    function closeQuizModal() {
+      document.getElementById('quizOverlay').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function handleQuizOverlayClick(e) {
+      if (e.target === e.currentTarget) closeQuizModal();
+    }
+
+    function renderQuizStep() {
+      const step = QUIZ_STEPS[quizCurrentStep];
+      const fill = ((quizCurrentStep) / QUIZ_STEPS.length) * 100;
+      document.getElementById('quizProgressFill').style.width = fill + '%';
+      document.getElementById('quizHeaderTitle').innerHTML = '<i class="fas fa-magic"></i> Build My Setup';
+
+      const selectedVal = quizAnswers[quizCurrentStep] || null;
+      const optionsHTML = step.options.map(opt => `
+        <div class="quiz-option${selectedVal === opt.value ? ' selected' : ''}" onclick="selectQuizOption(this, '${opt.value}')">
+          <i class="${opt.icon}"></i>
+          <span>${opt.text}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('quizBody').innerHTML = `
+        <div class="quiz-step active">
+          <div class="quiz-step-label">${step.label}</div>
+          <div class="quiz-question">${step.question}</div>
+          <div class="quiz-options">${optionsHTML}</div>
+          <div class="quiz-nav">
+            <button class="quiz-btn-back" onclick="quizBack()" ${quizCurrentStep === 0 ? 'style="visibility:hidden"' : ''}>← Back</button>
+            <button class="quiz-btn-next" id="quizNextBtn" onclick="quizNext()" ${selectedVal ? '' : 'disabled'}>
+              ${quizCurrentStep === QUIZ_STEPS.length - 1 ? 'See My Setup →' : 'Next →'}
+            </button>
           </div>
-          <div id="perfTestResults">
-            <div class="perf-status"><i class="fas fa-bolt"></i> Monitoring performance... Collecting data for 5-second average</div>
-          </div>
-        </div>`; updatePerformanceDisplay(); }
-    function stopAndSavePerformance(){ stopPerformanceMonitor(); }
-    function updatePerformanceDisplay(){
-      const container=document.getElementById('perfTestResults'); if(!container||perfSamples.memory.length===0) return;
-      const current={memoryTest:Math.round(average(perfSamples.memory)),renderTest:Math.round(average(perfSamples.render)),storageTest:Math.round(average(perfSamples.storage))};
-      const prevData=localStorage.getItem('perfTestResults'); const previous=prevData?JSON.parse(prevData):null;
-      const older=previous&&previous.older?previous.older:null;
-      const count=perfSamples.memory.length; const statusText=count<5?`Collecting samples... (${count}/5)`:`5-second rolling average (${count} samples)`;
-      const isFirst=!container.querySelector('.perf-results');
-      if(isFirst){
-        let html=`<div class="perf-status" id="perfStatus" style="background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid #4ade80;border-radius:6px;margin-bottom:16px;">${statusText}</div><div class="perf-results">`;
-        html+=createPerfCard('Memory Operations',current.memoryTest,previous?previous.memoryTest:null,older?older.memoryTest:null,'ms',true);
-        html+=createPerfCard('DOM Rendering',current.renderTest,previous?previous.renderTest:null,older?older.renderTest:null,'ms',true);
-        html+=createPerfCard('Storage I/O',current.storageTest,previous?previous.storageTest:null,older?older.storageTest:null,'ms',true);
-        html+='</div><div class="perf-chart-container"><canvas id="perfChart"></canvas></div>';
-        container.innerHTML=html;
-        createPerformanceChart({...current,previous,older});
+        </div>
+      `;
+    }
+
+    function selectQuizOption(el, value) {
+      el.closest('.quiz-options').querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      quizAnswers[quizCurrentStep] = value;
+      document.getElementById('quizNextBtn').disabled = false;
+    }
+
+    function quizNext() {
+      if (!quizAnswers[quizCurrentStep]) return;
+      if (quizCurrentStep < QUIZ_STEPS.length - 1) {
+        quizCurrentStep++;
+        renderQuizStep();
       } else {
-        const statusEl=document.getElementById('perfStatus'); if(statusEl) statusEl.textContent=statusText;
-        const cards=container.querySelectorAll('.perf-result-card');
-        const metrics=[{value:current.memoryTest,prev:previous?previous.memoryTest:null},{value:current.renderTest,prev:previous?previous.renderTest:null},{value:current.storageTest,prev:previous?previous.storageTest:null}];
-        cards.forEach((card,i)=>{ if(i<metrics.length){ const m=metrics[i]; const el=card.querySelector('.perf-comparison:first-of-type .perf-value'); if(el) el.textContent=m.value+'ms'; const imp=card.querySelector('.perf-improvement'); if(imp&&m.prev!==null){ const diff=m.value-m.prev; const pct=((diff/m.prev)*100).toFixed(1); const improved=diff<0; const sign=diff>0?'+':''; imp.className=`perf-improvement ${improved?'positive':'negative'}`; imp.innerHTML=`${improved?'<i class="fas fa-arrow-up"></i>':'<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved?'Better':'Worse'}`; } } });
-        if(performanceChart){ performanceChart.data.datasets[performanceChart.data.datasets.length-1].data=[current.memoryTest,current.renderTest,current.storageTest]; performanceChart.update('none'); }
+        showQuizResults();
       }
     }
-    async function testMemoryPerformance(){ const start=performance.now(); const arrays=[]; for(let i=0;i<1000;i++) arrays.push(new Array(1000).fill(Math.random())); let sum=0; for(let a of arrays) sum+=a[0]; const end=performance.now(); return Math.round(end-start); }
-    async function testRenderPerformance(){ const start=performance.now(); const testDiv=document.createElement('div'); testDiv.style.position='absolute'; testDiv.style.left='-9999px'; document.body.appendChild(testDiv); for(let i=0;i<500;i++){ const el=document.createElement('div'); el.textContent='Test '+i; el.style.padding='10px'; testDiv.appendChild(el); } testDiv.offsetHeight; document.body.removeChild(testDiv); const end=performance.now(); return Math.round(end-start); }
-    async function testStoragePerformance(){ const start=performance.now(); for(let i=0;i<100;i++) localStorage.setItem('perf_test_'+i,'x'.repeat(100)); for(let i=0;i<100;i++) localStorage.getItem('perf_test_'+i); for(let i=0;i<100;i++) localStorage.removeItem('perf_test_'+i); const end=performance.now(); return Math.round(end-start); }
-    function createPerfCard(title,current,previous,older,unit,lowerIsBetter){ let improvHTML=''; if(previous!==null&&previous!==undefined){ const diff=current-previous; const pct=((diff/previous)*100).toFixed(1); const improved=lowerIsBetter?diff<0:diff>0; const sign=diff>0?'+':''; improvHTML=`<div class="perf-improvement ${improved?'positive':'negative'}">${improved?'<i class="fas fa-arrow-up"></i>':'<i class="fas fa-arrow-down"></i>'} ${sign}${pct}% ${improved?'Better':'Worse'}</div>`; } const prevRow=previous!==null&&previous!==undefined?`<div class="perf-comparison"><span class="perf-label">Previous:</span><span class="perf-value">${previous}${unit}</span></div>`:''; const olderRow=older!==null&&older!==undefined?`<div class="perf-comparison"><span class="perf-label">Older:</span><span class="perf-value">${older}${unit}</span></div>`:''; return `<div class="perf-result-card"><h4>${title}</h4><div class="perf-comparison"><span class="perf-label">Current:</span><span class="perf-value">${current}${unit}</span></div>${prevRow}${olderRow}${improvHTML}</div>`; }
-    function createPerformanceChart(results){
-      const ctx=document.getElementById('perfChart'); if(!ctx) return;
-      if(performanceChart) performanceChart.destroy();
-      const datasets=[];
-      if(results.older) datasets.push({label:'Older (ms)',data:[results.older.memoryTest,results.older.renderTest,results.older.storageTest],backgroundColor:'rgba(100,116,139,0.5)',borderColor:'rgba(100,116,139,1)',borderWidth:1});
-      if(results.previous) datasets.push({label:'Previous (ms)',data:[results.previous.memoryTest,results.previous.renderTest,results.previous.storageTest],backgroundColor:'rgba(156,163,175,0.5)',borderColor:'rgba(156,163,175,1)',borderWidth:1});
-      datasets.push({label:'Current (ms)',data:[results.memoryTest,results.renderTest,results.storageTest],backgroundColor:'rgba(74,222,128,0.5)',borderColor:'rgba(74,222,128,1)',borderWidth:1});
-      const barPct=datasets.length>=3?0.6:0.8;
-      datasets.forEach(d=>{d.barPercentage=barPct; d.categoryPercentage=0.85;});
-      performanceChart=new Chart(ctx,{type:'bar',data:{labels:['Memory Ops','DOM Rendering','Storage I/O'],datasets},options:{responsive:true,maintainAspectRatio:true,plugins:{title:{display:true,text:'Performance Comparison (Lower is Better)',color:'#e5e7eb'},legend:{labels:{color:'#e5e7eb'}}},scales:{y:{beginAtZero:true,ticks:{color:'#9ca3af'},grid:{color:'#333'}},x:{ticks:{color:'#9ca3af'},grid:{color:'#333'}}}}});
+
+    function quizBack() {
+      if (quizCurrentStep > 0) { quizCurrentStep--; renderQuizStep(); }
     }
+
+    function showQuizResults() {
+      document.getElementById('quizProgressFill').style.width = '100%';
+      document.getElementById('quizHeaderTitle').innerHTML = '<i class="fas fa-check-circle"></i> Your Setup Plan';
+      document.getElementById('quizLoginBar').style.display = 'none';
+
+      const [goal, level, concern, time] = quizAnswers;
+      const recs = buildRecommendations(goal, level, concern, time);
+
+      let html = '<div class="quiz-results">';
+      html += '<div class="quiz-results-title"><i class="fas fa-clipboard-list"></i> Personalized Recommendations</div>';
+
+      recs.forEach(section => {
+        html += `<div class="result-section"><div class="result-section-label">${section.label}</div>`;
+        section.items.forEach(item => {
+          html += `<div class="result-card">
+            <i class="${item.icon}"></i>
+            <div class="result-card-body">
+              <div class="result-card-name">${item.name} <span class="result-priority ${item.priority}">${item.priority.toUpperCase()}</span></div>
+              <div class="result-card-desc">${item.desc}</div>
+              ${item.link ? `<a href="${item.link}" class="result-card-link" target="_blank">Go to ${item.page} →</a>` : ''}
+            </div>
+          </div>`;
+        });
+        html += '</div>';
+      });
+
+      html += `<div class="quiz-results-actions">
+        <button class="btn-reset" onclick="openQuizModal()">← Retake Quiz</button>
+        <a href="${recs[0]?.items[0]?.link || 'optimization.html'}" class="btn-go">Start Here →</a>
+      </div></div>`;
+
+      document.getElementById('quizBody').innerHTML = html;
+    }
+
+    function buildRecommendations(goal, level, concern, time) {
+      const sections = [];
+
+      // Priority tools based on goal
+      if (goal === 'performance' || goal === 'all') {
+        const items = [
+          { icon: 'fas fa-bolt', name: 'BIOS XMP/EXPO Tuning', desc: 'Enable memory profile for instant RAM speed gains — highest impact tweak.', link: 'optimization.html', page: 'Optimization', priority: 'high' },
+          { icon: 'fas fa-sliders-h', name: 'Power Plan & GPU Scheduling', desc: 'Set High Performance mode and enable hardware GPU scheduling.', link: 'optimization.html', page: 'Optimization', priority: 'high' },
+        ];
+        if (concern === 'gaming') items.push({ icon: 'fas fa-gamepad', name: 'Game Mode & NVIDIA Settings', desc: 'Enable Game Mode and set NVIDIA to maximum performance mode.', link: 'optimization.html', page: 'Optimization', priority: 'medium' });
+        if (level !== 'beginner') items.push({ icon: 'fas fa-broom', name: 'Bloatware & Startup Removal', desc: 'Win11Debloat + ShutUp10++ for deep system cleanup.', link: 'optimization.html', page: 'Optimization', priority: 'medium' });
+        sections.push({ label: '⚡ Performance', items });
+      }
+
+      if (goal === 'privacy' || goal === 'all') {
+        const items = [
+          { icon: 'fas fa-globe', name: 'Brave Browser', desc: 'Drop Chrome immediately. Built-in ad blocking, no telemetry.', link: 'https://brave.com/', page: 'Brave', priority: 'high' },
+          { icon: 'fas fa-envelope', name: 'Proton Mail', desc: 'End-to-end encrypted email. Swiss privacy laws.', link: 'https://proton.me/mail', page: 'Proton', priority: 'high' },
+        ];
+        if (concern === 'tracking' || concern === 'surveillance') {
+          items.push({ icon: 'fas fa-wifi', name: 'Mullvad VPN', desc: 'No-logs VPN, accepts cash/crypto, no account required.', link: 'https://mullvad.net/', page: 'Mullvad', priority: 'high' });
+        }
+        items.push({ icon: 'fas fa-shield-alt', name: 'Disable Windows Telemetry', desc: 'Stop Microsoft from collecting your data via settings + registry.', link: 'optimization.html', page: 'Optimization', priority: 'medium' });
+        sections.push({ label: '🛡️ Privacy', items });
+      }
+
+      if (goal === 'opsec' || goal === 'all') {
+        const items = [
+          { icon: 'fas fa-lock', name: 'VeraCrypt', desc: 'Encrypt your drives and sensitive files with military-grade encryption.', link: 'opsec.html', page: 'OpSec', priority: 'high' },
+          { icon: 'fas fa-user-secret', name: 'Compartmentalization', desc: 'Separate your identities: different browsers, emails, and devices per role.', link: 'opsec.html', page: 'OpSec', priority: 'high' },
+        ];
+        if (level === 'advanced') items.push({ icon: 'fas fa-hdd', name: 'Tails OS or Whonix', desc: 'Air-gapped or Tor-routed OS for sensitive operations.', link: 'opsec.html', page: 'OpSec', priority: 'medium' });
+        sections.push({ label: '🔒 OpSec', items });
+      }
+
+      // Quick wins for time-constrained users
+      if (time === 'quick') {
+        sections.push({ label: '⏱️ 15-Minute Wins', items: [
+          { icon: 'fas fa-dns', name: 'Set Cloudflare DNS (1.1.1.1)', desc: 'Faster, more private DNS in 2 minutes flat.', link: 'optimization.html', page: 'Optimization', priority: 'high' },
+          { icon: 'fas fa-eye', name: 'Privacy Checkup', desc: 'Go to anonymity.html and check your browser & email setup.', link: 'anonymity.html', page: 'Anonymity', priority: 'medium' },
+        ]});
+      }
+
+      return sections;
+    }
+
+    function showLoginForm() {
+      document.getElementById('quizBody').innerHTML = `
+        <div class="login-form-wrap">
+          <h3><i class="fas fa-user-circle"></i> Sign In to Save Progress</h3>
+          <p style="font-size:0.85rem; color:var(--muted); margin-bottom:18px;">Your quiz results and checklist progress will sync across devices.</p>
+          <input type="email" class="login-input" placeholder="Email address" id="loginEmail" />
+          <input type="password" class="login-input" placeholder="Password" id="loginPass" />
+          <div class="login-actions">
+            <button class="quiz-btn-back" onclick="openQuizModal()">← Back to Quiz</button>
+            <button class="quiz-btn-next" onclick="handleLogin()">Sign In</button>
+          </div>
+          <div class="login-note">Don't have an account? <a href="#" style="color:var(--blue);" onclick="alert('Account creation coming soon!')">Create one free</a></div>
+        </div>
+      `;
+      document.getElementById('quizProgressTrack').style.display = 'none';
+      document.getElementById('quizLoginBar').style.display = 'none';
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('loginEmail')?.value;
+      if (!email) return;
+      // Placeholder — wire to real auth when ready
+      document.getElementById('quizBody').innerHTML = `
+        <div style="text-align:center; padding:40px 20px;">
+          <div style="font-size:3rem; margin-bottom:12px;">✓</div>
+          <h3 style="color:var(--blue); margin:0 0 8px;">Signed in as ${email}</h3>
+          <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;">Your progress will be saved automatically.</p>
+          <button class="quiz-btn-next" onclick="openQuizModal()">Take the Quiz →</button>
+        </div>
+      `;
+    }
+
+
 
     // ===== LOGO HOLD-DOWN FOR PIRACY MODAL =====
     let logoHoldTimer = null;
@@ -645,6 +868,26 @@
     // Click outside to close
     document.getElementById('piracyModal').addEventListener('click', closePiracyModal);
   </script>
+
+  <!-- Setup Quiz Modal -->
+  <div class="quiz-overlay" id="quizOverlay" onclick="handleQuizOverlayClick(event)">
+    <div class="quiz-modal" onclick="event.stopPropagation()">
+      <div class="quiz-header">
+        <h2 id="quizHeaderTitle"><i class="fas fa-magic"></i> Build My Setup</h2>
+        <button class="close-btn" onclick="closeQuizModal()">×</button>
+      </div>
+      <div class="quiz-progress-track" id="quizProgressTrack" style="display:none;">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div>
+      </div>
+      <div class="quiz-login-bar" id="quizLoginBar">
+        <span><i class="fas fa-cloud" style="margin-right:5px; color:var(--blue)"></i> Save your results across sessions</span>
+        <a onclick="showLoginForm()">Sign in</a>
+      </div>
+      <div class="quiz-body" id="quizBody">
+        <!-- Steps injected by JS -->
+      </div>
+    </div>
+  </div>
 
   <!-- Piracy Sites Modal (3-second logo hold) -->
   <div class="piracy-modal" id="piracyModal">
@@ -700,6 +943,214 @@
         </ul>
       </div>
     </div>
-  </div>
+  </div>  <!-- Firebase Auth + Firestore -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",
+      authDomain: "bytesavior-6da1f.firebaseapp.com",
+      projectId: "bytesavior-6da1f",
+      storageBucket: "bytesavior-6da1f.firebasestorage.app",
+      messagingSenderId: "27072163055",
+      appId: "1:27072163055:web:98f302a7de4d944802bf1a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // ── Helpers ──────────────────────────────────────────────
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('profileToast');
+      t.textContent = msg;
+      t.className = 'profile-toast show' + (isError ? ' error' : '');
+      setTimeout(() => t.className = 'profile-toast', 3000);
+    }
+
+    function getInitials(name, email) {
+      if (name) return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      return email ? email[0].toUpperCase() : '?';
+    }
+
+    async function ensureUserDoc(user) {
+      const ref = doc(db, 'users', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          email: user.email,
+          displayName: user.displayName || '',
+          createdAt: serverTimestamp(),
+          isSupporter: false,
+          quizResults: null,
+          checklistProgress: []
+        });
+      }
+      return (await getDoc(ref)).data();
+    }
+
+    // ── Render functions ─────────────────────────────────────
+    function renderLoggedOut(mode = 'login') {
+      const modal = document.getElementById('profileModal');
+      modal.innerHTML = `
+        <div class="profile-auth-wrap">
+          <h3>Welcome to ByteSavior</h3>
+          <p>Sign in to save your quiz results and checklist progress.</p>
+          <div class="profile-tabs">
+            <button class="profile-tab ${mode==='login'?'active':''}" onclick="window._profileSetMode('login')">Sign In</button>
+            <button class="profile-tab ${mode==='signup'?'active':''}" onclick="window._profileSetMode('signup')">Create Account</button>
+          </div>
+          ${mode === 'signup' ? `<input type="text" class="profile-input" id="pDisplayName" placeholder="Display name" />` : ''}
+          <input type="email" class="profile-input" id="pEmail" placeholder="Email address" autocomplete="email" />
+          <input type="password" class="profile-input" id="pPassword" placeholder="Password" autocomplete="${mode==='login'?'current-password':'new-password'}" />
+          <div class="profile-error" id="pError"></div>
+          <button class="profile-submit-btn" id="pSubmitBtn" onclick="window._profileSubmit('${mode}')">
+            ${mode === 'login' ? 'Sign In' : 'Create Account'}
+          </button>
+          <div class="profile-divider"><span>or</span></div>
+          <button class="profile-google-btn" onclick="window._profileGoogle()">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+            Continue with Google
+          </button>
+        </div>
+      `;
+      // auto-focus email
+      setTimeout(() => document.getElementById('pEmail')?.focus(), 50);
+    }
+
+    async function renderLoggedIn(user) {
+      const modal = document.getElementById('profileModal');
+      let userData = {};
+      try { userData = await ensureUserDoc(user); } catch(e) {}
+      const isSupporter = userData.isSupporter || false;
+      const initials = getInitials(user.displayName, user.email);
+      const displayName = user.displayName || user.email.split('@')[0];
+
+      modal.innerHTML = `
+        <div class="profile-user-header">
+          <div class="profile-user-avatar">${initials}</div>
+          <div>
+            <div class="profile-user-name">${displayName}</div>
+            <div class="profile-user-email">${user.email}</div>
+            ${isSupporter ? `<div class="profile-supporter-badge"><i class="fas fa-star"></i> Supporter</div>` : ''}
+          </div>
+        </div>
+        <div class="profile-menu">
+          <a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()">
+            <i class="fas fa-tasks"></i> My Checklist Progress
+          </a>
+          <button class="profile-menu-item" onclick="window._openQuizFromProfile()">
+            <i class="fas fa-magic"></i> Retake Setup Quiz
+          </button>
+          <div class="profile-menu-sep"></div>
+          ${!isSupporter ? `
+          <div class="profile-donate-section">
+            <p>Support ByteSavior for <strong style="color:var(--text)">$3.50/year</strong> — removes ads during diagnostics and shows a Supporter badge.</p>
+            <a href="https://ko-fi.com/bytesavior/membership" target="_blank" class="profile-donate-btn" rel="noopener">
+              <i class="fas fa-heart"></i> Become a Supporter
+            </a>
+          </div>
+          ` : `
+          <div class="profile-donate-section" style="background:rgba(251,191,36,0.05); border-color:rgba(251,191,36,0.2);">
+            <p style="color:#fbbf24; font-weight:600; margin-bottom:0;">⭐ Thank you for supporting ByteSavior!</p>
+          </div>
+          `}
+          <div class="profile-menu-sep"></div>
+          <button class="profile-menu-item danger" onclick="window._profileSignOut()">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </button>
+        </div>
+      `;
+
+      // Update profile button
+      const btn = document.getElementById('profileBtn');
+      btn.classList.add('signed-in');
+      if (isSupporter) {
+        btn.innerHTML = `<i class="fas fa-user"></i><span class="supporter-ring"></span>`;
+      }
+    }
+
+    // ── Auth actions (exposed to window for inline onclick) ──
+    window._profileSetMode = (mode) => renderLoggedOut(mode);
+
+    window._profileSubmit = async (mode) => {
+      const email = document.getElementById('pEmail')?.value.trim();
+      const password = document.getElementById('pPassword')?.value;
+      const errEl = document.getElementById('pError');
+      const btn = document.getElementById('pSubmitBtn');
+      if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
+      btn.disabled = true;
+      btn.textContent = mode === 'login' ? 'Signing in...' : 'Creating account...';
+      errEl.textContent = '';
+      try {
+        if (mode === 'signup') {
+          const displayName = document.getElementById('pDisplayName')?.value.trim();
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          if (displayName) await updateProfile(cred.user, { displayName });
+          await ensureUserDoc(cred.user);
+          showToast('Account created — welcome!');
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+          showToast('Signed in successfully.');
+        }
+        closeProfileModal();
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+        const msgs = {
+          'auth/email-already-in-use': 'That email is already registered.',
+          'auth/invalid-email': 'Please enter a valid email.',
+          'auth/weak-password': 'Password must be at least 6 characters.',
+          'auth/wrong-password': 'Incorrect password.',
+          'auth/user-not-found': 'No account found with that email.',
+          'auth/invalid-credential': 'Incorrect email or password.',
+          'auth/too-many-requests': 'Too many attempts. Try again later.'
+        };
+        errEl.textContent = msgs[e.code] || 'Something went wrong. Try again.';
+      }
+    };
+
+    window._profileGoogle = async () => {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        await ensureUserDoc(result.user);
+        showToast('Signed in with Google.');
+        closeProfileModal();
+      } catch(e) {
+        if (e.code !== 'auth/popup-closed-by-user') {
+          document.getElementById('pError').textContent = 'Google sign-in failed. Try again.';
+        }
+      }
+    };
+
+    window._profileSignOut = async () => {
+      await signOut(auth);
+      const btn = document.getElementById('profileBtn');
+      btn.classList.remove('signed-in');
+      btn.innerHTML = '<i class="fas fa-user" id="profileBtnIcon"></i>';
+      showToast('Signed out.');
+      closeProfileModal();
+    };
+
+    window._openQuizFromProfile = () => {
+      closeProfileModal();
+      setTimeout(() => openQuizModal(), 100);
+    };
+
+    // ── Auth state listener ───────────────────────────────────
+    onAuthStateChanged(auth, async (user) => {
+      const loading = document.getElementById('profileLoading');
+      if (loading) loading.style.display = 'none';
+      if (user) {
+        await renderLoggedIn(user);
+      } else {
+        renderLoggedOut('login');
+      }
+    });
+  </script>
+
 </body>
 </html>
