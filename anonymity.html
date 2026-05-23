@@ -620,15 +620,82 @@ html, body {
       100% { transform: translate(80px, 80px); }
     }
 
+  
+    /* ===== PROFILE BUTTON ===== */
+    .profile-btn-wrap { position: fixed; top: 16px; right: 16px; z-index: 4000; }
+    .profile-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; color: var(--muted); font-size: 1.1rem; position: relative; }
+    .profile-btn:hover { border-color: var(--blue); box-shadow: 0 0 12px rgba(0,191,255,0.3); color: var(--blue); }
+    .profile-btn.signed-in { border-color: var(--blue); color: var(--blue); }
+    .profile-btn .supporter-ring { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fbbf24; animation: pulse-ring 2s ease-in-out infinite; }
+    @keyframes pulse-ring { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+    .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: flex-start; justify-content: flex-end; z-index: 3500; padding: 68px 16px 0; }
+    .profile-overlay.active { display: flex; }
+    .profile-modal { background: var(--panel); border: 1.5px solid #333; border-radius: 14px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: profileSlideIn 0.22s ease-out; overflow: hidden; max-height: 88vh; overflow-y: auto; }
+    @keyframes profileSlideIn { from{opacity:0;transform:translateY(-12px);} to{opacity:1;transform:translateY(0);} }
+    .profile-auth-wrap { padding: 22px; }
+    .profile-auth-wrap h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 4px; }
+    .profile-auth-wrap p { font-size: 0.82rem; color: var(--muted); margin: 0 0 16px; }
+    .profile-tabs { display: flex; margin-bottom: 16px; border: 1.5px solid #333; border-radius: 8px; overflow: hidden; }
+    .profile-tab { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; border: none; color: var(--muted); transition: all 0.18s; }
+    .profile-tab.active { background: var(--blue); color: white; }
+    .profile-input { width: 100%; padding: 9px 12px; background: var(--bg); border: 1.5px solid #333; border-radius: 7px; color: var(--text); font-size: 0.88rem; margin-bottom: 9px; font-family: inherit; transition: border-color 0.2s; }
+    .profile-input:focus { outline: none; border-color: var(--blue); }
+    .profile-submit-btn { width: 100%; padding: 10px; background: var(--blue); border: none; border-radius: 8px; color: white; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 2px; }
+    .profile-submit-btn:hover { background: #0099e6; }
+    .profile-submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+    .profile-divider { display: flex; align-items: center; gap: 10px; margin: 13px 0; }
+    .profile-divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    .profile-divider::before,.profile-divider::after { content:''; flex:1; height:1px; background:#333; }
+    .profile-google-btn { width: 100%; padding: 9px; background: #fff; border: none; border-radius: 8px; color: #333; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
+    .profile-google-btn:hover { opacity: 0.88; }
+    .profile-error { font-size: 0.78rem; color: #ef4444; margin-top: 6px; min-height: 14px; }
+    .profile-user-header { background: var(--panel-dark); padding: 18px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #333; }
+    .profile-user-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0; }
+    .profile-user-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; }
+    .profile-user-email { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+    .profile-supporter-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); margin-top: 4px; }
+    .profile-menu { padding: 8px 0; }
+    .profile-menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 0.88rem; color: var(--text); cursor: pointer; transition: background 0.15s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
+    .profile-menu-item:hover { background: rgba(255,255,255,0.04); color: var(--blue); }
+    .profile-menu-item i { width: 16px; text-align: center; color: var(--muted); font-size: 0.9rem; transition: color 0.15s; }
+    .profile-menu-item:hover i { color: var(--blue); }
+    .profile-menu-sep { height: 1px; background: #333; margin: 5px 0; }
+    .profile-menu-item.danger { color: #ef4444; }
+    .profile-menu-item.danger i { color: #ef4444; }
+    .profile-menu-item.danger:hover { background: rgba(239,68,68,0.08); }
+    .profile-donate-section { margin: 4px 16px 14px; padding: 12px 14px; background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.25); border-radius: 8px; }
+    .profile-donate-section p { font-size: 0.78rem; color: var(--muted); margin: 0 0 8px; line-height: 1.4; }
+    .profile-donate-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 8px; background: #fbbf24; border: none; border-radius: 7px; color: #1a1100; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+    .profile-donate-btn:hover { background: #f59e0b; }
+    .profile-loading { padding: 32px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .profile-loading i { font-size: 1.4rem; color: var(--blue); display: block; margin-bottom: 10px; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .profile-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e1e1e; border: 1px solid var(--blue); border-radius: 8px; padding: 10px 20px; font-size: 0.88rem; color: var(--text); z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+    .profile-toast.show { opacity: 1; }
+    .profile-toast.error { border-color: #ef4444; color: #ef4444; }
+
   </style>
 </head>
 
 <body>
+  <!-- Profile Button -->
+  <div class="profile-btn-wrap">
+    <button class="profile-btn" id="profileBtn" onclick="toggleProfileModal()" title="Account">
+      <i class="fas fa-user" id="profileBtnIcon"></i>
+    </button>
+  </div>
+  <div class="profile-overlay" id="profileOverlay" onclick="handleProfileOverlayClick(event)">
+    <div class="profile-modal" onclick="event.stopPropagation()" id="profileModal">
+      <div class="profile-loading" id="profileLoading">
+        <i class="fas fa-circle-notch"></i> Loading...
+      </div>
+    </div>
+  </div>
+  <div class="profile-toast" id="profileToast"></div>
+
 
 <!-- Diagnostic Button -->
-<button class="diagnostic-btn" onclick="window.location.href='index.html'" title="Back to Home">
-  <i class="fas fa-home"></i>
-</button>
+
 
 <div class="container">
 
@@ -1004,5 +1071,40 @@ ${source ? `### Source/Reference\n${source}` : ''}
 
 </script>
 
+  <script>
+    function toggleProfileModal() {
+      const ov = document.getElementById('profileOverlay');
+      ov.classList.toggle('active');
+      document.body.style.overflow = ov.classList.contains('active') ? 'hidden' : 'auto';
+    }
+    function closeProfileModal() {
+      document.getElementById('profileOverlay').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+    function handleProfileOverlayClick(e) {
+      if (e.target === e.currentTarget) closeProfileModal();
+    }
+  </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    const cfg={apiKey:"AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",authDomain:"bytesavior-6da1f.firebaseapp.com",projectId:"bytesavior-6da1f",storageBucket:"bytesavior-6da1f.firebasestorage.app",messagingSenderId:"27072163055",appId:"1:27072163055:web:98f302a7de4d944802bf1a"};
+    const app=initializeApp(cfg);
+    const auth=getAuth(app);
+    const db=getFirestore(app);
+    const gp=new GoogleAuthProvider();
+    function toast(msg,err=false){const t=document.getElementById('profileToast');t.textContent=msg;t.className='profile-toast show'+(err?' error':'');setTimeout(()=>t.className='profile-toast',3000);}
+    function initials(name,email){if(name)return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);return email?email[0].toUpperCase():'?';}
+    async function ensureDoc(user){const r=doc(db,'users',user.uid);const s=await getDoc(r);if(!s.exists())await setDoc(r,{email:user.email,displayName:user.displayName||'',createdAt:serverTimestamp(),isSupporter:false,quizResults:null,checklistProgress:[]});return(await getDoc(r)).data();}
+    function renderOut(mode='login'){const m=document.getElementById('profileModal');m.innerHTML=`<div class="profile-auth-wrap"><h3>Welcome to ByteSavior</h3><p>Sign in to save your progress and scores.</p><div class="profile-tabs"><button class="profile-tab ${mode==='login'?'active':''}" onclick="window._pm('login')">Sign In</button><button class="profile-tab ${mode==='signup'?'active':''}" onclick="window._pm('signup')">Create Account</button></div>${mode==='signup'?'<input type="text" class="profile-input" id="pDisplayName" placeholder="Display name"/>':''}<input type="email" class="profile-input" id="pEmail" placeholder="Email address" autocomplete="email"/><input type="password" class="profile-input" id="pPassword" placeholder="Password" autocomplete="${mode==='login'?'current-password':'new-password'}"/><div class="profile-error" id="pError"></div><button class="profile-submit-btn" id="pSubmitBtn" onclick="window._ps('${mode}')">${mode==='login'?'Sign In':'Create Account'}</button><div class="profile-divider"><span>or</span></div><button class="profile-google-btn" onclick="window._pg()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>Continue with Google</button></div>`;setTimeout(()=>document.getElementById('pEmail')?.focus(),50);}
+    async function renderIn(user){const m=document.getElementById('profileModal');let ud={};try{ud=await ensureDoc(user);}catch(e){}const sup=ud.isSupporter||false;const ini=initials(user.displayName,user.email);const dn=user.displayName||user.email.split('@')[0];m.innerHTML=`<div class="profile-user-header"><div class="profile-user-avatar">${ini}</div><div><div class="profile-user-name">${dn}</div><div class="profile-user-email">${user.email}</div>${sup?'<div class="profile-supporter-badge"><i class="fas fa-star"></i> Supporter</div>':''}</div></div><div class="profile-menu"><a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()"><i class="fas fa-tasks"></i> My Checklist Progress</a><button class="profile-menu-item" onclick="window._openRank()"><i class="fas fa-trophy"></i> Check Your Rank</button><button class="profile-menu-item" onclick="window.location.href='index.html#openquiz'"><i class="fas fa-magic"></i> Build My Setup</button><div class="profile-menu-sep"></div>${!sup?`<div class="profile-donate-section"><p>Support ByteSavior for <strong style="color:var(--text)">$3.50/year</strong> — removes ads and shows a Supporter badge.</p><a href="https://ko-fi.com/bytesavior/membership" target="_blank" class="profile-donate-btn" rel="noopener"><i class="fas fa-heart"></i> Become a Supporter</a></div>`:'<div class="profile-donate-section" style="background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2);"><p style="color:#fbbf24;font-weight:600;margin-bottom:0;">⭐ Thank you for supporting ByteSavior!</p></div>'}<div class="profile-menu-sep"></div><button class="profile-menu-item danger" onclick="window._pso()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></div>`;const btn=document.getElementById('profileBtn');btn.classList.add('signed-in');if(sup)btn.innerHTML='<i class="fas fa-user"></i><span class="supporter-ring"></span>';}
+    window._pm=m=>renderOut(m);
+    window._ps=async mode=>{const email=document.getElementById('pEmail')?.value.trim();const pw=document.getElementById('pPassword')?.value;const err=document.getElementById('pError');const btn=document.getElementById('pSubmitBtn');if(!email||!pw){err.textContent='Please fill in all fields.';return;}btn.disabled=true;btn.textContent=mode==='login'?'Signing in...':'Creating...';err.textContent='';try{if(mode==='signup'){const dn=document.getElementById('pDisplayName')?.value.trim();const c=await createUserWithEmailAndPassword(auth,email,pw);if(dn)await updateProfile(c.user,{displayName:dn});await ensureDoc(c.user);toast('Account created — welcome!');}else{await signInWithEmailAndPassword(auth,email,pw);toast('Signed in.');}closeProfileModal();}catch(e){btn.disabled=false;btn.textContent=mode==='login'?'Sign In':'Create Account';const msgs={'auth/email-already-in-use':'Email already registered.','auth/invalid-email':'Invalid email.','auth/weak-password':'Password needs 6+ chars.','auth/wrong-password':'Wrong password.','auth/user-not-found':'No account with that email.','auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts.'};err.textContent=msgs[e.code]||'Something went wrong.';}};
+    window._pg=async()=>{try{const r=await signInWithPopup(auth,gp);await ensureDoc(r.user);toast('Signed in with Google.');closeProfileModal();}catch(e){if(e.code!=='auth/popup-closed-by-user')document.getElementById('pError').textContent='Google sign-in failed.';}};
+    window._pso=async()=>{await signOut(auth);const btn=document.getElementById('profileBtn');btn.classList.remove('signed-in');btn.innerHTML='<i class="fas fa-user" id="profileBtnIcon"></i>';toast('Signed out.');closeProfileModal();};
+    window._openRank=()=>{window.location.href='diagnostics.html';};
+    onAuthStateChanged(auth,async user=>{const l=document.getElementById('profileLoading');if(l)l.style.display='none';if(user)await renderIn(user);else renderOut('login');});
+  </script>
 </body>
 </html>

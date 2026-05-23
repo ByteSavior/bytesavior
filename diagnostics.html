@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ByteSavior — System Diagnostics</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --blue: #00bfff;
+  --bg: #121212;
+  --panel: #1e1e1e;
+  --panel-dark: #0f172a;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --green: #4ade80;
+  --red: #ef4444;
+  --yellow: #fbbf24;
+  --orange: #fb923c;
+  --purple: #a78bfa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ===== BACKGROUND (matches index) ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(0,191,255,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(0,191,255,0.09) 0%, transparent 50%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,191,255,0.05) 40px, rgba(0,191,255,0.05) 41px),
+    repeating-linear-gradient(60deg, transparent, transparent 80px, rgba(0,191,255,0.04) 80px, rgba(0,191,255,0.04) 81px),
+    repeating-linear-gradient(120deg, transparent, transparent 80px, rgba(0,191,255,0.04) 80px, rgba(0,191,255,0.04) 81px);
+  animation: hexFlow 20s linear infinite;
+}
+
+@keyframes hexFlow {
+  0% { transform: translate(0,0); }
+  100% { transform: translate(80px,80px); }
+}
+
+/* ===== HOME BUTTON (top-left) ===== */
+.home-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: var(--panel);
+  color: var(--muted);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+  z-index: 1000;
+}
+
+.home-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(0,191,255,0.06);
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 24px;
+  animation: fadeIn 0.8s ease 0.1s backwards;
+}
+
+.hero-title {
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 28px;
+  animation: fadeIn 0.8s ease 0.25s backwards;
+}
+
+.hero-title span {
+  color: var(--blue);
+  text-shadow: 0 0 40px rgba(0,191,255,0.35);
+}
+
+.hero-blurb {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.75;
+  margin-bottom: 52px;
+  animation: fadeIn 0.8s ease 0.4s backwards;
+}
+
+/* ===== CHROME WARNING (subtle, inline) ===== */
+.chrome-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--yellow);
+  margin-bottom: 40px;
+  animation: fadeIn 0.8s ease 0.5s backwards;
+}
+
+/* ===== AD SECTION ===== */
+.ad-wrap {
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 40px;
+  animation: fadeIn 0.8s ease 0.55s backwards;
+}
+
+.ad-box {
+  background: var(--panel);
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.ad-progress-bar {
+  position: absolute;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), #0077bb);
+  transition: width 1s linear;
+}
+
+.ad-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #444;
+  margin-bottom: 18px;
+}
+
+.ad-headline {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.ad-sub {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 18px;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ad-email {
+  display: inline-block;
+  background: rgba(0,191,255,0.1);
+  border: 1px solid rgba(0,191,255,0.3);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 0.88rem;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.ad-countdown-text {
+  font-size: 0.82rem;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.ad-countdown-text span { color: var(--blue); font-weight: 700; }
+
+.donate-line {
+  background: rgba(74,222,128,0.06);
+  border: 1px solid rgba(74,222,128,0.18);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.donate-line strong { color: var(--green); }
+
+.skip-btn {
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 7px 20px;
+  font-size: 0.82rem;
+  color: #555;
+  cursor: not-allowed;
+  transition: all 0.3s;
+}
+
+.skip-btn.ready {
+  border-color: var(--blue);
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.skip-btn.ready:hover { background: var(--blue); color: white; }
+
+/* ===== WHAT THIS DOES cards ===== */
+.what-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: 48px;
+  animation: fadeIn 0.8s ease 0.6s backwards;
+}
+
+.what-item {
+  background: var(--panel);
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.what-item i {
+  font-size: 1rem;
+  color: var(--blue);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.what-item .wlabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.what-item .wsub {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ===== MAIN CONTENT (post-ad) ===== */
+#diagContent {
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
+#diagContent.visible { display: block; }
+
+.diag-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+/* ===== RUN SECTION ===== */
+.run-hero {
+  text-align: center;
+  padding: 60px 20px 48px;
+}
+
+.run-hero h2 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.run-hero p {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 32px;
+}
+
+.run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 44px;
+  background: linear-gradient(135deg, var(--blue) 0%, #0077bb 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0,191,255,0.35);
+  transition: all 0.3s;
+  letter-spacing: 0.02em;
+}
+
+.run-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,191,255,0.55); }
+.run-btn:active { transform: translateY(0); }
+.run-btn:disabled { background: #2a2a2a; color: #555; box-shadow: none; cursor: not-allowed; transform: none; }
+.run-btn i { font-size: 1.1rem; }
+
+.run-note { color: var(--muted); font-size: 0.78rem; margin-top: 14px; letter-spacing: 0.01em; }
+
+@keyframes pulse { 0%,100% { box-shadow: 0 6px 24px rgba(0,191,255,0.35); } 50% { box-shadow: 0 6px 36px rgba(0,191,255,0.65); } }
+.pulse { animation: pulse 2.5s ease-in-out infinite; }
+
+/* ===== PROGRESS ===== */
+.progress-section {
+  display: none;
+  background: var(--panel);
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.progress-section.visible { display: block; }
+
+.progress-title {
+  color: var(--blue);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid #1e1e1e;
+  font-size: 0.88rem;
+}
+
+.progress-item:last-child { border-bottom: none; }
+.prog-icon { width: 18px; text-align: center; }
+.prog-icon.pending { color: #333; }
+.prog-icon.running { color: var(--blue); animation: spin 1s linear infinite; }
+.prog-icon.done { color: var(--green); }
+.prog-icon.error { color: var(--red); }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.prog-label { flex: 1; color: var(--text); }
+.prog-val { color: var(--muted); font-size: 0.75rem; font-family: monospace; }
+
+/* ===== SCORES ===== */
+.scores-section { display: none; margin-bottom: 36px; }
+.scores-section.visible { display: block; animation: fadeInUp 0.5s ease; }
+
+@keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+.scores-eyebrow {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.scores-title {
+  text-align: center;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.scores-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 36px;
+}
+
+.overall-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.overall-ring {
+  position: relative;
+  width: 200px; height: 200px;
+  margin-bottom: 16px;
+}
+
+.overall-ring svg { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #222; stroke-width: 14; }
+.ring-prog {
+  fill: none; stroke-width: 14; stroke-linecap: round;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.4,0,0.2,1);
+}
+.ring-excellent { stroke: #4ade80; }
+.ring-good { stroke: var(--blue); }
+.ring-fair { stroke: var(--yellow); }
+.ring-poor { stroke: var(--red); }
+
+.overall-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
+}
+
+.overall-num { font-size: 3rem; font-weight: 900; color: var(--text); line-height: 1; }
+.overall-denom { font-size: 0.8rem; color: var(--muted); }
+.overall-label { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.overall-tag { font-size: 0.82rem; color: var(--muted); text-align: center; max-width: 320px; }
+
+/* ===== CATEGORY CARDS ===== */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.cat-card {
+  background: var(--panel);
+  border: 1px solid #252525;
+  border-radius: 12px;
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.cat-card.cpu::before  { background: var(--orange); }
+.cat-card.mem::before  { background: var(--green); }
+.cat-card.gpu::before  { background: var(--purple); }
+.cat-card.wifi::before { background: var(--blue); }
+.cat-card.stor::before { background: var(--yellow); }
+.cat-card.sys::before  { background: var(--red); }
+
+.cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cat-title { font-weight: 700; font-size: 0.9rem; color: var(--text); display: flex; align-items: center; gap: 7px; }
+.cat-title i.cpu  { color: var(--orange); }
+.cat-title i.mem  { color: var(--green); }
+.cat-title i.gpu  { color: var(--purple); }
+.cat-title i.wifi { color: var(--blue); }
+.cat-title i.stor { color: var(--yellow); }
+.cat-title i.sys  { color: var(--red); }
+
+.cat-score {
+  font-size: 1.4rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 6px;
+}
+
+.cat-score.excellent { color: #4ade80; background: rgba(74,222,128,0.12); }
+.cat-score.good      { color: var(--blue); background: rgba(0,191,255,0.12); }
+.cat-score.fair      { color: var(--yellow); background: rgba(251,191,36,0.12); }
+.cat-score.poor      { color: var(--red); background: rgba(239,68,68,0.12); }
+
+.cat-bar { background: #1a1a1a; border-radius: 3px; height: 6px; margin-bottom: 12px; overflow: hidden; }
+.cat-bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.cat-bar-fill.excellent { background: linear-gradient(90deg,#22c55e,#4ade80); }
+.cat-bar-fill.good      { background: linear-gradient(90deg,#0099cc,#00bfff); }
+.cat-bar-fill.fair      { background: linear-gradient(90deg,#d97706,#fbbf24); }
+.cat-bar-fill.poor      { background: linear-gradient(90deg,#dc2626,#ef4444); }
+
+.cat-metrics { list-style: none; }
+.cat-metric { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #1e1e1e; font-size: 0.8rem; }
+.cat-metric:last-child { border-bottom: none; }
+.cat-metric-label { color: var(--muted); }
+.cat-metric-val { color: var(--text); font-family: monospace; font-weight: 600; }
+
+/* ===== CHARTS ===== */
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.chart-card {
+  background: var(--panel);
+  border: 1px solid #252525;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.chart-card h4 { color: var(--text); font-size: 0.88rem; margin-bottom: 14px; font-weight: 600; }
+.chart-card canvas { max-height: 220px; }
+
+/* ===== DETAIL ACCORDIONS ===== */
+.detail-section {
+  background: var(--panel);
+  border: 1px solid #252525;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.detail-header {
+  background: transparent;
+  padding: 13px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.detail-header:hover { color: var(--blue); }
+.detail-header::after { content: "+"; font-size: 1.1rem; color: #444; }
+.detail-header.open { color: var(--blue); }
+.detail-header.open::after { content: "−"; color: var(--blue); }
+
+.detail-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; overflow: hidden; }
+.detail-body.open { grid-template-rows: 1fr; }
+.detail-body > div { min-height: 0; overflow: hidden; }
+.detail-inner { padding: 4px 18px 16px; }
+
+.data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px,1fr)); gap: 8px; }
+
+.data-item {
+  background: #161c24;
+  border-radius: 6px;
+  padding: 9px 12px;
+  border-left: 2px solid #2a2a2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.data-item.highlight { border-left-color: var(--blue); }
+.data-item.good      { border-left-color: var(--green); }
+.data-item.warn      { border-left-color: var(--yellow); }
+.data-item.bad       { border-left-color: var(--red); }
+
+.data-label { color: var(--muted); font-size: 0.78rem; font-weight: 600; }
+.data-value { color: var(--text); font-size: 0.78rem; font-family: monospace; text-align: right; word-break: break-all; max-width: 56%; }
+
+/* ===== RECS ===== */
+.recs-section { display: none; margin-bottom: 40px; }
+.recs-section.visible { display: block; animation: fadeInUp 0.5s ease 0.15s backwards; }
+
+.recs-eyebrow { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.recs-title { font-size: clamp(1.3rem,3vw,1.8rem); font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 6px; }
+.recs-sub { color: var(--muted); font-size: 0.83rem; margin-bottom: 24px; }
+
+.scroll-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 28px;
+  padding: 12px;
+  animation: bounceDown 2s ease-in-out infinite;
+  letter-spacing: 0.03em;
+}
+
+.scroll-hint i { margin-right: 6px; }
+
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%       { transform: translateY(5px); opacity: 1; }
+}
+
+.detail-below { animation: fadeInUp 0.5s ease 0.1s backwards; }
+
+.rec-card {
+  background: var(--panel);
+  border: 1px solid #252525;
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  border-left: 3px solid var(--blue);
+}
+
+.rec-card.priority-critical { border-left-color: var(--red); }
+.rec-card.priority-high     { border-left-color: var(--orange); }
+.rec-card.priority-medium   { border-left-color: var(--yellow); }
+.rec-card.priority-low      { border-left-color: var(--green); }
+.rec-card.priority-info     { border-left-color: var(--blue); }
+
+.rec-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 7px; }
+.rec-title-text { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+
+.rec-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.rec-pill.critical { background: rgba(239,68,68,0.18); color: var(--red); }
+.rec-pill.high     { background: rgba(251,146,60,0.18); color: var(--orange); }
+.rec-pill.medium   { background: rgba(251,191,36,0.18); color: var(--yellow); }
+.rec-pill.low      { background: rgba(74,222,128,0.18); color: var(--green); }
+.rec-pill.info     { background: rgba(0,191,255,0.18); color: var(--blue); }
+
+.rec-body { color: var(--muted); font-size: 0.84rem; line-height: 1.6; }
+.rec-body strong { color: var(--text); }
+
+.rec-action { margin-top: 9px; font-size: 0.78rem; display: flex; align-items: center; gap: 6px; }
+.rec-action a { color: var(--blue); text-decoration: none; }
+.rec-action a:hover { text-decoration: underline; }
+
+.rec-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.rec-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(0,191,255,0.08);
+  border: 1px solid rgba(0,191,255,0.25);
+  border-radius: 6px;
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.rec-action-btn:hover {
+  background: rgba(0,191,255,0.18);
+  border-color: var(--blue);
+  transform: translateX(2px);
+}
+
+/* ===== FOOTER ===== */
+.page-footer {
+  text-align: center;
+  padding: 32px 20px 60px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  position: relative;
+  z-index: 1;
+}
+
+.page-footer a { color: var(--blue); text-decoration: none; }
+.page-footer a:hover { text-decoration: underline; }
+.footer-links { display: flex; gap: 20px; justify-content: center; margin-top: 12px; }
+
+hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
+
+/* ===== PROFILE BUTTON ===== */
+.profile-btn-wrap { position: fixed; top: 16px; right: 16px; z-index: 4000; }
+.profile-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; color: var(--muted); font-size: 1.1rem; }
+.profile-btn:hover { border-color: var(--blue); box-shadow: 0 0 12px rgba(0,191,255,0.3); color: var(--blue); }
+
+/* ===== LEADERBOARD MODAL ===== */
+.lb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 4500; padding: 20px; }
+.lb-overlay.active { display: flex; }
+.lb-modal { background: var(--panel); border: 2px solid var(--blue); border-radius: 14px; max-width: 520px; width: 100%; box-shadow: 0 8px 40px rgba(0,191,255,0.25); animation: fadeInUp 0.3s ease-out; overflow: hidden; max-height: 88vh; display: flex; flex-direction: column; }
+.lb-header { background: var(--panel-dark); padding: 18px 22px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.lb-header h2 { margin: 0; color: var(--blue); font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+.lb-close-btn { background: none; border: none; color: var(--muted); font-size: 26px; cursor: pointer; line-height: 1; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: color 0.2s; }
+.lb-close-btn:hover { color: var(--blue); }
+.lb-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+/* ===== SAVE NUDGE / CHECK YOUR RANK ===== */
+.save-nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,191,255,0.06);
+  border: 1px solid rgba(0,191,255,0.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  font-size: 0.84rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.rank-check-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+.rank-check-btn:hover { background: #0099e6; transform: translateY(-1px); }
+
+.profile-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e1e1e; border: 1px solid var(--blue); border-radius: 8px; padding: 10px 20px; font-size: 0.88rem; color: var(--text); z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+.profile-toast.show { opacity: 1; }
+
+@media (max-width: 640px) {
+  .what-grid { grid-template-columns: repeat(2,1fr); }
+  .cat-grid { grid-template-columns: 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .hero-title { font-size: 2.4rem; }
+  .home-btn { top: 14px; left: 14px; padding: 7px 12px; font-size: 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Home button top-left -->
+<a href="index.html" class="home-btn">
+  <i class="fas fa-arrow-left"></i> Home
+</a>
+
+<!-- Profile button top-right (mirrors index.html) -->
+<div class="profile-btn-wrap">
+  <button class="profile-btn" id="profileBtn" onclick="window.location.href='index.html'" title="Account — manage on Home">
+    <i class="fas fa-user"></i>
+  </button>
+</div>
+
+<!-- Toast -->
+<div class="profile-toast" id="profileToast"></div>
+
+<!-- Leaderboard Modal -->
+<div class="lb-overlay" id="lbOverlay" onclick="if(event.target===this)closeLbModal()">
+  <div class="lb-modal" onclick="event.stopPropagation()">
+    <div class="lb-header">
+      <h2><i class="fas fa-trophy"></i> Top 15 — Diagnostic Scores</h2>
+      <button class="lb-close-btn" onclick="closeLbModal()">×</button>
+    </div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="heroSection">
+
+  <div class="hero-eyebrow">ByteSavior &bull; System Diagnostics</div>
+
+  <div class="chrome-pill">
+    <i class="fas fa-exclamation-triangle"></i>
+    Use Google Chrome for the most accurate results
+  </div>
+
+  <!-- What this does — stays above the ad, never moves -->
+  <div class="what-grid">
+    <div class="what-item">
+      <i class="fas fa-microchip"></i>
+      <span class="wlabel">CPU Stress</span>
+      <span class="wsub">Fibonacci, primes, float ops, matrix multiply</span>
+    </div>
+    <div class="what-item">
+      <i class="fas fa-memory"></i>
+      <span class="wlabel">Memory</span>
+      <span class="wsub">Bandwidth, alloc speed, read/write throughput</span>
+    </div>
+    <div class="what-item">
+      <i class="fas fa-tv"></i>
+      <span class="wlabel">GPU & Display</span>
+      <span class="wsub">WebGL, renderer, canvas perf, resolution</span>
+    </div>
+    <div class="what-item">
+      <i class="fas fa-wifi"></i>
+      <span class="wlabel">Network</span>
+      <span class="wsub">Download speed, latency, jitter across 3 endpoints</span>
+    </div>
+    <div class="what-item">
+      <i class="fas fa-hdd"></i>
+      <span class="wlabel">Storage I/O</span>
+      <span class="wsub">Read/write benchmark via memory ops</span>
+    </div>
+    <div class="what-item">
+      <i class="fas fa-chart-pie"></i>
+      <span class="wlabel">Scored Results</span>
+      <span class="wsub">Every component rated 0–100 with fixes</span>
+    </div>
+  </div>
+
+  <!-- Ad sits below the info grid, collapses on skip -->
+  <div class="ad-wrap" id="adWrap">
+    <div class="ad-box">
+      <div class="ad-progress-bar" id="adBar" style="width:100%"></div>
+      <div class="ad-tag">Advertisement</div>
+      <div class="ad-headline">Advertise Here</div>
+      <p class="ad-sub">
+        Reach thousands of privacy-focused power users and hardware enthusiasts.
+        This slot is available — get in touch and let's talk numbers.
+      </p>
+      <div class="ad-email"><i class="fas fa-envelope"></i> &nbsp;bytesavior@proton.me</div>
+      <div class="ad-countdown-text">
+        Diagnostics unlock in <span id="adCountdown">30</span>s
+      </div>
+      <div class="donate-line">
+        <i class="fas fa-heart" style="color:var(--green)"></i>
+        <strong>Donate to ByteSavior</strong> to remove ads from diagnostics across all sessions.
+      </div>
+      <button class="skip-btn" id="skipBtn" disabled onclick="skipAd()">
+        Skip (<span id="skipTimer">30</span>s)
+      </button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== MAIN DIAG CONTENT (unlocked after ad) ===== -->
+<div id="diagContent">
+
+  <div class="diag-container">
+
+    <!-- Run section -->
+    <div class="run-hero">
+      <h2>Ready to analyse.</h2>
+      <p>Takes about 30 seconds — multiple passes collect more accurate data.</p>
+      <button class="run-btn pulse" id="runBtn" onclick="startFullDiagnostics()">
+        <i class="fas fa-play-circle"></i> Run Full Diagnostics
+      </button>
+      <p class="run-note">All processing is local &bull; Nothing is sent anywhere &bull; ~30 second runtime</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section" id="progressSection">
+      <div class="progress-title"><i class="fas fa-spinner fa-spin"></i> Running diagnostics…</div>
+      <div id="progressList"></div>
+    </div>
+
+    <!-- ===== SCORES SUMMARY — appears first after run, sticky-ish at top ===== -->
+    <div class="scores-section" id="scoresSection">
+      <div class="scores-eyebrow">Results</div>
+      <div class="scores-title">Your System Score</div>
+      <p class="scores-sub">Benchmarked against an ideal high-performance desktop. Max achievable: ~95.</p>
+
+      <!-- Overall ring + grade -->
+      <div class="overall-wrap">
+        <div class="overall-ring">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="85"></circle>
+            <circle class="ring-prog" id="overallCircle" cx="100" cy="100" r="85"
+              stroke-dasharray="534" stroke-dashoffset="534"></circle>
+          </svg>
+          <div class="overall-inner">
+            <div class="overall-num" id="overallNum">—</div>
+            <div class="overall-denom">/100</div>
+          </div>
+        </div>
+        <div class="overall-label" id="overallLabel">—</div>
+        <div class="overall-tag" id="overallTag"></div>
+      </div>
+
+      <!-- Category score cards — the main grades, right at the top -->
+      <div class="cat-grid" id="catGrid"></div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint" id="scrollHint">
+        <i class="fas fa-chevron-down"></i> Scroll down for charts, raw data &amp; recommendations
+      </div>
+
+      <!-- Save nudge / Check Your Rank -->
+      <div class="save-nudge" id="saveNudge" style="display:none">
+        <i class="fas fa-info-circle" style="color:var(--blue)"></i>
+        <span><a href="index.html" style="color:var(--blue);text-decoration:none;font-weight:600">Sign in</a> to save your score to the leaderboard</span>
+        <button class="rank-check-btn" onclick="openLbModal()"><i class="fas fa-trophy"></i> Check Your Rank</button>
+      </div>
+    </div>
+
+    <!-- ===== DETAIL SECTIONS — below the fold ===== -->
+    <div class="detail-below" id="detailBelow" style="display:none">
+
+      <!-- Charts -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h4><i class="fas fa-chart-area" style="color:var(--blue)"></i> &nbsp;Component Breakdown</h4>
+          <canvas id="radarChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h4><i class="fas fa-stopwatch" style="color:var(--orange)"></i> &nbsp;Stress Test Times (ms — lower is better)</h4>
+          <canvas id="stressChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Raw data accordions -->
+      <div id="detailSections"></div>
+
+      <hr class="divider" id="resultsDivider" style="display:none">
+
+      <!-- Recommendations -->
+      <div class="recs-section" id="recsSection">
+        <div class="recs-eyebrow">Personalised</div>
+        <div class="recs-title">What to fix next.</div>
+        <p class="recs-sub">Sorted by impact. Based on your actual benchmark data.</p>
+        <div id="recsList"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer">
+  <div>ByteSavior &mdash; Rescue performance. Reduce exposure.</div>
+  <div class="footer-links">
+    <a href="https://github.com/ByteSavior" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+    <a href="https://www.instagram.com/byte_savior/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+//  AD TIMER
+// ============================================================
+let adSeconds = 30;
+const adBar       = document.getElementById('adBar');
+const adCountdown = document.getElementById('adCountdown');
+const skipTimer   = document.getElementById('skipTimer');
+const skipBtn     = document.getElementById('skipBtn');
+
+const adInterval = setInterval(() => {
+  adSeconds--;
+  adCountdown.textContent = adSeconds;
+  skipTimer.textContent   = adSeconds;
+  adBar.style.width = ((adSeconds / 30) * 100) + '%';
+  if (adSeconds <= 0) {
+    clearInterval(adInterval);
+    skipBtn.classList.add('ready');
+    skipBtn.disabled = false;
+    skipBtn.textContent = 'Skip Ad';
+    setTimeout(skipAd, 3000);
+  }
+}, 1000);
+
+function skipAd() {
+  clearInterval(adInterval);
+  document.getElementById('adWrap').style.display = 'none';
+  document.getElementById('diagContent').classList.add('visible');
+}
+
+// ============================================================
+//  ACCORDION HELPERS
+// ============================================================
+function addDetailSection(title, icon, items) {
+  const container = document.getElementById('detailSections');
+  const div = document.createElement('div');
+  div.className = 'detail-section';
+  div.innerHTML = `
+    <button class="detail-header" onclick="toggleDetail(this)">${icon} &nbsp;${title}</button>
+    <div class="detail-body">
+      <div>
+        <div class="detail-inner">
+          <div class="data-grid">
+            ${items.map(i => `
+              <div class="data-item ${i.cls||''}">
+                <span class="data-label">${i.label}</span>
+                <span class="data-value">${i.value}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  container.appendChild(div);
+}
+
+function toggleDetail(btn) {
+  btn.classList.toggle('open');
+  btn.nextElementSibling.classList.toggle('open');
+}
+
+// ============================================================
+//  PROGRESS UI
+// ============================================================
+const STEPS = [
+  { id:'browser',    label:'Browser & OS detection' },
+  { id:'hardware',   label:'Hardware capability scan' },
+  { id:'gpu',        label:'GPU & WebGL analysis' },
+  { id:'display',    label:'Display & rendering info' },
+  { id:'memory',     label:'Memory benchmark — 4 passes' },
+  { id:'cpu_single', label:'CPU single-thread — 3 passes + sampling' },
+  { id:'cpu_multi',  label:'CPU multi-thread — 3 passes' },
+  { id:'storage',    label:'Storage I/O — 3 passes' },
+  { id:'network',    label:'Network speed & latency — multi-endpoint' },
+  { id:'scoring',    label:'Finalising scores & recommendations' },
+];
+
+function buildProgressUI() {
+  document.getElementById('progressList').innerHTML = STEPS.map(s => `
+    <div class="progress-item">
+      <span class="prog-icon pending" id="icon_${s.id}"><i class="fas fa-circle"></i></span>
+      <span class="prog-label">${s.label}</span>
+      <span class="prog-val" id="val_${s.id}"></span>
+    </div>`).join('');
+}
+
+function setStep(id, state, val='') {
+  const icon = document.getElementById('icon_' + id);
+  const valEl = document.getElementById('val_' + id);
+  icon.className = 'prog-icon ' + state;
+  if (state === 'running') icon.innerHTML = '<i class="fas fa-spinner"></i>';
+  else if (state === 'done')  icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+  else if (state === 'error') icon.innerHTML = '<i class="fas fa-times-circle"></i>';
+  if (valEl) valEl.textContent = val;
+}
+
+// ============================================================
+//  UTILITIES
+// ============================================================
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function clamp(v,lo,hi) { return Math.max(lo, Math.min(hi, v)); }
+function scoreClass(s) {
+  if (s >= 80) return 'excellent';
+  if (s >= 60) return 'good';
+  if (s >= 40) return 'fair';
+  return 'poor';
+}
+
+// ============================================================
+//  DETECTION
+// ============================================================
+function detectBrowser() {
+  const ua = navigator.userAgent;
+  let name = 'Unknown', version = '';
+  if (/Edg\//.test(ua))       { name='Microsoft Edge'; version=ua.match(/Edg\/([0-9.]+)/)?.[1]||''; }
+  else if (/OPR\//.test(ua))  { name='Opera'; version=ua.match(/OPR\/([0-9.]+)/)?.[1]||''; }
+  else if (/Chrome\//.test(ua)&&!/Chromium/.test(ua)) { name='Google Chrome'; version=ua.match(/Chrome\/([0-9.]+)/)?.[1]||''; }
+  else if (/Firefox\//.test(ua)){ name='Mozilla Firefox'; version=ua.match(/Firefox\/([0-9.]+)/)?.[1]||''; }
+  else if (/Safari\//.test(ua)&&!/Chrome/.test(ua)) { name='Safari'; version=ua.match(/Version\/([0-9.]+)/)?.[1]||''; }
+  return { name, version, ua, isChrome: name==='Google Chrome' };
+}
+
+function detectOS() {
+  const ua = navigator.userAgent;
+  if (/Windows NT 10.0|Windows NT 11.0/.test(ua)) return { name:'Windows 10/11', platform:'Windows' };
+  if (/Windows NT 6.3/.test(ua)) return { name:'Windows 8.1', platform:'Windows' };
+  if (/Windows NT 6.1/.test(ua)) return { name:'Windows 7', platform:'Windows' };
+  if (/Android/.test(ua))   return { name:'Android', platform:'Mobile' };
+  if (/iPhone|iPad/.test(ua)) return { name:'iOS', platform:'Mobile' };
+  if (/Mac OS X/.test(ua))  { const v=ua.match(/Mac OS X ([0-9_]+)/)?.[1]?.replace(/_/g,'.'); return { name:'macOS '+(v||''), platform:'macOS' }; }
+  if (/Linux/.test(ua))     return { name:'Linux', platform:'Linux' };
+  return { name:'Unknown', platform:'Unknown' };
+}
+
+async function detectGPU() {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) return { renderer:'No WebGL', vendor:'N/A', version:'N/A', maxTextureSize:0, extensions:0, webgl2:false, canvasMs:9999 };
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : 'Unavailable';
+    const vendor   = ext ? gl.getParameter(ext.UNMASKED_VENDOR_WEBGL)   : 'Unavailable';
+    const version  = gl.getParameter(gl.VERSION);
+    const maxTex   = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    const maxVertexAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+    const extensions = gl.getSupportedExtensions()?.length || 0;
+    const webgl2   = !!canvas.getContext('webgl2');
+
+    const pc = document.createElement('canvas');
+    pc.width = pc.height = 512;
+    const ctx = pc.getContext('2d');
+    const t0 = performance.now();
+    for (let i=0;i<500;i++) { ctx.fillStyle=`hsl(${i},70%,50%)`; ctx.fillRect(Math.random()*512,Math.random()*512,50,50); }
+    const canvasMs = Math.round(performance.now()-t0);
+    return { renderer, vendor, version, maxTextureSize:maxTex, maxVertexAttribs, extensions, webgl2, canvasMs };
+  } catch(e) {
+    return { renderer:'Error', vendor:'N/A', version:'N/A', maxTextureSize:0, extensions:0, webgl2:false, canvasMs:9999 };
+  }
+}
+
+function detectDisplay() {
+  return {
+    width:screen.width, height:screen.height,
+    availWidth:screen.availWidth, availHeight:screen.availHeight,
+    colorDepth:screen.colorDepth, pixelDepth:screen.pixelDepth,
+    dpr:window.devicePixelRatio||1,
+    orientation:screen.orientation?.type||'unknown',
+    effectiveRes: Math.round(screen.width*(window.devicePixelRatio||1))+'×'+Math.round(screen.height*(window.devicePixelRatio||1)),
+    totalPixels:(screen.width*screen.height).toLocaleString(),
+  };
+}
+
+function detectHardware() {
+  const conn = navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  return {
+    cpuCores: navigator.hardwareConcurrency||null,
+    ramGB:    navigator.deviceMemory||null,
+    platform: navigator.platform,
+    language: navigator.language,
+    languages:(navigator.languages||[navigator.language]).join(', '),
+    cookiesEnabled: navigator.cookieEnabled,
+    onLine: navigator.onLine,
+    maxTouchPoints: navigator.maxTouchPoints,
+    connection: conn ? { effectiveType:conn.effectiveType, downlink:conn.downlink, rtt:conn.rtt, saveData:conn.saveData } : null,
+  };
+}
+
+// ============================================================
+//  BENCHMARKS
+// ============================================================
+async function benchmarkMemory() {
+  const t0 = performance.now();
+  const arrays=[];
+  for (let i=0;i<500;i++) arrays.push(new Float64Array(1024).fill(Math.random()));
+  const allocMs = Math.round(performance.now()-t0);
+
+  const t1 = performance.now();
+  const buf = new ArrayBuffer(32*1024*1024);
+  const view = new Uint8Array(buf);
+  for (let i=0;i<view.length;i+=64) view[i]=i&0xff;
+  const writeMs = Math.round(performance.now()-t1);
+
+  const t2 = performance.now();
+  let sum=0;
+  for (let i=0;i<view.length;i+=64) sum+=view[i];
+  const readMs = Math.round(performance.now()-t2);
+
+  const writeBW = Math.round(32/(writeMs/1000));
+  const readBW  = Math.round(32/(readMs/1000));
+  return { allocMs, writeMs, readMs, writeBW, readBW };
+}
+
+async function benchmarkCPUSingle() {
+  const t0=performance.now();
+  function fib(n){if(n<=1)return n;return fib(n-1)+fib(n-2);}
+  fib(38);
+  const fibMs=Math.round(performance.now()-t0);
+
+  const t1=performance.now();
+  const limit=500000;
+  const sieve=new Uint8Array(limit+1).fill(1);
+  sieve[0]=sieve[1]=0;
+  for(let i=2;i*i<=limit;i++) if(sieve[i]) for(let j=i*i;j<=limit;j+=i) sieve[j]=0;
+  const primeCount=sieve.reduce((a,b)=>a+b,0);
+  const sieveMs=Math.round(performance.now()-t1);
+
+  const t2=performance.now();
+  let val=1.0;
+  for(let i=0;i<5_000_000;i++) val=Math.sin(val)*Math.cos(val)+Math.sqrt(Math.abs(val));
+  const floatMs=Math.round(performance.now()-t2);
+
+  const t3=performance.now();
+  const arr=Array.from({length:100000},()=>Math.random());
+  arr.sort((a,b)=>a-b);
+  const sortMs=Math.round(performance.now()-t3);
+
+  const t4=performance.now();
+  let str='';
+  for(let i=0;i<10000;i++) str+=String.fromCharCode(65+(i%26));
+  str.split('').reverse().join('');
+  const strMs=Math.round(performance.now()-t4);
+
+  return { fibMs, sieveMs, floatMs, sortMs, strMs, primeCount, totalMs:fibMs+sieveMs+floatMs+sortMs+strMs };
+}
+
+async function benchmarkCPUMulti() {
+  const t0=performance.now();
+  const tasks=Array.from({length:4},(_,idx)=>new Promise(resolve=>{
+    let v=idx+1.0;
+    for(let i=0;i<2_000_000;i++) v=Math.sin(v)*Math.atan(v)+Math.log(Math.abs(v)+1);
+    resolve(v);
+  }));
+  await Promise.all(tasks);
+  const multiMs=Math.round(performance.now()-t0);
+
+  const t1=performance.now();
+  const N=200;
+  const A=Array.from({length:N},()=>Array.from({length:N},()=>Math.random()));
+  const B=Array.from({length:N},()=>Array.from({length:N},()=>Math.random()));
+  const C=Array.from({length:N},()=>new Array(N).fill(0));
+  for(let i=0;i<N;i++) for(let k=0;k<N;k++) for(let j=0;j<N;j++) C[i][j]+=A[i][k]*B[k][j];
+  const matrixMs=Math.round(performance.now()-t1);
+
+  const t2=performance.now();
+  const fa=new Float32Array(1_000_000).map((_,i)=>i*0.001);
+  let dot=0;
+  for(let i=0;i<fa.length;i++) dot+=fa[i]*fa[i];
+  const dotMs=Math.round(performance.now()-t2);
+
+  return { multiMs, matrixMs, dotMs, dotProduct:dot.toFixed(2), totalMs:multiMs+matrixMs+dotMs };
+}
+
+async function benchmarkStorage() {
+  const t0=performance.now();
+  const KEYS=200, VAL='x'.repeat(500);
+  for(let i=0;i<KEYS;i++) localStorage.setItem('bs_b'+i,VAL);
+  const writeMs=Math.round(performance.now()-t0);
+
+  const t1=performance.now();
+  let r=0;
+  for(let i=0;i<KEYS;i++) r+=(localStorage.getItem('bs_b'+i)||'').length;
+  const readMs=Math.round(performance.now()-t1);
+  for(let i=0;i<KEYS;i++) localStorage.removeItem('bs_b'+i);
+
+  const t2=performance.now();
+  const memBuf=new ArrayBuffer(4*1024*1024);
+  const memView=new DataView(memBuf);
+  for(let i=0;i<memBuf.byteLength;i+=4) memView.setUint32(i,i,true);
+  const memWriteMs=Math.round(performance.now()-t2);
+
+  const writeBW=Math.round((KEYS*500)/1024/(writeMs/1000));
+  const readBW =Math.round((KEYS*500)/1024/(readMs/1000));
+  return { writeMs, readMs, memWriteMs, writeBW, readBW };
+}
+
+async function benchmarkNetwork() {
+  const results={ downloadMbps:null, latencyMs:null, jitterMs:null, testMethod:'unknown' };
+
+  // ---- LATENCY: ping 4 no-cors endpoints, take median ----
+  const pingTargets=[
+    'https://www.cloudflare.com/cdn-cgi/trace',
+    'https://dns.google/',
+    'https://www.google.com/generate_204',
+    'https://one.one.one.one/',
+  ];
+  const latencies=[];
+  for(const ep of pingTargets){
+    try{
+      const t0=performance.now();
+      await fetch(ep,{method:'HEAD',mode:'no-cors',cache:'no-store',signal:AbortSignal.timeout(3000)});
+      latencies.push(Math.round(performance.now()-t0));
+    }catch(e){}
+  }
+  if(latencies.length>=2){
+    latencies.sort((a,b)=>a-b);
+    // Drop highest outlier, average rest
+    const trimmed=latencies.slice(0,latencies.length-1);
+    results.latencyMs=Math.round(trimmed.reduce((a,b)=>a+b,0)/trimmed.length);
+    results.jitterMs=trimmed.length>1?Math.round(Math.max(...trimmed)-Math.min(...trimmed)):0;
+  } else if(latencies.length===1){
+    results.latencyMs=latencies[0];
+    results.jitterMs=0;
+  }
+
+  // ---- DOWNLOAD: fetch several files in sequence, pick best ----
+  // Use publicly cacheable CDN files of known sizes for reliable measurement.
+  // We fetch 3 files and take the best (highest) Mbps reading.
+  const dlTargets=[
+    // ~90KB
+    { url:'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js?nc='+Date.now(), label:'three.js (~600KB)' },
+    // ~170KB
+    { url:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js?nc='+Date.now(), label:'pdf.js (~1MB)' },
+    // ~250KB
+    { url:'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js?nc='+Date.now(), label:'lodash' },
+  ];
+
+  const dlReadings=[];
+  for(const target of dlTargets){
+    try{
+      const t0=performance.now();
+      const resp=await fetch(target.url,{cache:'no-store',signal:AbortSignal.timeout(8000)});
+      const buf=await resp.arrayBuffer();
+      const elapsed=(performance.now()-t0)/1000;
+      if(elapsed>0.05){ // ignore suspiciously fast (cache hit)
+        const mbps=parseFloat(((buf.byteLength*8)/elapsed/1_000_000).toFixed(2));
+        dlReadings.push({ mbps, bytes:buf.byteLength, ms:Math.round(elapsed*1000), label:target.label });
+      }
+    }catch(e){}
+    await sleep(80);
+  }
+
+  if(dlReadings.length>0){
+    // Sort by speed, take median to avoid outliers
+    dlReadings.sort((a,b)=>a.mbps-b.mbps);
+    const mid=Math.floor(dlReadings.length/2);
+    const chosen=dlReadings[mid];
+    results.downloadMbps=chosen.mbps;
+    results.downloadBytes=chosen.bytes;
+    results.downloadMs=chosen.ms;
+    results.downloadLabel=chosen.label;
+    results.allReadings=dlReadings;
+    results.testMethod='multi-file CDN';
+  }
+
+  // ---- NAVIGATOR API as supplementary data ----
+  const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  if(conn){
+    results.effectiveType=conn.effectiveType;
+    results.navDownlink=conn.downlink;  // Mbps (browser estimate, capped at 10 for mobile)
+    results.navRtt=conn.rtt;
+    // Only use nav data as fallback if our test completely failed
+    if(results.downloadMbps===null&&conn.downlink){
+      results.downloadMbps=conn.downlink;
+      results.testMethod='navigator API';
+    }
+    if(results.latencyMs===null&&conn.rtt) results.latencyMs=conn.rtt;
+  }
+
+  return results;
+}
+
+// ============================================================
+//  SCORING
+// ============================================================
+function scoreAll(hw,browser,os,gpu,display,mem,cpuS,cpuM,storage,net){
+  const scores={};
+
+  // CPU (max 92)
+  let cpu=0;
+  const cores=hw.cpuCores||0;
+  cpu += cores>=16?28:cores>=12?24:cores>=8?20:cores>=6?15:cores>=4?10:cores>=2?5:2;
+  const stTotal=cpuS.fibMs+cpuS.floatMs+cpuS.sortMs;
+  cpu += stTotal<400?28:stTotal<600?24:stTotal<900?19:stTotal<1400?14:stTotal<2000?9:4;
+  cpu += cpuM.matrixMs<300?22:cpuM.matrixMs<500?18:cpuM.matrixMs<800?13:cpuM.matrixMs<1500?8:3;
+  cpu += cpuS.sieveMs<20?14:cpuS.sieveMs<40?11:cpuS.sieveMs<80?8:cpuS.sieveMs<150?5:2;
+  scores.cpu = clamp(Math.round(cpu),0,92);
+
+  // Memory (max 90)
+  let mem_=0;
+  const ram=hw.ramGB||0;
+  mem_ += ram>=64?35:ram>=32?30:ram>=16?24:ram>=8?16:ram>=4?9:ram>0?4:8;
+  mem_ += mem.writeBW>=8000?30:mem.writeBW>=4000?25:mem.writeBW>=2000?19:mem.writeBW>=800?13:mem.writeBW>=300?8:3;
+  mem_ += mem.allocMs<20?25:mem.allocMs<50?20:mem.allocMs<100?14:mem.allocMs<200?9:4;
+  scores.memory = clamp(Math.round(mem_),0,90);
+
+  // GPU (max 90)
+  let gpu_=0;
+  const rL=(gpu.renderer||'').toLowerCase();
+  const isDed=/nvidia|amd|radeon|geforce|rx \d|rtx|gtx/.test(rL);
+  if(isDed){
+    if(/rtx 40|rtx 39|rx 7[5-9]/.test(rL)) gpu_+=38;
+    else if(/rtx 30|rtx 28|rx 6[5-9]/.test(rL)) gpu_+=32;
+    else if(/rtx 20|gtx 16|rx 5[5-9]/.test(rL)) gpu_+=25;
+    else gpu_+=20;
+  } else if(/intel|apple m|apple gpu|mali|adreno/.test(rL)) gpu_+=10;
+  else gpu_+=5;
+  if(gpu.webgl2) gpu_+=12;
+  gpu_ += gpu.maxTextureSize>=16384?10:gpu.maxTextureSize>=8192?7:gpu.maxTextureSize>=4096?4:0;
+  gpu_ += gpu.extensions>=30?8:gpu.extensions>=20?5:0;
+  gpu_ += gpu.canvasMs<15?18:gpu.canvasMs<30?14:gpu.canvasMs<60?10:gpu.canvasMs<120?6:2;
+  scores.gpu = clamp(Math.round(gpu_),0,90);
+
+  // WiFi (max 88)
+  let net_=0;
+  const dl=net.downloadMbps||0;
+  net_ += dl>=500?40:dl>=200?33:dl>=100?26:dl>=50?20:dl>=25?14:dl>=10?9:dl>0?4:0;
+  const lat=net.latencyMs||999;
+  net_ += lat<=10?30:lat<=25?24:lat<=50?18:lat<=100?12:lat<=200?7:2;
+  const jit=net.jitterMs||0;
+  net_ += jit<=2?18:jit<=10?14:jit<=30?9:jit<=60?5:1;
+  scores.wifi = clamp(Math.round(net_),0,88);
+
+  // Storage (max 88)
+  let stor=0;
+  stor += storage.writeBW>=3000?25:storage.writeBW>=1500?20:storage.writeBW>=500?14:storage.writeBW>=100?9:4;
+  stor += storage.readBW>=5000?25:storage.readBW>=2000?20:storage.readBW>=800?15:storage.readBW>=200?10:5;
+  stor += storage.memWriteMs<5?20:storage.memWriteMs<15?16:storage.memWriteMs<40?11:storage.memWriteMs<100?7:3;
+  const dp=display.width*display.height;
+  stor += dp>=3840*2160?18:dp>=2560*1440?14:dp>=1920*1080?10:dp>=1280*720?6:3;
+  scores.storage = clamp(Math.round(stor),0,88);
+
+  // System (max 85)
+  let sys=0;
+  if(os.platform==='Linux') sys+=22;
+  else if(os.platform==='Windows') sys+=20;
+  else if(os.platform==='macOS') sys+=18;
+  else sys+=5;
+  sys += browser.isChrome?18:10;
+  sys += (display.dpr||1)>=2?12:(display.dpr||1)>=1.5?9:6;
+  sys += display.colorDepth>=30?10:display.colorDepth>=24?8:4;
+  sys += hw.maxTouchPoints>1?8:15;
+  scores.system = clamp(Math.round(sys),0,85);
+
+  // Overall (max 95)
+  const overall = Math.round(
+    scores.cpu*0.25 + scores.memory*0.20 + scores.gpu*0.20 +
+    scores.wifi*0.15 + scores.storage*0.10 + scores.system*0.10
+  );
+  scores.overall = clamp(overall,0,95);
+  return scores;
+}
+
+// ============================================================
+//  OPTIMIZATION PAGE DEEP LINKS
+//  Each entry maps to a specific accordion section + step on
+//  optimization.html. We open the page with a hash, then JS
+//  on that page (or a small loader) expands the right section.
+//  We encode section index + step title in the hash so the
+//  receiver can auto-expand. Format: #section-N-step-SLUG
+// ============================================================
+const OPT = {
+  xmp:        { text: 'Enable XMP/EXPO in BIOS → step-by-step', href: 'optimization.html#bios-xmp' },
+  resizebar:  { text: 'Enable Resizable BAR in BIOS',            href: 'optimization.html#bios-rebar' },
+  highperf:   { text: 'Set High Performance Power Plan',         href: 'optimization.html#power-highperf' },
+  hags:       { text: 'Enable Hardware-Accelerated GPU Scheduling', href: 'optimization.html#power-hags' },
+  gsync:      { text: 'Enable G-SYNC / FreeSync',                href: 'optimization.html#gpu-gsync' },
+  nvidiamax:  { text: 'Set NVIDIA Maximum Performance Mode',     href: 'optimization.html#gpu-maxperf' },
+  nvidia3d:   { text: 'Tune Advanced NVIDIA 3D Settings',        href: 'optimization.html#gpu-3d' },
+  refreshrate:{ text: 'Set Correct Refresh Rate',                href: 'optimization.html#power-refresh' },
+  dns:        { text: 'Set Cloudflare DNS (1.1.1.1)',            href: 'optimization.html#network-dns' },
+  netreset:   { text: 'Run Network Reset Commands',              href: 'optimization.html#network-reset' },
+  netadapter: { text: 'Tune Network Adapter Settings',           href: 'optimization.html#network-adapter' },
+  telemetry:  { text: 'Disable Windows Telemetry & Diagnostics', href: 'optimization.html#privacy-telemetry' },
+  bloat:      { text: 'Remove Bloatware & Disable Startup Apps', href: 'optimization.html#bloat-startup' },
+  debloat:    { text: 'Run Win11Debloat / ShutUp10++',           href: 'optimization.html#tools-debloat' },
+  sysmain:    { text: 'Disable SysMain (SSD systems)',           href: 'optimization.html#power-sysmain' },
+  sfc:        { text: 'Run SFC & DISM System File Repair',       href: 'optimization.html#maintenance-sfc' },
+  gamemode:   { text: 'Enable Windows Game Mode',                href: 'optimization.html#power-gamemode' },
+  ndu:        { text: 'Disable NDU (Network Data Usage)',        href: 'optimization.html#power-ndu' },
+};
+
+// ============================================================
+//  RECOMMENDATIONS
+// ============================================================
+function generateRecs(hw,browser,os,gpu,display,net,scores,cpuS,cpuM,mem,storage){
+  const recs=[];
+  // action can now be an array of links for multi-step guidance
+  const add=(title,body,priority,actions)=>recs.push({title,body,priority,actions: Array.isArray(actions)?actions: actions?[actions]:[]});
+
+  // ---- ALWAYS PRESENT ----
+  add('Start Here — Run the Full Optimization Checklist',
+    'Whatever your scores, software-level tuning delivers free performance. The Optimization page walks through every tweak step by step — BIOS, power plans, GPU settings, privacy, bloatware, and networking.',
+    'info', [
+      OPT.xmp, OPT.highperf, OPT.hags, OPT.telemetry
+    ]);
+
+  // ---- CPU ----
+  const cores=hw.cpuCores||0;
+  if(cores>0&&cores<4){
+    add(`Critical: CPU Only Has ${cores} Logical Cores`,
+      `Your processor exposes only <strong>${cores} logical cores</strong> to the browser. Modern games need 6–8 minimum, content creation needs 12–16. Upgrade to AMD Ryzen 5/7 or Intel Core i5/i7. Your matrix benchmark (${cpuM.matrixMs}ms) shows the bottleneck — a Ryzen 7 5800X does this in under 350ms.<br><br>
+      While you save for hardware, squeeze every drop from what you have:`,
+      'critical', [OPT.highperf, OPT.gamemode, OPT.bloat]);
+  } else if(cores>=4&&cores<8){
+    add(`CPU Has ${cores} Cores — Tune It While You Can`,
+      `<strong>${cores} cores</strong> is workable but increasingly a bottleneck in 2024+ titles and workflows. Consider upgrading to an 8–12 core CPU when budget allows. Until then, make sure nothing is stealing CPU time in the background:`,
+      'medium', [OPT.highperf, OPT.bloat, OPT.sysmain, OPT.gamemode]);
+  }
+
+  if(cpuS.floatMs>500){
+    add('Single-Thread Performance is Weak',
+      `Your floating-point benchmark finished in <strong>${cpuS.floatMs}ms</strong> — the ideal is under 150ms. This typically means one of three things: (1) older CPU architecture, (2) thermal throttling from a clogged cooler or dried-out thermal paste, or (3) Windows power plan is set to Balanced or Power Saver.<br><br>
+      Fix the software side immediately — it's free:`,
+      'high', [OPT.highperf, OPT.ndu, OPT.sysmain]);
+  }
+
+  if(cpuS.sieveMs>80){
+    add('CPU Integer Performance is Slow',
+      `Prime sieve benchmark: <strong>${cpuS.sieveMs}ms</strong> (ideal &lt;20ms). Integer workloads like game physics, compression, and encryption are all affected. Verify your power plan is on High Performance and that no background process is stealing cores:`,
+      'medium', [OPT.highperf, OPT.bloat, OPT.debloat]);
+  }
+
+  if(cpuM.matrixMs>900){
+    add('Multi-Thread Throughput is Below Average',
+      `Matrix multiply (200×200) took <strong>${cpuM.matrixMs}ms</strong> — a well-tuned system does this under 500ms. This affects video encoding, 3D rendering, compiling, and any parallelised workload. Enable XMP/EXPO first (slow RAM drags multi-thread scores), then check background processes:`,
+      'high', [OPT.xmp, OPT.highperf, OPT.bloat]);
+  }
+
+  // ---- MEMORY ----
+  const ram=hw.ramGB||0;
+  if(ram>0&&ram<8){
+    add(`Critical: Only ${ram}GB RAM Detected`,
+      `<strong>${ram}GB is severely limiting everything</strong> — browsers alone eat 2–4GB, leaving almost nothing for your OS and apps. This will cause constant swapping to disk, stuttering, and crashes under load. Upgrading RAM is the single highest-impact upgrade per dollar available to you.<br><br>
+      Target: 16GB DDR4-3200 (dual channel). While you wait:`,
+      'critical', [OPT.sysmain, OPT.bloat, OPT.debloat]);
+  } else if(ram>=8&&ram<16){
+    add(`RAM at ${ram}GB — 16GB Is Now the Standard`,
+      `${ram}GB is functional for light use but <strong>modern games and Chrome tabs eat through it fast</strong>. Adding a second matching DIMM for dual-channel gives you both more capacity AND a significant bandwidth improvement (up to 2× memory throughput). Make sure XMP/EXPO is enabled to run your existing RAM at rated speed:`,
+      'medium', [OPT.xmp]);
+  }
+
+  if(mem.writeBW<2000){
+    add('RAM Is Running Below Rated Speed — Enable XMP/EXPO',
+      `Your memory write bandwidth estimates at <strong>${mem.writeBW} MB/s</strong>. DDR4-3200 in dual-channel should deliver 40,000+ MB/s at the hardware level. The most common cause: your RAM is running at the JEDEC default (2133MHz) instead of its rated speed because XMP/EXPO is not enabled in BIOS.<br><br>
+      This is the single most impactful free BIOS change you can make — takes 2 minutes:`,
+      mem.writeBW<500?'critical':'high', [OPT.xmp, OPT.resizebar]);
+  } else if(mem.writeBW<5000){
+    add('RAM Bandwidth Could Be Higher',
+      `Estimated bandwidth: <strong>${mem.writeBW} MB/s</strong>. If you're running a single DIMM, adding a matching second stick for dual-channel nearly doubles bandwidth. Also confirm XMP/EXPO is enabled in BIOS for rated speeds:`,
+      'low', [OPT.xmp]);
+  }
+
+  // ---- GPU ----
+  const rL=(gpu.renderer||'').toLowerCase();
+  const isDed=/nvidia|amd|radeon|geforce|rx \d|rtx|gtx/.test(rL);
+  const isNvidia=/nvidia|geforce|rtx|gtx/.test(rL);
+  const isAmd=/amd|radeon|rx \d/.test(rL);
+
+  if(!isDed){
+    add(`No Dedicated GPU — ${(gpu.renderer||'Unknown').slice(0,40)}`,
+      `Integrated graphics share your system RAM and have no dedicated VRAM. <strong>Gaming, 3D rendering, and video editing are not viable without a discrete GPU.</strong> An NVIDIA RTX 4060 (~$300) or AMD RX 7600 (~$270) would transform your machine. Until then, make sure the integrated GPU is getting every possible advantage:`,
+      'critical', [OPT.hags, OPT.highperf, OPT.refreshrate]);
+  }
+
+  if(isDed&&gpu.canvasMs>80){
+    add(`GPU Rendering is Underperforming — ${gpu.canvasMs}ms Canvas Test`,
+      `Canvas benchmark: <strong>${gpu.canvasMs}ms</strong> (ideal &lt;15ms). Your dedicated GPU exists but isn't being used efficiently. The most common fixes: enable Hardware-Accelerated GPU Scheduling, make sure the discrete GPU is selected for all apps, and set Maximum Performance mode in the control panel:`,
+      'high', [OPT.hags, OPT.nvidiamax, OPT.nvidia3d, OPT.gsync]);
+  } else if(isDed&&gpu.canvasMs>30){
+    add('Fine-Tune Your GPU Control Panel',
+      `Canvas test: ${gpu.canvasMs}ms — decent but not optimal. Squeeze out more frame rate and lower latency by configuring the NVIDIA/AMD control panel correctly:`,
+      'medium', isNvidia?[OPT.nvidiamax, OPT.nvidia3d, OPT.gsync, OPT.hags]:[OPT.hags, OPT.refreshrate]);
+  }
+
+  if(isDed&&!gpu.webgl2){
+    add('WebGL 2.0 Not Supported — Update GPU Drivers',
+      'Your GPU supports WebGL 2.0 in hardware but the browser or drivers are blocking it. Update your GPU drivers via GeForce Experience / AMD Adrenalin, and use Chrome for the most complete graphics API support.',
+      'medium', [OPT.nvidiamax]);
+  }
+
+  if(display.dpr===1&&display.width>=1920){
+    add('Check Your Monitor Refresh Rate',
+      `Your display is ${display.width}×${display.height} — make sure Windows is set to your monitor's maximum refresh rate (not stuck at 60Hz). This is one of the most overlooked settings:`,
+      'medium', [OPT.refreshrate]);
+  }
+
+  // ---- NETWORK ----
+  if(net.downloadMbps!==null&&net.downloadMbps<25){
+    add(`Slow Connection — ${net.downloadMbps} Mbps`,
+      `<strong>${net.downloadMbps} Mbps</strong> is below the threshold for comfortable 4K streaming (25 Mbps) or fast game downloads. First check: is this WiFi? A wired Ethernet connection typically triples effective throughput and cuts latency by 80%. Also flush DNS and reset your network stack — takes 30 seconds:`,
+      net.downloadMbps<5?'critical':'high', [OPT.dns, OPT.netreset, OPT.netadapter]);
+  } else if(net.downloadMbps!==null&&net.downloadMbps<100){
+    add(`Network Speed Has Room to Grow — ${net.downloadMbps} Mbps`,
+      `Your measured speed is ${net.downloadMbps} Mbps. If you're on WiFi you're likely leaving 50–300 Mbps on the table vs a wired connection. Setting a fast DNS server (Cloudflare 1.1.1.1) also reduces page load times and latency independent of raw speed:`,
+      'low', [OPT.dns, OPT.netadapter]);
+  }
+
+  if(net.latencyMs!==null&&net.latencyMs>80){
+    add(`High Latency — ${net.latencyMs}ms Average`,
+      `<strong>${net.latencyMs}ms</strong> will cause noticeable lag in online gaming (target: &lt;20ms wired), video calls, and real-time apps. The fastest fixes: switch to Ethernet, set Cloudflare DNS (1.1.1.1), and flush the DNS cache. If on WiFi, move closer to the router or upgrade to WiFi 6:`,
+      net.latencyMs>150?'high':'medium', [OPT.dns, OPT.netreset, OPT.netadapter]);
+  } else if(net.latencyMs!==null&&net.latencyMs>30){
+    add(`Latency Could Be Lower — ${net.latencyMs}ms`,
+      `${net.latencyMs}ms is acceptable but Cloudflare DNS (1.1.1.1) often shaves 10–30ms off latency by replacing your ISP's slower DNS resolver:`,
+      'low', [OPT.dns]);
+  }
+
+  if(net.jitterMs!==null&&net.jitterMs>25){
+    add(`High Jitter — ${net.jitterMs}ms`,
+      `Jitter of <strong>${net.jitterMs}ms</strong> means your connection is inconsistent — you'll notice this as micro-stutters in games, choppy video calls, and unreliable streaming. Almost always a WiFi issue. Wired Ethernet eliminates jitter almost entirely. Also try restarting your router and checking for interference on your WiFi channel:`,
+      'medium', [OPT.netreset, OPT.netadapter]);
+  }
+
+  // ---- DISPLAY ----
+  const dispPx=display.width*display.height;
+  if(dispPx<1920*1080){
+    add(`Low Resolution Display — ${display.width}×${display.height}`,
+      `You're below 1080p. <strong>1920×1080 is the practical minimum</strong> for productive work and gaming in 2024. A 1080p 144Hz IPS panel can be had for $120–$150 and is a night-and-day quality of life improvement. Make sure Windows is set to your monitor's native resolution and max refresh rate:`,
+      'medium', [OPT.refreshrate]);
+  } else if(dispPx<2560*1440){
+    add('Consider a 1440p Monitor for Your Next Upgrade',
+      `You're at ${display.width}×${display.height}. A <strong>2560×1440 panel</strong> gives 77% more pixels than 1080p — noticeably sharper text, more screen real estate, and better gaming immersion. The RTX 3060 / RX 6600 tier handles 1440p well. Make sure your refresh rate is maxed out in the meantime:`,
+      'low', [OPT.refreshrate]);
+  }
+
+  // ---- OS / PRIVACY ----
+  if(os.platform==='Windows'){
+    add('Reduce Windows Background Overhead',
+      `Windows ships with telemetry, consumer features, and background services that eat CPU, RAM, and disk. Disabling them is safe and gives back measurable resources — especially on lower-spec machines:`,
+      'medium', [OPT.telemetry, OPT.debloat, OPT.bloat, OPT.sysmain, OPT.ndu]);
+  }
+
+  if(os.platform==='Windows'&&os.name.includes('7')){
+    add('Windows 7 is End of Life — Upgrade Immediately',
+      '<strong>Windows 7 receives no security patches.</strong> Known exploits are being actively used against unpatched machines. Upgrade to Windows 10 or 11 — it is free via the official Microsoft upgrade tool.',
+      'critical', []);
+  }
+
+  if(!browser.isChrome){
+    add(`Switch to Chrome for Accurate Diagnostics — You Used: ${browser.name}`,
+      `Chrome exposes <code>navigator.deviceMemory</code>, <code>hardwareConcurrency</code>, the NetworkInformation API, and full WebGL debug info. In ${browser.name}, some of these are hidden or unavailable, meaning your scores above may be lower than your hardware actually deserves. Re-run in Chrome for the most accurate reading.`,
+      'medium', []);
+  }
+
+  // ---- SYSTEM FILE HEALTH (always useful) ----
+  add('Run a System File Health Check',
+    `Corrupted or missing Windows system files silently degrade performance over time. SFC and DISM take 15 minutes and can fix crashes, slow boot, and random errors — worth running at least once a year:`,
+    'low', [OPT.sfc]);
+
+  const order={critical:0,high:1,medium:2,low:3,info:4};
+  recs.sort((a,b)=>order[a.priority]-order[b.priority]);
+  return recs;
+}
+
+// ============================================================
+//  RENDER
+// ============================================================
+let radarChart=null, stressChart=null;
+
+function renderScores(scores,cpuS,cpuM,mem,net){
+  const C=2*Math.PI*85;
+  const offset=C-(scores.overall/100)*C;
+  const circle=document.getElementById('overallCircle');
+  circle.setAttribute('stroke-dasharray',C);
+  circle.setAttribute('stroke-dashoffset',C);
+  circle.className='ring-prog ring-'+scoreClass(scores.overall);
+  setTimeout(()=>circle.setAttribute('stroke-dashoffset',offset),100);
+
+  document.getElementById('overallNum').textContent=scores.overall;
+  const grade=scores.overall>=80?'Excellent':scores.overall>=65?'Good':scores.overall>=50?'Fair':scores.overall>=35?'Below Average':'Needs Major Upgrades';
+  document.getElementById('overallLabel').textContent=grade;
+  const tags={
+    'Excellent':'Well-optimised — review recommendations for fine-tuning.',
+    'Good':'Solid setup. Targeted upgrades will push you into the top tier.',
+    'Fair':'Real room to grow — start with the high-priority recommendations.',
+    'Below Average':'Several bottlenecks detected. Focus on Critical items first.',
+    'Needs Major Upgrades':'Hardware is significantly limiting performance. Prioritise RAM and CPU.'
+  };
+  document.getElementById('overallTag').textContent=tags[grade]||'';
+
+  const d=window._diagData;
+  const cats=[
+    { key:'cpu', cls:'cpu', label:'CPU Performance', icon:'fas fa-microchip', icls:'cpu', metrics:[
+      {label:'Logical cores', value:(d.hw.cpuCores||'?')+' cores'},
+      {label:'Single-thread total', value:(cpuS.fibMs+cpuS.floatMs+cpuS.sortMs)+'ms'},
+      {label:'Matrix 200×200', value:cpuM.matrixMs+'ms'},
+      {label:'Sieve (500k)', value:cpuS.sieveMs+'ms'},
+    ]},
+    { key:'memory', cls:'mem', label:'Memory & RAM', icon:'fas fa-memory', icls:'mem', metrics:[
+      {label:'System RAM', value:(d.hw.ramGB||'?')+'GB'},
+      {label:'Write BW (est.)', value:mem.writeBW+' MB/s'},
+      {label:'Read BW (est.)', value:mem.readBW+' MB/s'},
+      {label:'Alloc time', value:mem.allocMs+'ms'},
+    ]},
+    { key:'gpu', cls:'gpu', label:'GPU & Graphics', icon:'fas fa-tv', icls:'gpu', metrics:[
+      {label:'Renderer', value:(d.gpu.renderer||'Unknown').slice(0,32)},
+      {label:'WebGL 2', value:d.gpu.webgl2?'Supported ✓':'Not supported ✗'},
+      {label:'Max texture', value:(d.gpu.maxTextureSize||'?')+'px'},
+      {label:'Canvas test', value:(d.gpu.canvasMs||'?')+'ms'},
+    ]},
+    { key:'wifi', cls:'wifi', label:'Network / WiFi', icon:'fas fa-wifi', icls:'wifi', metrics:[
+      {label:'Download speed', value:net.downloadMbps!==null?net.downloadMbps+' Mbps':'N/A'},
+      {label:'Latency', value:net.latencyMs!==null?net.latencyMs+'ms':'N/A'},
+      {label:'Jitter', value:net.jitterMs!==null?net.jitterMs+'ms':'N/A'},
+    ]},
+    { key:'storage', cls:'stor', label:'Storage I/O', icon:'fas fa-hdd', icls:'stor', metrics:[
+      {label:'LS write BW', value:(d.storage.writeBW||'?')+' KB/s'},
+      {label:'LS read BW', value:(d.storage.readBW||'?')+' KB/s'},
+      {label:'Mem write 4MB', value:(d.storage.memWriteMs||'?')+'ms'},
+    ]},
+    { key:'system', cls:'sys', label:'System & Browser', icon:'fas fa-desktop', icls:'sys', metrics:[
+      {label:'OS', value:d.os.name||'?'},
+      {label:'Browser', value:(d.browser.name||'?')+' '+(d.browser.version||'')},
+      {label:'Display', value:(d.display.width||'?')+'×'+(d.display.height||'?')},
+      {label:'DPR', value:(d.display.dpr||'?')+'x'},
+    ]},
+  ];
+
+  const grid=document.getElementById('catGrid');
+  grid.innerHTML='';
+  cats.forEach(cat=>{
+    const s=scores[cat.key];
+    const sc=scoreClass(s);
+    const card=document.createElement('div');
+    card.className='cat-card '+cat.cls;
+    card.innerHTML=`
+      <div class="cat-header">
+        <div class="cat-title"><i class="${cat.icon} ${cat.icls}"></i>${cat.label}</div>
+        <div class="cat-score ${sc}">${s}</div>
+      </div>
+      <div class="cat-bar"><div class="cat-bar-fill ${sc}" style="width:0%" data-w="${s}"></div></div>
+      <ul class="cat-metrics">
+        ${cat.metrics.map(m=>`<li class="cat-metric"><span class="cat-metric-label">${m.label}</span><span class="cat-metric-val">${m.value}</span></li>`).join('')}
+      </ul>`;
+    grid.appendChild(card);
+    setTimeout(()=>{ card.querySelector('.cat-bar-fill').style.width=s+'%'; },200);
+  });
+
+  // Radar
+  if(radarChart) radarChart.destroy();
+  radarChart=new Chart(document.getElementById('radarChart'),{
+    type:'radar',
+    data:{
+      labels:['CPU','Memory','GPU','Network','Storage','System'],
+      datasets:[
+        {label:'Your System',data:[scores.cpu,scores.memory,scores.gpu,scores.wifi,scores.storage,scores.system],
+          backgroundColor:'rgba(0,191,255,0.12)',borderColor:'#00bfff',borderWidth:2,pointBackgroundColor:'#00bfff',pointRadius:4},
+        {label:'Ideal (~95)',data:[92,90,90,88,88,85],
+          backgroundColor:'rgba(74,222,128,0.06)',borderColor:'rgba(74,222,128,0.4)',borderWidth:1,borderDash:[5,3],pointRadius:0}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#9ca3af',font:{size:10}}}},
+      scales:{r:{min:0,max:100,ticks:{color:'#444',stepSize:20,backdropColor:'transparent'},
+        grid:{color:'#222'},pointLabels:{color:'#9ca3af',font:{size:10}},angleLines:{color:'#222'}}}}
+  });
+
+  // Stress bar
+  if(stressChart) stressChart.destroy();
+  stressChart=new Chart(document.getElementById('stressChart'),{
+    type:'bar',
+    data:{
+      labels:['Fibonacci','Sieve','Float ops','Sort 100k','Matrix 200²','Dot product'],
+      datasets:[
+        {label:'Your time (ms)',data:[cpuS.fibMs,cpuS.sieveMs,cpuS.floatMs,cpuS.sortMs,cpuM.matrixMs,cpuM.dotMs],
+          backgroundColor:'rgba(0,191,255,0.45)',borderColor:'#00bfff',borderWidth:1},
+        {label:'Ideal target (ms)',data:[280,15,130,18,350,80],
+          backgroundColor:'rgba(74,222,128,0.2)',borderColor:'rgba(74,222,128,0.6)',borderWidth:1}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#9ca3af',font:{size:10}}}},
+      scales:{y:{beginAtZero:true,ticks:{color:'#555'},grid:{color:'#222'}},
+        x:{ticks:{color:'#555',font:{size:9}},grid:{color:'#222'}}}}
+  });
+}
+
+function renderDetails(hw,browser,os,gpu,display,mem,cpuS,cpuM,storage,net){
+  document.getElementById('detailSections').innerHTML='';
+  addDetailSection('System & Browser','<i class="fas fa-desktop"></i>',[
+    {label:'OS',value:os.name,cls:'highlight'},
+    {label:'Browser',value:browser.name+' '+browser.version,cls:browser.isChrome?'good':'warn'},
+    {label:'Platform',value:hw.platform},{label:'Language',value:hw.language},
+    {label:'Timezone',value:Intl.DateTimeFormat().resolvedOptions().timeZone},
+    {label:'Cookies',value:hw.cookiesEnabled?'Enabled':'Disabled'},
+    {label:'Touch points',value:hw.maxTouchPoints},
+  ]);
+  addDetailSection('Hardware','<i class="fas fa-microchip"></i>',[
+    {label:'CPU Logical Cores',value:hw.cpuCores?hw.cpuCores+' cores':'Not available',cls:hw.cpuCores>=8?'good':hw.cpuCores>=4?'highlight':'bad'},
+    {label:'System RAM',value:hw.ramGB?hw.ramGB+' GB':'Not available',cls:hw.ramGB>=16?'good':hw.ramGB>=8?'highlight':hw.ramGB>0?'warn':''},
+    {label:'Memory Write BW',value:mem.writeBW+' MB/s',cls:mem.writeBW>=4000?'good':mem.writeBW>=1000?'highlight':'warn'},
+    {label:'Memory Read BW',value:mem.readBW+' MB/s'},
+    {label:'Alloc time (500 arrays)',value:mem.allocMs+'ms'},
+    {label:'Mem write (4MB)',value:storage.memWriteMs+'ms'},
+  ]);
+  addDetailSection('GPU & WebGL','<i class="fas fa-tv"></i>',[
+    {label:'GPU Renderer',value:gpu.renderer||'Unavailable',cls:'highlight'},
+    {label:'GPU Vendor',value:gpu.vendor||'Unavailable'},
+    {label:'WebGL Version',value:gpu.version||'N/A'},
+    {label:'WebGL 2.0',value:gpu.webgl2?'Supported ✓':'Not Supported ✗',cls:gpu.webgl2?'good':'warn'},
+    {label:'Max Texture Size',value:gpu.maxTextureSize?gpu.maxTextureSize+'px':'N/A',cls:gpu.maxTextureSize>=16384?'good':'highlight'},
+    {label:'Max Vertex Attribs',value:gpu.maxVertexAttribs||'N/A'},
+    {label:'Extensions',value:(gpu.extensions||0)+' supported'},
+    {label:'Canvas render (500 ops)',value:(gpu.canvasMs||'?')+'ms',cls:gpu.canvasMs<30?'good':gpu.canvasMs<80?'highlight':'bad'},
+  ]);
+  addDetailSection('Display','<i class="fas fa-expand-arrows-alt"></i>',[
+    {label:'Resolution',value:display.width+'×'+display.height,cls:'highlight'},
+    {label:'Available area',value:display.availWidth+'×'+display.availHeight},
+    {label:'Effective res (DPR)',value:display.effectiveRes},
+    {label:'Device pixel ratio',value:display.dpr+'x',cls:display.dpr>=2?'good':'highlight'},
+    {label:'Color depth',value:display.colorDepth+'-bit',cls:display.colorDepth>=30?'good':'highlight'},
+    {label:'Total pixels',value:display.totalPixels},
+  ]);
+  addDetailSection('CPU Stress Tests','<i class="fas fa-fire"></i>',[
+    {label:'Fibonacci fib(38)',value:cpuS.fibMs+'ms',cls:cpuS.fibMs<300?'good':cpuS.fibMs<600?'highlight':'bad'},
+    {label:'Sieve (500k)',value:cpuS.sieveMs+'ms',cls:cpuS.sieveMs<20?'good':cpuS.sieveMs<50?'highlight':'bad'},
+    {label:'Float ops (5M)',value:cpuS.floatMs+'ms',cls:cpuS.floatMs<150?'good':cpuS.floatMs<400?'highlight':'bad'},
+    {label:'Sort 100k items',value:cpuS.sortMs+'ms',cls:cpuS.sortMs<20?'good':cpuS.sortMs<60?'highlight':'bad'},
+    {label:'String ops',value:cpuS.strMs+'ms'},
+    {label:'Primes found (≤500k)',value:cpuS.primeCount?.toLocaleString()},
+    {label:'Single-thread total',value:cpuS.totalMs+'ms',cls:'highlight'},
+    {label:'Matrix 200×200',value:cpuM.matrixMs+'ms',cls:cpuM.matrixMs<400?'good':cpuM.matrixMs<800?'highlight':'bad'},
+    {label:'Parallel float (4)',value:cpuM.multiMs+'ms'},
+    {label:'Dot product (1M F32)',value:cpuM.dotMs+'ms',cls:cpuM.dotMs<80?'good':'highlight'},
+    {label:'Multi-thread total',value:cpuM.totalMs+'ms',cls:'highlight'},
+  ]);
+  addDetailSection('Network','<i class="fas fa-wifi"></i>',[
+    {label:'Download speed (measured)',value:net.downloadMbps!==null?net.downloadMbps+' Mbps':'Failed',cls:net.downloadMbps>=100?'good':net.downloadMbps>=25?'highlight':net.downloadMbps>0?'warn':'bad'},
+    {label:'Test method',value:net.testMethod||'N/A'},
+    {label:'All readings',value:net.allReadings?net.allReadings.map(r=>r.mbps+' Mbps').join(' / '):'N/A'},
+    {label:'Navigator downlink',value:net.navDownlink?net.navDownlink+' Mbps (capped at 10 on mobile)':'N/A'},
+    {label:'Latency (median of 4)',value:net.latencyMs!==null?net.latencyMs+'ms':'N/A',cls:net.latencyMs<25?'good':net.latencyMs<80?'highlight':'warn'},
+    {label:'Jitter (max−min)',value:net.jitterMs!==null?net.jitterMs+'ms':'N/A',cls:net.jitterMs<10?'good':net.jitterMs<30?'highlight':'warn'},
+    {label:'Effective connection type',value:net.effectiveType||'N/A'},
+    {label:'Navigator RTT',value:net.navRtt?net.navRtt+'ms':'N/A'},
+    {label:'Test file size',value:net.downloadBytes?Math.round(net.downloadBytes/1024)+' KB':'N/A'},
+    {label:'Download time',value:net.downloadMs?net.downloadMs+'ms':'N/A'},
+  ]);
+  addDetailSection('Storage Benchmarks','<i class="fas fa-hdd"></i>',[
+    {label:'LS write (200 × 500B)',value:storage.writeMs+'ms',cls:storage.writeMs<5?'good':storage.writeMs<20?'highlight':'warn'},
+    {label:'LS read (200 keys)',value:storage.readMs+'ms',cls:storage.readMs<2?'good':storage.readMs<10?'highlight':'warn'},
+    {label:'LS write bandwidth',value:storage.writeBW+' KB/s'},
+    {label:'LS read bandwidth',value:storage.readBW+' KB/s'},
+    {label:'In-mem write (4MB)',value:storage.memWriteMs+'ms',cls:storage.memWriteMs<5?'good':'highlight'},
+  ]);
+}
+
+function renderRecs(recs){
+  const list=document.getElementById('recsList');
+  if(!recs.length){ list.innerHTML='<p style="color:var(--muted)">No recommendations — your system is near-optimal.</p>'; return; }
+  list.innerHTML=recs.map(r=>`
+    <div class="rec-card priority-${r.priority}">
+      <div class="rec-top">
+        <div class="rec-title-text">${r.title}</div>
+        <div class="rec-pill ${r.priority}">${r.priority}</div>
+      </div>
+      <div class="rec-body">${r.body}</div>
+      ${r.actions&&r.actions.length?`
+        <div class="rec-actions">
+          ${r.actions.map(a=>`
+            <a href="${a.href}" class="rec-action-btn" target="_self">
+              <i class="fas fa-arrow-right"></i> ${a.text}
+            </a>`).join('')}
+        </div>` : ''}
+    </div>`).join('');
+}
+
+// ============================================================
+//  MAIN RUNNER — ~30 second multi-pass collection
+// ============================================================
+async function startFullDiagnostics(){
+  const runBtn=document.getElementById('runBtn');
+  runBtn.disabled=true;
+  runBtn.classList.remove('pulse');
+  runBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Running…';
+
+  // Reset UI
+  document.getElementById('detailSections').innerHTML='';
+  document.getElementById('recsList').innerHTML='';
+  document.getElementById('resultsDivider').style.display='none';
+  document.getElementById('scoresSection').classList.remove('visible');
+  document.getElementById('recsSection').classList.remove('visible');
+  document.getElementById('detailBelow').style.display='none';
+  const scrollHint=document.getElementById('scrollHint');
+  if(scrollHint) scrollHint.style.display='none';
+
+  const prog=document.getElementById('progressSection');
+  prog.classList.add('visible');
+  buildProgressUI();
+
+  const TARGET_MS = 30000; // 30 seconds total
+  const diagStart = performance.now();
+
+  // ---- Pass 1: detection (fast, ~0.5s) ----
+  setStep('browser','running');
+  const browser=detectBrowser(), os=detectOS();
+  await sleep(300);
+  setStep('browser','done',browser.name+' on '+os.name);
+
+  setStep('hardware','running');
+  const hw=detectHardware();
+  await sleep(300);
+  setStep('hardware','done',(hw.cpuCores||'?')+' cores, '+(hw.ramGB||'?')+'GB RAM');
+
+  setStep('gpu','running');
+  const gpu=await detectGPU();
+  await sleep(200);
+  setStep('gpu','done',(gpu.renderer||'N/A').slice(0,30));
+
+  setStep('display','running');
+  const display=detectDisplay();
+  await sleep(200);
+  setStep('display','done',display.width+'×'+display.height+' @ '+display.dpr+'x DPR');
+
+  // ---- Pass 1: memory bench ----
+  setStep('memory','running');
+  const memRuns=[];
+  for(let i=0;i<4;i++){
+    memRuns.push(await benchmarkMemory());
+    await sleep(150);
+  }
+  // Average the runs
+  const mem={
+    allocMs: Math.round(memRuns.reduce((a,r)=>a+r.allocMs,0)/memRuns.length),
+    writeMs: Math.round(memRuns.reduce((a,r)=>a+r.writeMs,0)/memRuns.length),
+    readMs:  Math.round(memRuns.reduce((a,r)=>a+r.readMs,0)/memRuns.length),
+    writeBW: Math.round(memRuns.reduce((a,r)=>a+r.writeBW,0)/memRuns.length),
+    readBW:  Math.round(memRuns.reduce((a,r)=>a+r.readBW,0)/memRuns.length),
+  };
+  setStep('memory','done',mem.writeBW+' MB/s write BW (avg 4 passes)');
+
+  // ---- CPU single-thread: 3 passes, take best (lowest total) ----
+  setStep('cpu_single','running');
+  const cpuSRuns=[];
+  for(let i=0;i<3;i++){
+    await sleep(100);
+    cpuSRuns.push(await benchmarkCPUSingle());
+  }
+  // Best = lowest totalMs (peak performance, not thermal throttled)
+  const cpuS=cpuSRuns.reduce((best,r)=>r.totalMs<best.totalMs?r:best);
+  setStep('cpu_single','done',`Best of 3: ${cpuS.totalMs}ms total`);
+
+  // ---- CPU multi-thread: 3 passes, take best ----
+  setStep('cpu_multi','running');
+  const cpuMRuns=[];
+  for(let i=0;i<3;i++){
+    await sleep(100);
+    cpuMRuns.push(await benchmarkCPUMulti());
+  }
+  const cpuM=cpuMRuns.reduce((best,r)=>r.totalMs<best.totalMs?r:best);
+  setStep('cpu_multi','done',`Best of 3: matrix ${cpuM.matrixMs}ms`);
+
+  // ---- Storage: 3 passes, average ----
+  setStep('storage','running');
+  const storRuns=[];
+  for(let i=0;i<3;i++){
+    storRuns.push(await benchmarkStorage());
+    await sleep(200);
+  }
+  const storage={
+    writeMs:   Math.round(storRuns.reduce((a,r)=>a+r.writeMs,0)/storRuns.length),
+    readMs:    Math.round(storRuns.reduce((a,r)=>a+r.readMs,0)/storRuns.length),
+    memWriteMs:Math.round(storRuns.reduce((a,r)=>a+r.memWriteMs,0)/storRuns.length),
+    writeBW:   Math.round(storRuns.reduce((a,r)=>a+r.writeBW,0)/storRuns.length),
+    readBW:    Math.round(storRuns.reduce((a,r)=>a+r.readBW,0)/storRuns.length),
+  };
+  setStep('storage','done',storage.writeBW+' KB/s write (avg 3 passes)');
+
+  // ---- Network: full test ----
+  setStep('network','running');
+  const net=await benchmarkNetwork();
+  setStep('network','done',net.downloadMbps!==null?net.downloadMbps+' Mbps':'Limited data');
+
+  // ---- Pad remaining time up to ~30s so we honour the promise ----
+  setStep('scoring','running');
+  const elapsed=performance.now()-diagStart;
+  const padNeeded=Math.max(0, TARGET_MS-elapsed-600);
+
+  if(padNeeded>0){
+    // Use the padding time productively: run extra CPU sampling passes
+    // and average them in to smooth out variance
+    const extraPasses=[];
+    const passMs=Math.min(padNeeded/2, 4000);
+    for(let i=0;i<2&&(performance.now()-diagStart)<(TARGET_MS-1200);i++){
+      extraPasses.push(await benchmarkCPUSingle());
+      await sleep(200);
+    }
+    // If we got extra passes, blend them with our best
+    if(extraPasses.length>0){
+      const allSingle=[cpuS,...extraPasses];
+      // Take the median total rather than best to get a stable read
+      allSingle.sort((a,b)=>a.totalMs-b.totalMs);
+      const midIdx=Math.floor(allSingle.length/2);
+      Object.assign(cpuS, allSingle[midIdx]);
+    }
+    // Wait out any remaining time
+    const remaining=Math.max(0, TARGET_MS-(performance.now()-diagStart)-400);
+    if(remaining>0) await sleep(remaining);
+  }
+
+  await sleep(300);
+
+  window._diagData={hw,browser,os,gpu,display,mem,cpuS,cpuM,storage,net};
+  const scores=scoreAll(hw,browser,os,gpu,display,mem,cpuS,cpuM,storage,net);
+  const recs=generateRecs(hw,browser,os,gpu,display,net,scores,cpuS,cpuM,mem,storage);
+  setStep('scoring','done','Overall: '+scores.overall+'/100');
+
+  await sleep(200);
+
+  // ---- Render scores at top, reveal detail section below ----
+  renderScores(scores,cpuS,cpuM,mem,net);
+  document.getElementById('scoresSection').classList.add('visible');
+
+  // Show scroll hint briefly
+  if(scrollHint){ scrollHint.style.display='block'; }
+
+  // Scroll to top of scores immediately so user sees their grades
+  document.getElementById('scoresSection').scrollIntoView({behavior:'smooth',block:'start'});
+
+  // Render detail content into the below-fold section
+  await sleep(400);
+  renderDetails(hw,browser,os,gpu,display,mem,cpuS,cpuM,storage,net);
+  renderRecs(recs);
+  document.getElementById('resultsDivider').style.display='block';
+  document.getElementById('recsSection').classList.add('visible');
+  document.getElementById('detailBelow').style.display='block';
+
+  runBtn.disabled=false;
+  runBtn.classList.add('pulse');
+  runBtn.innerHTML='<i class="fas fa-redo"></i> Re-Run Diagnostics';
+
+  // ---- Save score to Firestore if user is signed in ----
+  try { await saveScoreToFirestore(scores.overall); } catch(e) { console.warn('Score save skipped:', e); }
+}
+
+// ============================================================
+//  FIREBASE SCORE SAVE
+// ============================================================
+async function saveScoreToFirestore(score) {
+  const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js");
+  const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js");
+  const { getFirestore, doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",
+    authDomain: "bytesavior-6da1f.firebaseapp.com",
+    projectId: "bytesavior-6da1f",
+    storageBucket: "bytesavior-6da1f.firebasestorage.app",
+    messagingSenderId: "27072163055",
+    appId: "1:27072163055:web:98f302a7de4d944802bf1a"
+  };
+
+  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const user = auth.currentUser;
+
+  if (!user) {
+    // Show a subtle "sign in to save" nudge near the score
+    const nudge = document.getElementById('saveNudge');
+    if (nudge) nudge.style.display = 'flex';
+    return;
+  }
+
+  // Save/update — one doc per user keyed by uid so each user has one best score
+  // We keep the best score, not overwrite with worse
+  const { getDoc } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+  const ref = doc(db, 'diagScores', user.uid);
+  const existing = await getDoc(ref);
+  const prevScore = existing.exists() ? (existing.data().score || 0) : 0;
+
+  if (score >= prevScore) {
+    await setDoc(ref, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email?.split('@')[0] || 'User',
+      score,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  // Show confirmation near score
+  const nudge = document.getElementById('saveNudge');
+  if (nudge) {
+    nudge.style.display = 'flex';
+    nudge.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> Score saved to leaderboard &bull; <a href="javascript:void(0)" onclick="openLbModal()" style="color:var(--blue);text-decoration:none;font-weight:600">Check Your Rank</a>`;
+    nudge.style.borderColor = 'rgba(74,222,128,0.3)';
+    nudge.style.background = 'rgba(74,222,128,0.06)';
+  }
+}
+
+// ============================================================
+//  LEADERBOARD (mirrors index.html version)
+// ============================================================
+const RANK_TIERS_DIAG = [
+  { min:0,  max:9,  name:'Unsecured',       color:'#ef4444' },
+  { min:10, max:24, name:'Default User',     color:'#f97316' },
+  { min:25, max:49, name:'Aware',            color:'#fbbf24' },
+  { min:50, max:69, name:'Hardened',         color:'#a3e635' },
+  { min:70, max:84, name:'Optimized',        color:'#4ade80' },
+  { min:85, max:94, name:'Advanced',         color:'#22d3ee' },
+  { min:95, max:100,name:'ByteSavior Elite', color:'#a78bfa' },
+];
+
+function tierForDiag(s){ return RANK_TIERS_DIAG.find(r=>s>=r.min&&s<=r.max)||RANK_TIERS_DIAG[0]; }
+
+function avatarColorDiag(str){
+  const colors=['#00bfff','#4ade80','#a78bfa','#fb923c','#f43f5e','#22d3ee','#fbbf24'];
+  let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h);
+  return colors[Math.abs(h)%colors.length];
+}
+
+function openLbModal(){
+  document.getElementById('lbOverlay').classList.add('active');
+  document.body.style.overflow='hidden';
+  renderLbDiag();
+}
+
+function closeLbModal(){
+  document.getElementById('lbOverlay').classList.remove('active');
+  document.body.style.overflow='auto';
+}
+
+async function renderLbDiag(){
+  const body=document.getElementById('lbBody');
+  body.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted)"><i class="fas fa-circle-notch fa-spin" style="font-size:1.6rem;color:var(--blue);display:block;margin-bottom:10px"></i>Loading...</div>';
+  try{
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js");
+    const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js");
+    const { getFirestore, collection, query, orderBy, limit, getDocs, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+    const firebaseConfig={apiKey:"AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",authDomain:"bytesavior-6da1f.firebaseapp.com",projectId:"bytesavior-6da1f",storageBucket:"bytesavior-6da1f.firebasestorage.app",messagingSenderId:"27072163055",appId:"1:27072163055:web:98f302a7de4d944802bf1a"};
+    const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+    const db=getFirestore(app);
+    const auth=getAuth(app);
+    const currentUser=auth.currentUser;
+
+    const q=query(collection(db,'diagScores'),orderBy('score','desc'),limit(15));
+    const snap=await getDocs(q);
+    const rows=[];
+    snap.forEach(d=>rows.push({id:d.id,...d.data()}));
+
+    let yourEntry=null;
+    if(currentUser){
+      const yourDoc=rows.find(r=>r.uid===currentUser.uid);
+      if(!yourDoc){
+        const snap2=await getDoc(doc(db,'diagScores',currentUser.uid));
+        if(snap2.exists()) yourEntry={id:snap2.id,...snap2.data()};
+      } else { yourEntry=yourDoc; }
+    }
+
+    buildLbHTMLDiag(rows, yourEntry, currentUser);
+  } catch(e){
+    body.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">Could not load leaderboard. Check your connection.</div>';
+  }
+}
+
+function buildLbHTMLDiag(rows, yourEntry, currentUser){
+  const body=document.getElementById('lbBody');
+  let html='';
+
+  if(currentUser&&yourEntry){
+    const tier=tierForDiag(yourEntry.score||0);
+    const pos=rows.findIndex(r=>r.uid===currentUser.uid);
+    html+=`<div style="background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">Your Score</div>
+        <div style="font-weight:700;font-size:0.95rem;color:var(--text)">${yourEntry.displayName||currentUser.email?.split('@')[0]||'You'}</div>
+        <span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:8px;background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}44;margin-top:3px;display:inline-block">${tier.name}</span>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:2rem;font-weight:900;color:var(--blue);line-height:1">${yourEntry.score}</div>
+        <div style="font-size:0.7rem;color:var(--muted)">${pos>=0?'#'+(pos+1)+' overall':'outside top 15'}</div>
+      </div>
+    </div>`;
+  } else if(currentUser){
+    html+=`<div style="text-align:center;color:var(--muted);font-size:0.88rem;margin-bottom:20px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">Run diagnostics and sign in to appear on the leaderboard.</div>`;
+  } else {
+    html+=`<div style="text-align:center;color:var(--muted);font-size:0.88rem;margin-bottom:20px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">Sign in and run diagnostics to save your score.</div>`;
+  }
+
+  html+='<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Top 15 Scores</div>';
+
+  if(rows.length===0){
+    html+='<div style="text-align:center;color:var(--muted);padding:24px">No scores yet — be the first!</div>';
+  } else {
+    html+='<ul style="list-style:none;display:flex;flex-direction:column;gap:8px">';
+    rows.forEach((r,i)=>{
+      const tier=tierForDiag(r.score||0);
+      const isYou=currentUser&&r.uid===currentUser.uid;
+      const posLabel=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+      const name=r.displayName||r.email?.split('@')[0]||'Anonymous';
+      const init=name[0].toUpperCase();
+      html+=`<li style="display:flex;align-items:center;gap:12px;background:${isYou?'rgba(0,191,255,0.1)':'#1a2230'};border:${isYou?'1px solid rgba(0,191,255,0.3)':'1px solid transparent'};border-radius:8px;padding:10px 14px">
+        <div style="font-size:0.9rem;font-weight:800;width:24px;text-align:center;flex-shrink:0;color:var(--muted)">${posLabel}</div>
+        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:white;flex-shrink:0;background:${avatarColorDiag(r.uid||name)}">${init}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:0.88rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}${isYou?' <span style="color:var(--blue);font-size:0.7rem">(you)</span>':''}
+            <span style="font-size:0.68rem;font-weight:700;padding:1px 7px;border-radius:8px;background:${tier.color}22;color:${tier.color};margin-left:4px">${tier.name}</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${r.score}</div>
+          <div style="font-size:0.68rem;color:var(--muted)">/100</div>
+        </div>
+      </li>`;
+    });
+    html+='</ul>';
+  }
+
+  html+='<div style="font-size:0.74rem;color:var(--muted);text-align:center;margin-top:16px;line-height:1.5">Only your best score is stored. Scores update automatically after each run.</div>';
+  body.innerHTML=html;
+}
+</script>
+</body>
+</html>

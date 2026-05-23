@@ -59,6 +59,7 @@
     .quiz-launch-btn:active { transform: translateY(0); }
     .quiz-launch-btn i { font-size: 1.1rem; }
 
+
     /* ===== QUIZ MODAL ===== */
     .quiz-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
     .quiz-overlay.active { display: flex; }
@@ -301,6 +302,42 @@
     .success-message h3 { margin: 0 0 12px 0; color: var(--blue); }
     .success-message p { margin: 0; color: var(--muted); line-height: 1.6; }
 
+
+    /* ===== LEADERBOARD MODAL ===== */
+    .lb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 4500; padding: 20px; }
+    .lb-overlay.active { display: flex; }
+    .lb-modal { background: var(--panel); border: 2px solid var(--blue); border-radius: 14px; max-width: 520px; width: 100%; box-shadow: 0 8px 40px rgba(0,191,255,0.25); animation: slideIn 0.3s ease-out; overflow: hidden; max-height: 88vh; display: flex; flex-direction: column; }
+    .lb-header { background: var(--panel-dark); padding: 18px 22px; border-bottom: 2px solid var(--blue); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .lb-header h2 { margin: 0; color: var(--blue); font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
+    .lb-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .lb-your-score { background: rgba(0,191,255,0.08); border: 1px solid rgba(0,191,255,0.3); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .lb-your-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 2px; }
+    .lb-your-name { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+    .lb-your-score-val { font-size: 2rem; font-weight: 900; color: var(--blue); line-height: 1; }
+    .lb-your-rank-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; margin-top: 3px; display: inline-block; }
+    .lb-no-score { text-align: center; color: var(--muted); font-size: 0.88rem; margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+    .lb-no-score a { color: var(--blue); text-decoration: none; font-weight: 600; }
+    .lb-section-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .lb-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .lb-row { display: flex; align-items: center; gap: 12px; background: #1a2230; border-radius: 8px; padding: 10px 14px; transition: background 0.15s; }
+    .lb-row.is-you { background: rgba(0,191,255,0.1); border: 1px solid rgba(0,191,255,0.3); }
+    .lb-row.top-3 { background: rgba(251,191,36,0.07); }
+    .lb-pos { font-size: 0.9rem; font-weight: 800; width: 24px; text-align: center; flex-shrink: 0; color: var(--muted); }
+    .lb-pos.gold   { color: #fbbf24; }
+    .lb-pos.silver { color: #94a3b8; }
+    .lb-pos.bronze { color: #b45309; }
+    .lb-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: white; flex-shrink: 0; }
+    .lb-info { flex: 1; min-width: 0; }
+    .lb-uname { font-weight: 600; font-size: 0.88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-rank-tag { font-size: 0.68rem; font-weight: 700; padding: 1px 7px; border-radius: 8px; margin-left: 5px; vertical-align: middle; }
+    .lb-score-col { text-align: right; flex-shrink: 0; }
+    .lb-score-num { font-size: 1.1rem; font-weight: 800; color: var(--blue); }
+    .lb-score-sub { font-size: 0.68rem; color: var(--muted); }
+    .lb-empty { text-align: center; color: var(--muted); font-size: 0.88rem; padding: 24px 0; }
+    .lb-loading { text-align: center; color: var(--muted); padding: 32px; }
+    .lb-loading i { font-size: 1.6rem; color: var(--blue); display: block; margin-bottom: 10px; animation: spin 1s linear infinite; }
+    .lb-footer-note { font-size: 0.74rem; color: var(--muted); text-align: center; margin-top: 16px; line-height: 1.5; }
+
     @media (max-height: 700px) { .landing-container { padding: 60px 20px 80px; } }
   
     /* ========================================
@@ -441,15 +478,18 @@
           <span class="nav-card-icon"><i class="fas fa-shield-alt"></i></span>
           <h2 class="nav-card-title">OpSec</h2>
         </a>
+
       </div>
 
-      <!-- Setup Quiz Button -->
-      <div class="tools-section">
-        <button class="quiz-launch-btn" onclick="openQuizModal()">
-          <i class="fas fa-magic"></i> Build My Setup
-        </button>
-      </div>
 
+
+    </div>
+
+    <!-- Get Started Button -->
+    <div style="margin-top: 4px; margin-bottom: 8px; text-align: center; animation: fadeIn 1s ease 1.1s backwards;">
+      <a href="diagnostics.html" style="text-decoration:none; display:inline-flex; align-items:center; gap:10px; padding:14px 36px; border:2px solid var(--blue); border-radius:10px; color:var(--blue); font-size:1rem; font-weight:600; letter-spacing:0.02em; background:rgba(0,191,255,0.06); box-shadow:0 4px 16px rgba(0,191,255,0.15); transition:background 0.2s, box-shadow 0.2s, transform 0.2s;" onmouseover="this.style.background='rgba(0,191,255,0.14)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,191,255,0.35)'" onmouseout="this.style.background='rgba(0,191,255,0.06)';this.style.transform='';this.style.boxShadow='0 4px 16px rgba(0,191,255,0.15)'">
+        <i class="fas fa-play-circle"></i> Get Started
+      </a>
     </div>
 
     <!-- Footer Links -->
@@ -825,6 +865,158 @@
 
 
 
+
+    // ===== LEADERBOARD =====
+    function openLbModal() {
+      document.getElementById('lbOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      renderLb();
+    }
+
+    function closeLbModal() {
+      document.getElementById('lbOverlay').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Rank tier colours/names (mirrors optimization.html)
+    const RANK_TIERS = [
+      { min:0,  max:9,  name:'Unsecured',       color:'#ef4444' },
+      { min:10, max:24, name:'Default User',     color:'#f97316' },
+      { min:25, max:49, name:'Aware',            color:'#fbbf24' },
+      { min:50, max:69, name:'Hardened',         color:'#a3e635' },
+      { min:70, max:84, name:'Optimized',        color:'#4ade80' },
+      { min:85, max:94, name:'Advanced',         color:'#22d3ee' },
+      { min:95, max:100,name:'ByteSavior Elite', color:'#a78bfa' },
+    ];
+
+    function tierFor(score) {
+      return RANK_TIERS.find(r => score >= r.min && score <= r.max) || RANK_TIERS[0];
+    }
+
+    function avatarColor(str) {
+      const colors = ['#00bfff','#4ade80','#a78bfa','#fb923c','#f43f5e','#22d3ee','#fbbf24'];
+      let h = 0; for (let i=0;i<str.length;i++) h = str.charCodeAt(i) + ((h<<5)-h);
+      return colors[Math.abs(h) % colors.length];
+    }
+
+    async function renderLb() {
+      const body = document.getElementById('lbBody');
+      body.innerHTML = '<div class="lb-loading"><i class="fas fa-circle-notch"></i>Loading...</div>';
+
+      // We read from Firestore — will be populated by diagnostics.html saves
+      try {
+        // Dynamically import firebase (already loaded in module script)
+        const { getFirestore, collection, query, orderBy, limit, getDocs } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+        const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js");
+        const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js");
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",
+          authDomain: "bytesavior-6da1f.firebaseapp.com",
+          projectId: "bytesavior-6da1f",
+          storageBucket: "bytesavior-6da1f.firebasestorage.app",
+          messagingSenderId: "27072163055",
+          appId: "1:27072163055:web:98f302a7de4d944802bf1a"
+        };
+
+        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const currentUser = auth.currentUser;
+
+        const q = query(collection(db, 'diagScores'), orderBy('score','desc'), limit(15));
+        const snap = await getDocs(q);
+        const rows = [];
+        snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+
+        let yourEntry = null;
+        if (currentUser) {
+          const yourDoc = rows.find(r => r.uid === currentUser.uid);
+          if (!yourDoc) {
+            // Try fetching separately in case outside top 15
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+            const snap2 = await getDoc(doc(db, 'diagScores', currentUser.uid));
+            if (snap2.exists()) yourEntry = { id: snap2.id, ...snap2.data() };
+          } else {
+            yourEntry = yourDoc;
+          }
+        }
+
+        buildLbHTML(rows, yourEntry, currentUser);
+      } catch(e) {
+        console.error('Leaderboard error:', e);
+        buildLbHTML([], null, null, true);
+      }
+    }
+
+    function buildLbHTML(rows, yourEntry, currentUser, error=false) {
+      const body = document.getElementById('lbBody');
+      let html = '';
+
+      // Your score card
+      if (currentUser && yourEntry) {
+        const tier = tierFor(yourEntry.score || 0);
+        const initials = (yourEntry.displayName || currentUser.email || '?')[0].toUpperCase();
+        const pos = rows.findIndex(r => r.uid === currentUser.uid);
+        html += `<div class="lb-your-score">
+          <div>
+            <div class="lb-your-label">Your Score</div>
+            <div class="lb-your-name">${yourEntry.displayName || currentUser.email?.split('@')[0] || 'You'}</div>
+            <span class="lb-your-rank-badge" style="background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}44">${tier.name}</span>
+          </div>
+          <div style="text-align:right">
+            <div class="lb-your-score-val">${yourEntry.score}</div>
+            <div style="font-size:0.72rem;color:var(--muted)">${pos>=0?'#'+(pos+1)+' overall':'outside top 15'}</div>
+          </div>
+        </div>`;
+      } else if (currentUser && !yourEntry) {
+        html += `<div class="lb-no-score">You haven't run diagnostics yet. <a href="diagnostics.html">Run your test</a> to appear on the board.</div>`;
+      } else {
+        html += `<div class="lb-no-score">Sign in and run diagnostics to appear on the leaderboard.</div>`;
+      }
+
+      html += '<div class="lb-section-title">Top 15 This Month</div>';
+
+      if (error) {
+        html += '<div class="lb-empty"><i class="fas fa-wifi-slash"></i><br>Could not load leaderboard. Check your connection.</div>';
+      } else if (rows.length === 0) {
+        html += '<div class="lb-empty">No scores yet — be the first! <a href="diagnostics.html" style="color:var(--blue)">Run diagnostics</a>.</div>';
+      } else {
+        html += '<ul class="lb-list">';
+        rows.forEach((r, i) => {
+          const tier = tierFor(r.score || 0);
+          const isYou = currentUser && r.uid === currentUser.uid;
+          const posClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+          const name = r.displayName || r.email?.split('@')[0] || 'Anonymous';
+          const initials = name[0].toUpperCase();
+          const posLabel = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+          html += `<li class="lb-row ${isYou?'is-you':''} ${i<3?'top-3':''}">
+            <div class="lb-pos ${posClass}">${posLabel}</div>
+            <div class="lb-avatar" style="background:${avatarColor(r.uid||name)}">${initials}</div>
+            <div class="lb-info">
+              <div class="lb-uname">${name}${isYou?' <span style="color:var(--blue);font-size:0.7rem">(you)</span>':''}
+                <span class="lb-rank-tag" style="background:${tier.color}22;color:${tier.color}">${tier.name}</span>
+              </div>
+            </div>
+            <div class="lb-score-col">
+              <div class="lb-score-num">${r.score}</div>
+              <div class="lb-score-sub">/100</div>
+            </div>
+          </li>`;
+        });
+        html += '</ul>';
+      }
+
+      html += '<div class="lb-footer-note">Scores are submitted automatically after completing diagnostics while signed in.</div>';
+      body.innerHTML = html;
+    }
+
+    // Expose to profile module
+    window._openRankFromProfile = () => {
+      closeProfileModal();
+      setTimeout(() => openLbModal(), 100);
+    };
+
     // ===== LOGO HOLD-DOWN FOR PIRACY MODAL =====
     let logoHoldTimer = null;
     const logo = document.querySelector('.logo-img');
@@ -1042,6 +1234,9 @@
           <a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()">
             <i class="fas fa-tasks"></i> My Checklist Progress
           </a>
+          <button class="profile-menu-item" onclick="window._openRankFromProfile()">
+            <i class="fas fa-trophy"></i> Check Your Rank
+          </button>
           <button class="profile-menu-item" onclick="window._openQuizFromProfile()">
             <i class="fas fa-magic"></i> Retake Setup Quiz
           </button>
@@ -1151,6 +1346,20 @@
       }
     });
   </script>
+
+
+  <!-- Leaderboard Modal -->
+  <div class="lb-overlay" id="lbOverlay" onclick="if(event.target===this)closeLbModal()">
+    <div class="lb-modal" onclick="event.stopPropagation()">
+      <div class="lb-header">
+        <h2><i class="fas fa-trophy"></i> Top 15 — Diagnostic Scores</h2>
+        <button class="close-btn" onclick="closeLbModal()">×</button>
+      </div>
+      <div class="lb-body" id="lbBody">
+        <div class="lb-loading"><i class="fas fa-circle-notch"></i>Loading leaderboard...</div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
