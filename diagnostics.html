@@ -723,8 +723,62 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
 
 /* ===== PROFILE BUTTON ===== */
 .profile-btn-wrap { position: fixed; top: 16px; right: 16px; z-index: 4000; }
-.profile-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; color: var(--muted); font-size: 1.1rem; }
+.profile-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, box-shadow 0.2s; color: var(--muted); font-size: 1.1rem; position: relative; }
 .profile-btn:hover { border-color: var(--blue); box-shadow: 0 0 12px rgba(0,191,255,0.3); color: var(--blue); }
+.profile-btn.signed-in { border-color: var(--blue); color: var(--blue); }
+.profile-btn .supporter-ring { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fbbf24; animation: pulse-ring 2s ease-in-out infinite; }
+@keyframes pulse-ring { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+/* ===== PROFILE MODAL ===== */
+.profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: flex-start; justify-content: flex-end; z-index: 3500; padding: 68px 16px 0; }
+.profile-overlay.active { display: flex; }
+.profile-modal { background: var(--panel); border: 1.5px solid #333; border-radius: 14px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: profileSlideIn 0.22s ease-out; overflow: hidden; max-height: 88vh; overflow-y: auto; }
+@keyframes profileSlideIn { from{opacity:0;transform:translateY(-12px);} to{opacity:1;transform:translateY(0);} }
+.profile-auth-wrap { padding: 22px; }
+.profile-auth-wrap h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin: 0 0 4px; }
+.profile-auth-wrap p { font-size: 0.82rem; color: var(--muted); margin: 0 0 16px; }
+.profile-tabs { display: flex; margin-bottom: 16px; border: 1.5px solid #333; border-radius: 8px; overflow: hidden; }
+.profile-tab { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; border: none; color: var(--muted); transition: all 0.18s; }
+.profile-tab.active { background: var(--blue); color: white; }
+.profile-input { width: 100%; padding: 9px 12px; background: var(--bg); border: 1.5px solid #333; border-radius: 7px; color: var(--text); font-size: 0.88rem; margin-bottom: 9px; font-family: inherit; transition: border-color 0.2s; }
+.profile-input:focus { outline: none; border-color: var(--blue); }
+.profile-submit-btn { width: 100%; padding: 10px; background: var(--blue); border: none; border-radius: 8px; color: white; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 2px; }
+.profile-submit-btn:hover { background: #0099e6; }
+.profile-submit-btn:disabled { background: #333; color: var(--muted); cursor: not-allowed; }
+.profile-divider { display: flex; align-items: center; gap: 10px; margin: 13px 0; }
+.profile-divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+.profile-divider::before,.profile-divider::after { content:''; flex:1; height:1px; background:#333; }
+.profile-google-btn { width: 100%; padding: 9px; background: #fff; border: none; border-radius: 8px; color: #333; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
+.profile-google-btn:hover { opacity: 0.88; }
+.profile-error { font-size: 0.78rem; color: #ef4444; margin-top: 6px; min-height: 14px; }
+.profile-user-header { background: var(--panel-dark); padding: 18px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #333; }
+.profile-user-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: white; flex-shrink: 0; }
+.profile-user-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; }
+.profile-user-email { font-size: 0.75rem; color: var(--muted); word-break: break-all; }
+.profile-supporter-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); margin-top: 4px; }
+.profile-score-card { margin: 14px 16px 0; background: rgba(0,191,255,0.07); border: 1px solid rgba(0,191,255,0.25); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.profile-score-card .psc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.profile-score-card .psc-score { font-size: 2.4rem; font-weight: 900; color: var(--blue); line-height: 1; }
+.profile-score-card .psc-denom { font-size: 0.8rem; color: var(--muted); }
+.profile-score-card .psc-rank { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+.profile-score-card .psc-run-btn { font-size: 0.75rem; color: var(--muted); text-align: right; }
+.profile-score-card .psc-run-btn a { color: var(--blue); text-decoration: none; font-weight: 600; }
+.profile-menu { padding: 8px 0; }
+.profile-menu-item { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 0.88rem; color: var(--text); cursor: pointer; transition: background 0.15s; border: none; background: none; width: 100%; text-align: left; text-decoration: none; }
+.profile-menu-item:hover { background: rgba(255,255,255,0.04); color: var(--blue); }
+.profile-menu-item i { width: 16px; text-align: center; color: var(--muted); font-size: 0.9rem; transition: color 0.15s; }
+.profile-menu-item:hover i { color: var(--blue); }
+.profile-menu-sep { height: 1px; background: #333; margin: 5px 0; }
+.profile-menu-item.danger { color: #ef4444; }
+.profile-menu-item.danger i { color: #ef4444; }
+.profile-menu-item.danger:hover { background: rgba(239,68,68,0.08); }
+.profile-donate-section { margin: 4px 16px 14px; padding: 12px 14px; background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.25); border-radius: 8px; }
+.profile-donate-section p { font-size: 0.78rem; color: var(--muted); margin: 0 0 8px; line-height: 1.4; }
+.profile-donate-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; padding: 8px; background: #fbbf24; border: none; border-radius: 7px; color: #1a1100; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+.profile-donate-btn:hover { background: #f59e0b; }
+.profile-loading { padding: 32px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+.profile-loading i { font-size: 1.4rem; color: var(--blue); display: block; margin-bottom: 10px; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===== LEADERBOARD MODAL ===== */
 .lb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 4500; padding: 20px; }
@@ -788,11 +842,20 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
   <i class="fas fa-arrow-left"></i> Home
 </a>
 
-<!-- Profile button top-right (mirrors index.html) -->
+<!-- Profile button top-right — full modal, not a redirect -->
 <div class="profile-btn-wrap">
-  <button class="profile-btn" id="profileBtn" onclick="window.location.href='index.html'" title="Account — manage on Home">
-    <i class="fas fa-user"></i>
+  <button class="profile-btn" id="profileBtn" onclick="toggleProfileModal()" title="Account">
+    <i class="fas fa-user" id="profileBtnIcon"></i>
   </button>
+</div>
+
+<!-- Profile Modal -->
+<div class="profile-overlay" id="profileOverlay" onclick="if(event.target===this)closeProfileModal()">
+  <div class="profile-modal" onclick="event.stopPropagation()" id="profileModal">
+    <div class="profile-loading" id="profileLoading">
+      <i class="fas fa-circle-notch"></i> Loading...
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -1278,7 +1341,7 @@ async function benchmarkStorage() {
 async function benchmarkNetwork() {
   const results={ downloadMbps:null, latencyMs:null, jitterMs:null, testMethod:'unknown' };
 
-  // ---- LATENCY: ping 4 no-cors endpoints, take median ----
+  // ---- LATENCY: HEAD requests to 4 endpoints, take median ----
   const pingTargets=[
     'https://www.cloudflare.com/cdn-cgi/trace',
     'https://dns.google/',
@@ -1295,67 +1358,72 @@ async function benchmarkNetwork() {
   }
   if(latencies.length>=2){
     latencies.sort((a,b)=>a-b);
-    // Drop highest outlier, average rest
     const trimmed=latencies.slice(0,latencies.length-1);
     results.latencyMs=Math.round(trimmed.reduce((a,b)=>a+b,0)/trimmed.length);
-    results.jitterMs=trimmed.length>1?Math.round(Math.max(...trimmed)-Math.min(...trimmed)):0;
+    results.jitterMs=Math.round(Math.max(...trimmed)-Math.min(...trimmed));
   } else if(latencies.length===1){
-    results.latencyMs=latencies[0];
-    results.jitterMs=0;
+    results.latencyMs=latencies[0]; results.jitterMs=0;
   }
 
-  // ---- DOWNLOAD: fetch several files in sequence, pick best ----
-  // Use publicly cacheable CDN files of known sizes for reliable measurement.
-  // We fetch 3 files and take the best (highest) Mbps reading.
-  const dlTargets=[
-    // ~90KB
-    { url:'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js?nc='+Date.now(), label:'three.js (~600KB)' },
-    // ~170KB
-    { url:'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js?nc='+Date.now(), label:'pdf.js (~1MB)' },
-    // ~250KB
-    { url:'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js?nc='+Date.now(), label:'lodash' },
+  // ---- DOWNLOAD: two-phase timing, multiple passes, median result ----
+  // Phase 1: fetch() resolves when headers arrive (includes TCP+TLS).
+  // Phase 2: arrayBuffer() reads only the body transfer.
+  // We use the BODY-READ duration for speed calculation to exclude
+  // connection setup overhead which inflates latency but not throughput.
+  // Min body read time of 80ms enforced to reject cache hits.
+  const speedRuns=[];
+  const testFiles=[
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js',
   ];
 
-  const dlReadings=[];
-  for(const target of dlTargets){
-    try{
-      const t0=performance.now();
-      const resp=await fetch(target.url,{cache:'no-store',signal:AbortSignal.timeout(8000)});
-      const buf=await resp.arrayBuffer();
-      const elapsed=(performance.now()-t0)/1000;
-      if(elapsed>0.05){ // ignore suspiciously fast (cache hit)
-        const mbps=parseFloat(((buf.byteLength*8)/elapsed/1_000_000).toFixed(2));
-        dlReadings.push({ mbps, bytes:buf.byteLength, ms:Math.round(elapsed*1000), label:target.label });
-      }
-    }catch(e){}
-    await sleep(80);
+  for(let fi=0;fi<testFiles.length;fi++){
+    for(let pass=0;pass<2;pass++){
+      try{
+        const url=testFiles[fi]+'?nc='+Date.now()+'p'+pass;
+        // Warm TCP: fetch headers first
+        const resp=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(12000)});
+        // Time only the body read — this is the pure transfer throughput
+        const t0=performance.now();
+        const buf=await resp.arrayBuffer();
+        const bodyMs=performance.now()-t0;
+        const bytes=buf.byteLength;
+
+        // Reject: too small, or body read < 80ms (almost certainly served from
+        // browser disk/memory cache — not a real network transfer)
+        if(bytes<50000||bodyMs<80) continue;
+
+        const mbps=parseFloat(((bytes*8)/(bodyMs/1000)/1_000_000).toFixed(2));
+        if(mbps>0.1&&mbps<50000) speedRuns.push({mbps,bytes,ms:Math.round(bodyMs),file:fi,pass});
+      }catch(e){}
+      await sleep(150);
+    }
+    if(speedRuns.length>=4) break;
   }
 
-  if(dlReadings.length>0){
-    // Sort by speed, take median to avoid outliers
-    dlReadings.sort((a,b)=>a.mbps-b.mbps);
-    const mid=Math.floor(dlReadings.length/2);
-    const chosen=dlReadings[mid];
+  if(speedRuns.length>0){
+    speedRuns.sort((a,b)=>a.mbps-b.mbps);
+    const mid=Math.floor(speedRuns.length/2);
+    const chosen=speedRuns[mid];
     results.downloadMbps=chosen.mbps;
     results.downloadBytes=chosen.bytes;
     results.downloadMs=chosen.ms;
-    results.downloadLabel=chosen.label;
-    results.allReadings=dlReadings;
-    results.testMethod='multi-file CDN';
+    results.allReadings=speedRuns.map(r=>r.mbps+' Mbps');
+    results.testMethod='body-phase timing, '+speedRuns.length+' samples, median';
   }
 
-  // ---- NAVIGATOR API as supplementary data ----
+  // ---- Navigator API (supplementary / fallback only) ----
   const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
   if(conn){
     results.effectiveType=conn.effectiveType;
-    results.navDownlink=conn.downlink;  // Mbps (browser estimate, capped at 10 for mobile)
+    results.navDownlink=conn.downlink;
     results.navRtt=conn.rtt;
-    // Only use nav data as fallback if our test completely failed
+    if(results.latencyMs===null&&conn.rtt) results.latencyMs=conn.rtt;
     if(results.downloadMbps===null&&conn.downlink){
       results.downloadMbps=conn.downlink;
-      results.testMethod='navigator API';
+      results.testMethod='navigator API (fallback)';
     }
-    if(results.latencyMs===null&&conn.rtt) results.latencyMs=conn.rtt;
   }
 
   return results;
@@ -2021,70 +2089,34 @@ async function startFullDiagnostics(){
   runBtn.classList.add('pulse');
   runBtn.innerHTML='<i class="fas fa-redo"></i> Re-Run Diagnostics';
 
-  // ---- Save score to Firestore if user is signed in ----
-  try { await saveScoreToFirestore(scores.overall); } catch(e) { console.warn('Score save skipped:', e); }
+  // ---- Save score via Firebase module bridge ----
+  if (window._saveDiagScore) window._saveDiagScore(scores.overall);
+  else window._pendingScore = scores.overall; // auth not ready yet, module will pick it up
 }
+</script>
 
-// ============================================================
-//  FIREBASE SCORE SAVE
-// ============================================================
-async function saveScoreToFirestore(score) {
-  const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js");
-  const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js");
-  const { getFirestore, doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
+<!-- ===== FIREBASE: Profile + Score Save + Leaderboard ===== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",
-    authDomain: "bytesavior-6da1f.firebaseapp.com",
-    projectId: "bytesavior-6da1f",
-    storageBucket: "bytesavior-6da1f.firebasestorage.app",
-    messagingSenderId: "27072163055",
-    appId: "1:27072163055:web:98f302a7de4d944802bf1a"
-  };
+const cfg = {
+  apiKey: "AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",
+  authDomain: "bytesavior-6da1f.firebaseapp.com",
+  projectId: "bytesavior-6da1f",
+  storageBucket: "bytesavior-6da1f.firebasestorage.app",
+  messagingSenderId: "27072163055",
+  appId: "1:27072163055:web:98f302a7de4d944802bf1a"
+};
 
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const user = auth.currentUser;
+const app = initializeApp(cfg);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const gp   = new GoogleAuthProvider();
 
-  if (!user) {
-    // Show a subtle "sign in to save" nudge near the score
-    const nudge = document.getElementById('saveNudge');
-    if (nudge) nudge.style.display = 'flex';
-    return;
-  }
-
-  // Save/update — one doc per user keyed by uid so each user has one best score
-  // We keep the best score, not overwrite with worse
-  const { getDoc } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
-  const ref = doc(db, 'diagScores', user.uid);
-  const existing = await getDoc(ref);
-  const prevScore = existing.exists() ? (existing.data().score || 0) : 0;
-
-  if (score >= prevScore) {
-    await setDoc(ref, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || user.email?.split('@')[0] || 'User',
-      score,
-      updatedAt: serverTimestamp(),
-    });
-  }
-
-  // Show confirmation near score
-  const nudge = document.getElementById('saveNudge');
-  if (nudge) {
-    nudge.style.display = 'flex';
-    nudge.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> Score saved to leaderboard &bull; <a href="javascript:void(0)" onclick="openLbModal()" style="color:var(--blue);text-decoration:none;font-weight:600">Check Your Rank</a>`;
-    nudge.style.borderColor = 'rgba(74,222,128,0.3)';
-    nudge.style.background = 'rgba(74,222,128,0.06)';
-  }
-}
-
-// ============================================================
-//  LEADERBOARD (mirrors index.html version)
-// ============================================================
-const RANK_TIERS_DIAG = [
+// ---- Rank tiers ----
+const TIERS = [
   { min:0,  max:9,  name:'Unsecured',       color:'#ef4444' },
   { min:10, max:24, name:'Default User',     color:'#f97316' },
   { min:25, max:49, name:'Aware',            color:'#fbbf24' },
@@ -2093,115 +2125,352 @@ const RANK_TIERS_DIAG = [
   { min:85, max:94, name:'Advanced',         color:'#22d3ee' },
   { min:95, max:100,name:'ByteSavior Elite', color:'#a78bfa' },
 ];
+const tier = s => TIERS.find(r => s >= r.min && s <= r.max) || TIERS[0];
+const avCol = str => { const c=['#00bfff','#4ade80','#a78bfa','#fb923c','#f43f5e','#22d3ee','#fbbf24']; let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return c[Math.abs(h)%c.length]; };
+const initials = (name, email) => { if(name) return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); return email ? email[0].toUpperCase() : '?'; };
 
-function tierForDiag(s){ return RANK_TIERS_DIAG.find(r=>s>=r.min&&s<=r.max)||RANK_TIERS_DIAG[0]; }
-
-function avatarColorDiag(str){
-  const colors=['#00bfff','#4ade80','#a78bfa','#fb923c','#f43f5e','#22d3ee','#fbbf24'];
-  let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h);
-  return colors[Math.abs(h)%colors.length];
+// ---- Toaster ----
+function toast(msg, err=false) {
+  const t = document.getElementById('profileToast');
+  t.textContent = msg;
+  t.className = 'profile-toast show' + (err ? ' error' : '');
+  setTimeout(() => t.className = 'profile-toast', 3000);
 }
 
-function openLbModal(){
+// ---- Ensure user doc ----
+async function ensureDoc(user) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, { email: user.email, displayName: user.displayName||'', createdAt: serverTimestamp(), isSupporter: false });
+  }
+  return (await getDoc(ref)).data();
+}
+
+// ---- Save diagnostic score ----
+async function doSaveScore(user, score) {
+  try {
+    const ref = doc(db, 'diagScores', user.uid);
+    const snap = await getDoc(ref);
+    const prev = snap.exists() ? (snap.data().score || 0) : 0;
+    if (score >= prev) {
+      await setDoc(ref, {
+        uid: user.uid,
+        email: user.email || '',
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        score,
+        updatedAt: serverTimestamp(),
+      });
+    }
+    // Update the save nudge
+    const nudge = document.getElementById('saveNudge');
+    if (nudge) {
+      nudge.style.display = 'flex';
+      nudge.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> Score saved &bull; <a href="javascript:void(0)" onclick="openLbModal()" style="color:var(--blue);text-decoration:none;font-weight:600">Check Your Rank</a>`;
+      nudge.style.borderColor = 'rgba(74,222,128,0.3)';
+      nudge.style.background = 'rgba(74,222,128,0.06)';
+    }
+    // Store locally so profile can show it without another fetch
+    window._latestScore = score;
+    // If profile is open, re-render logged-in state to show new score
+    if (document.getElementById('profileOverlay')?.classList.contains('active')) {
+      renderIn(user);
+    }
+  } catch(e) { console.warn('Score save error:', e); }
+}
+
+// Expose save function to regular script
+window._diagAuthUser = null;
+window._doSaveScore = doSaveScore;
+
+// Bridge: called by the runner script
+window._saveDiagScore = function(score) {
+  window._pendingScore = score;
+  if (window._diagAuthUser) doSaveScore(window._diagAuthUser, score);
+};
+
+// ---- Profile modal controls ----
+window.toggleProfileModal = () => {
+  const ov = document.getElementById('profileOverlay');
+  ov.classList.toggle('active');
+  document.body.style.overflow = ov.classList.contains('active') ? 'hidden' : 'auto';
+};
+window.closeProfileModal = () => {
+  document.getElementById('profileOverlay').classList.remove('active');
+  document.body.style.overflow = 'auto';
+};
+
+// ---- Render logged-out ----
+function renderOut(mode = 'login') {
+  const m = document.getElementById('profileModal');
+  m.innerHTML = `
+    <div class="profile-auth-wrap">
+      <h3>ByteSavior Account</h3>
+      <p>Sign in to save scores and appear on the leaderboard.</p>
+      <div class="profile-tabs">
+        <button class="profile-tab ${mode==='login'?'active':''}" onclick="window._pm('login')">Sign In</button>
+        <button class="profile-tab ${mode==='signup'?'active':''}" onclick="window._pm('signup')">Create Account</button>
+      </div>
+      ${mode==='signup' ? '<input type="text" class="profile-input" id="pDisplayName" placeholder="Display name"/>' : ''}
+      <input type="email" class="profile-input" id="pEmail" placeholder="Email address" autocomplete="email"/>
+      <input type="password" class="profile-input" id="pPassword" placeholder="Password" autocomplete="${mode==='login'?'current-password':'new-password'}"/>
+      <div class="profile-error" id="pError"></div>
+      <button class="profile-submit-btn" id="pSubmitBtn" onclick="window._ps('${mode}')">${mode==='login'?'Sign In':'Create Account'}</button>
+      <div class="profile-divider"><span>or</span></div>
+      <button class="profile-google-btn" onclick="window._pg()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+    </div>`;
+  setTimeout(() => document.getElementById('pEmail')?.focus(), 50);
+}
+
+// ---- Render logged-in ----
+async function renderIn(user) {
+  const m = document.getElementById('profileModal');
+  let ud = {}, savedScore = null;
+  try { ud = await ensureDoc(user); } catch(e) {}
+
+  // Fetch saved score
+  try {
+    const snap = await getDoc(doc(db, 'diagScores', user.uid));
+    if (snap.exists()) savedScore = snap.data().score;
+  } catch(e) {}
+
+  // Use in-memory score if it's newer/higher
+  if (window._latestScore !== undefined && (savedScore === null || window._latestScore >= savedScore)) {
+    savedScore = window._latestScore;
+  }
+
+  const sup = ud.isSupporter || false;
+  const ini = initials(user.displayName, user.email);
+  const dn  = user.displayName || user.email?.split('@')[0] || 'User';
+  const t   = savedScore !== null ? tier(savedScore) : null;
+
+  m.innerHTML = `
+    <div class="profile-user-header">
+      <div class="profile-user-avatar">${ini}</div>
+      <div>
+        <div class="profile-user-name">${dn}</div>
+        <div class="profile-user-email">${user.email}</div>
+        ${sup ? '<div class="profile-supporter-badge"><i class="fas fa-star"></i> Supporter</div>' : ''}
+      </div>
+    </div>
+
+    ${savedScore !== null ? `
+    <div class="profile-score-card">
+      <div>
+        <div class="psc-label">Diagnostic Score</div>
+        <div class="psc-score">${savedScore}<span class="psc-denom"> /100</span></div>
+        <span class="psc-rank" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}44">${t.name}</span>
+      </div>
+      <div class="psc-run-btn">
+        ${window._diagData ? '<span style="color:var(--green);font-size:0.72rem"><i class="fas fa-check"></i> Just ran</span>' : '<a href="javascript:void(0)" onclick="closeProfileModal();document.getElementById(\'runBtn\').scrollIntoView({behavior:\'smooth\'})">Run again ↓</a>'}
+      </div>
+    </div>` : `
+    <div class="profile-score-card" style="background:rgba(255,255,255,0.03);border-color:#333">
+      <div>
+        <div class="psc-label">Diagnostic Score</div>
+        <div style="font-size:1rem;color:var(--muted);margin-top:4px">Not run yet</div>
+      </div>
+      <div class="psc-run-btn">
+        <a href="javascript:void(0)" onclick="closeProfileModal();document.getElementById('runBtn').scrollIntoView({behavior:'smooth'})">Run now ↓</a>
+      </div>
+    </div>`}
+
+    <div class="profile-menu">
+      <button class="profile-menu-item" onclick="window._openRank()">
+        <i class="fas fa-trophy"></i> Check Your Rank
+      </button>
+      <a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()">
+        <i class="fas fa-tasks"></i> My Checklist Progress
+      </a>
+      <button class="profile-menu-item" onclick="window.location.href='index.html#openquiz'">
+        <i class="fas fa-magic"></i> Build My Setup
+      </button>
+      <div class="profile-menu-sep"></div>
+      ${!sup ? `
+      <div class="profile-donate-section">
+        <p>Support ByteSavior for <strong style="color:var(--text)">$3.50/year</strong> — removes ads and shows a Supporter badge.</p>
+        <a href="https://ko-fi.com/bytesavior/membership" target="_blank" class="profile-donate-btn" rel="noopener"><i class="fas fa-heart"></i> Become a Supporter</a>
+      </div>` : `
+      <div class="profile-donate-section" style="background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2)">
+        <p style="color:#fbbf24;font-weight:600;margin-bottom:0">⭐ Thank you for supporting ByteSavior!</p>
+      </div>`}
+      <div class="profile-menu-sep"></div>
+      <button class="profile-menu-item danger" onclick="window._pso()">
+        <i class="fas fa-sign-out-alt"></i> Sign Out
+      </button>
+    </div>`;
+
+  const btn = document.getElementById('profileBtn');
+  if (btn) { btn.classList.add('signed-in'); if(sup) btn.innerHTML='<i class="fas fa-user"></i><span class="supporter-ring"></span>'; }
+}
+
+// ---- Auth actions ----
+window._pm = mode => renderOut(mode);
+
+window._ps = async mode => {
+  const email = document.getElementById('pEmail')?.value.trim();
+  const pw    = document.getElementById('pPassword')?.value;
+  const errEl = document.getElementById('pError');
+  const btn   = document.getElementById('pSubmitBtn');
+  if (!email||!pw) { errEl.textContent='Please fill in all fields.'; return; }
+  btn.disabled=true; btn.textContent=mode==='login'?'Signing in...':'Creating...'; errEl.textContent='';
+  try {
+    if (mode==='signup') {
+      const dn = document.getElementById('pDisplayName')?.value.trim();
+      const c  = await createUserWithEmailAndPassword(auth, email, pw);
+      if (dn) await updateProfile(c.user, { displayName: dn });
+      await ensureDoc(c.user);
+      toast('Account created — welcome!');
+    } else {
+      await signInWithEmailAndPassword(auth, email, pw);
+      toast('Signed in.');
+    }
+    closeProfileModal();
+  } catch(e) {
+    btn.disabled=false; btn.textContent=mode==='login'?'Sign In':'Create Account';
+    const msgs = {'auth/email-already-in-use':'Email already registered.','auth/invalid-email':'Invalid email.','auth/weak-password':'Password needs 6+ characters.','auth/wrong-password':'Wrong password.','auth/user-not-found':'No account found.','auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts — try later.'};
+    errEl.textContent = msgs[e.code] || 'Something went wrong.';
+  }
+};
+
+window._pg = async () => {
+  try {
+    const r = await signInWithPopup(auth, gp);
+    await ensureDoc(r.user);
+    toast('Signed in with Google.');
+    closeProfileModal();
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      const errEl = document.getElementById('pError');
+      if (errEl) errEl.textContent = 'Google sign-in failed. Try again.';
+    }
+  }
+};
+
+window._pso = async () => {
+  await signOut(auth);
+  window._latestScore = undefined;
+  const btn = document.getElementById('profileBtn');
+  if (btn) { btn.classList.remove('signed-in'); btn.innerHTML = '<i class="fas fa-user" id="profileBtnIcon"></i>'; }
+  toast('Signed out.');
+  closeProfileModal();
+};
+
+// ---- Leaderboard ----
+window.openLbModal = () => {
   document.getElementById('lbOverlay').classList.add('active');
-  document.body.style.overflow='hidden';
-  renderLbDiag();
-}
-
-function closeLbModal(){
+  document.body.style.overflow = 'hidden';
+  loadLeaderboard();
+};
+window.closeLbModal = () => {
   document.getElementById('lbOverlay').classList.remove('active');
-  document.body.style.overflow='auto';
-}
+  document.body.style.overflow = 'auto';
+};
+window._openRank = () => { closeProfileModal(); setTimeout(() => openLbModal(), 120); };
 
-async function renderLbDiag(){
-  const body=document.getElementById('lbBody');
-  body.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted)"><i class="fas fa-circle-notch fa-spin" style="font-size:1.6rem;color:var(--blue);display:block;margin-bottom:10px"></i>Loading...</div>';
-  try{
-    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js");
-    const { getAuth } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js");
-    const { getFirestore, collection, query, orderBy, limit, getDocs, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js");
-    const firebaseConfig={apiKey:"AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",authDomain:"bytesavior-6da1f.firebaseapp.com",projectId:"bytesavior-6da1f",storageBucket:"bytesavior-6da1f.firebasestorage.app",messagingSenderId:"27072163055",appId:"1:27072163055:web:98f302a7de4d944802bf1a"};
-    const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
-    const db=getFirestore(app);
-    const auth=getAuth(app);
-    const currentUser=auth.currentUser;
+async function loadLeaderboard() {
+  const body = document.getElementById('lbBody');
+  body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted)"><i class="fas fa-circle-notch fa-spin" style="font-size:1.6rem;color:var(--blue);display:block;margin-bottom:10px"></i>Loading...</div>';
 
-    const q=query(collection(db,'diagScores'),orderBy('score','desc'),limit(15));
-    const snap=await getDocs(q);
-    const rows=[];
-    snap.forEach(d=>rows.push({id:d.id,...d.data()}));
+  try {
+    const me = auth.currentUser;
+    const q  = query(collection(db, 'diagScores'), orderBy('score','desc'), limit(15));
+    const snap = await getDocs(q);
+    const rows = [];
+    snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
 
-    let yourEntry=null;
-    if(currentUser){
-      const yourDoc=rows.find(r=>r.uid===currentUser.uid);
-      if(!yourDoc){
-        const snap2=await getDoc(doc(db,'diagScores',currentUser.uid));
-        if(snap2.exists()) yourEntry={id:snap2.id,...snap2.data()};
-      } else { yourEntry=yourDoc; }
+    let myEntry = rows.find(r => me && r.uid === me.uid) || null;
+    if (!myEntry && me) {
+      try {
+        const s2 = await getDoc(doc(db, 'diagScores', me.uid));
+        if (s2.exists()) myEntry = { id: s2.id, ...s2.data() };
+      } catch(e) {}
     }
 
-    buildLbHTMLDiag(rows, yourEntry, currentUser);
-  } catch(e){
-    body.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">Could not load leaderboard. Check your connection.</div>';
-  }
-}
+    // Build HTML
+    let html = '';
 
-function buildLbHTMLDiag(rows, yourEntry, currentUser){
-  const body=document.getElementById('lbBody');
-  let html='';
+    // Your card
+    if (me && myEntry) {
+      const t = tier(myEntry.score || 0);
+      const pos = rows.findIndex(r => r.uid === me.uid);
+      html += `<div style="background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">Your Score</div>
+          <div style="font-weight:700;font-size:0.95rem;color:var(--text)">${myEntry.displayName || me.email?.split('@')[0] || 'You'}</div>
+          <span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:8px;background:${t.color}22;color:${t.color};border:1px solid ${t.color}44;display:inline-block;margin-top:3px">${t.name}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:2rem;font-weight:900;color:var(--blue);line-height:1">${myEntry.score}</div>
+          <div style="font-size:0.7rem;color:var(--muted)">${pos >= 0 ? '#'+(pos+1)+' overall' : 'outside top 15'}</div>
+        </div>
+      </div>`;
+    } else if (me) {
+      html += `<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:20px">Run diagnostics to save your score and appear on the board.</div>`;
+    } else {
+      html += `<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:20px">Sign in and run diagnostics to appear on the leaderboard.</div>`;
+    }
 
-  if(currentUser&&yourEntry){
-    const tier=tierForDiag(yourEntry.score||0);
-    const pos=rows.findIndex(r=>r.uid===currentUser.uid);
-    html+=`<div style="background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-      <div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">Your Score</div>
-        <div style="font-weight:700;font-size:0.95rem;color:var(--text)">${yourEntry.displayName||currentUser.email?.split('@')[0]||'You'}</div>
-        <span style="font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:8px;background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}44;margin-top:3px;display:inline-block">${tier.name}</span>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:2rem;font-weight:900;color:var(--blue);line-height:1">${yourEntry.score}</div>
-        <div style="font-size:0.7rem;color:var(--muted)">${pos>=0?'#'+(pos+1)+' overall':'outside top 15'}</div>
-      </div>
-    </div>`;
-  } else if(currentUser){
-    html+=`<div style="text-align:center;color:var(--muted);font-size:0.88rem;margin-bottom:20px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">Run diagnostics and sign in to appear on the leaderboard.</div>`;
-  } else {
-    html+=`<div style="text-align:center;color:var(--muted);font-size:0.88rem;margin-bottom:20px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">Sign in and run diagnostics to save your score.</div>`;
-  }
+    html += '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Top 15 Scores</div>';
 
-  html+='<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Top 15 Scores</div>';
-
-  if(rows.length===0){
-    html+='<div style="text-align:center;color:var(--muted);padding:24px">No scores yet — be the first!</div>';
-  } else {
-    html+='<ul style="list-style:none;display:flex;flex-direction:column;gap:8px">';
-    rows.forEach((r,i)=>{
-      const tier=tierForDiag(r.score||0);
-      const isYou=currentUser&&r.uid===currentUser.uid;
-      const posLabel=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-      const name=r.displayName||r.email?.split('@')[0]||'Anonymous';
-      const init=name[0].toUpperCase();
-      html+=`<li style="display:flex;align-items:center;gap:12px;background:${isYou?'rgba(0,191,255,0.1)':'#1a2230'};border:${isYou?'1px solid rgba(0,191,255,0.3)':'1px solid transparent'};border-radius:8px;padding:10px 14px">
-        <div style="font-size:0.9rem;font-weight:800;width:24px;text-align:center;flex-shrink:0;color:var(--muted)">${posLabel}</div>
-        <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:white;flex-shrink:0;background:${avatarColorDiag(r.uid||name)}">${init}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:0.88rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}${isYou?' <span style="color:var(--blue);font-size:0.7rem">(you)</span>':''}
-            <span style="font-size:0.68rem;font-weight:700;padding:1px 7px;border-radius:8px;background:${tier.color}22;color:${tier.color};margin-left:4px">${tier.name}</span>
+    if (rows.length === 0) {
+      html += '<div style="text-align:center;color:var(--muted);padding:24px">No scores yet — you could be first!</div>';
+    } else {
+      html += '<ul style="list-style:none;display:flex;flex-direction:column;gap:8px">';
+      rows.forEach((r, i) => {
+        const t = tier(r.score || 0);
+        const isMe = me && r.uid === me.uid;
+        const pl   = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+        const nm   = r.displayName || r.email?.split('@')[0] || 'Anonymous';
+        html += `<li style="display:flex;align-items:center;gap:12px;background:${isMe?'rgba(0,191,255,0.1)':'#1a2230'};border:${isMe?'1px solid rgba(0,191,255,0.3)':'1px solid transparent'};border-radius:8px;padding:10px 14px">
+          <div style="font-size:0.9rem;font-weight:800;width:24px;text-align:center;color:var(--muted)">${pl}</div>
+          <div style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:white;flex-shrink:0;background:${avCol(r.uid||nm)}">${nm[0].toUpperCase()}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:0.88rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              ${nm}${isMe?' <span style="color:var(--blue);font-size:0.7rem">(you)</span>':''}
+              <span style="font-size:0.68rem;font-weight:700;padding:1px 7px;border-radius:8px;background:${t.color}22;color:${t.color};margin-left:4px">${t.name}</span>
+            </div>
           </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${r.score}</div>
-          <div style="font-size:0.68rem;color:var(--muted)">/100</div>
-        </div>
-      </li>`;
-    });
-    html+='</ul>';
-  }
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--blue)">${r.score}</div>
+            <div style="font-size:0.68rem;color:var(--muted)">/100</div>
+          </div>
+        </li>`;
+      });
+      html += '</ul>';
+    }
 
-  html+='<div style="font-size:0.74rem;color:var(--muted);text-align:center;margin-top:16px;line-height:1.5">Only your best score is stored. Scores update automatically after each run.</div>';
-  body.innerHTML=html;
+    html += '<div style="font-size:0.74rem;color:var(--muted);text-align:center;margin-top:16px;line-height:1.5">Only your best score is kept. Updates automatically after each run.</div>';
+    body.innerHTML = html;
+
+  } catch(e) {
+    console.error('Leaderboard error:', e);
+    body.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px">
+      <i class="fas fa-exclamation-circle" style="color:var(--red);font-size:1.4rem;display:block;margin-bottom:10px"></i>
+      Failed to load leaderboard.<br><span style="font-size:0.78rem">Error: ${e.message}</span>
+    </div>`;
+  }
 }
+
+// ---- Auth state ----
+onAuthStateChanged(auth, async user => {
+  window._diagAuthUser = user;
+  const loading = document.getElementById('profileLoading');
+  if (loading) loading.style.display = 'none';
+  if (user) {
+    await renderIn(user);
+    // If a score was run before auth was ready, save it now
+    if (window._pendingScore !== undefined) {
+      await doSaveScore(user, window._pendingScore);
+      window._pendingScore = undefined;
+    }
+  } else {
+    renderOut('login');
+  }
+});
 </script>
 </body>
 </html>
