@@ -4,9 +4,314 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ByteSavior - Extras</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
+
+    /* ── JetBrains Mono + DM Sans ── */
+
+    /* ── DESIGN TOKENS ── */
+    :root {
+      --blue: #00bfff;
+      --bg: #0d0d0f;
+      --panel: #16161a;
+      --panel2: #1c1c22;
+      --panel-dark: #0a0a0d;
+      --border: #22222a;
+      --border-hi: #2a2a35;
+      --text: #e8e8f0;
+      --text2: #a0a0b0;
+      --muted: #505060;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --red: #ef4444;
+      --yellow: #fbbf24;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* scanline */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    @keyframes pulse-ring { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+    /* ── SPLIT LAYOUT ── */
+    .bs-wrapper {
+      display: flex;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .bs-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .bs-sidebar-top {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .bs-sidebar-top .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 5px var(--green);
+      animation: blink 2.4s infinite;
+    }
+
+    .bs-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .bs-brand-logo {
+      width: 36px; height: 36px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(0,191,255,0.3));
+      flex-shrink: 0;
+    }
+
+    .bs-brand-text {}
+    .bs-brand-name {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .bs-brand-name .accent { color: var(--blue); }
+    .bs-brand-tagline {
+      font-family: var(--mono);
+      font-size: 0.52rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .bs-nav {
+      flex: 1;
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .bs-nav-section {
+      padding: 12px 18px 4px;
+      font-family: var(--mono);
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .bs-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      text-decoration: none;
+      color: var(--text2);
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.14s, color 0.14s, border-color 0.14s;
+      border-left: 2px solid transparent;
+      font-family: var(--sans);
+    }
+    .bs-nav-item:hover {
+      background: var(--panel2);
+      color: var(--text);
+      border-left-color: var(--blue);
+    }
+    .bs-nav-item.active {
+      background: rgba(0,191,255,0.07);
+      color: var(--text);
+      border-left-color: var(--blue);
+    }
+    .bs-nav-icon {
+      width: 16px;
+      text-align: center;
+      color: var(--blue);
+      font-size: 0.8rem;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+    .bs-nav-item:hover .bs-nav-icon,
+    .bs-nav-item.active .bs-nav-icon { opacity: 1; }
+    .bs-nav-label { flex: 1; }
+    .bs-nav-arrow { font-size: 0.6rem; color: var(--muted); opacity: 0; transition: opacity 0.14s; }
+    .bs-nav-item:hover .bs-nav-arrow { opacity: 1; }
+
+    .bs-sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .bs-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 10px;
+      background: var(--blue);
+      color: #001a26;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--sans);
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      transition: background 0.16s;
+    }
+    .bs-cta:hover { background: #1ac8ff; }
+
+    /* ── RIGHT CONTENT PANE ── */
+    .bs-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bs-main-topbar {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--panel);
+    }
+
+    .bs-breadcrumb {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bs-breadcrumb .sep { color: #333; }
+    .bs-breadcrumb .current { color: var(--text2); }
+
+    .bs-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bs-version {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    /* Profile pill */
+    .bs-profile-pill {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--panel2);
+      border: 1px solid var(--border-hi);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+      position: relative;
+    }
+    .bs-profile-pill:hover { border-color: var(--blue); box-shadow: 0 0 10px rgba(0,191,255,0.2); color: var(--blue); }
+    .bs-profile-pill.signed-in { border-color: var(--blue); color: var(--blue); }
+    .bs-profile-pill .supporter-ring { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fbbf24; animation: pulse-ring 2s ease-in-out infinite; }
+
+    /* scrollable content */
+    .bs-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 28px 32px 60px;
+    }
+
+    /* ── OLD CLASSES: repoint to new tokens ── */
+    .container { max-width: 100%; }
+    .site-header { display: none !important; }
+    .main-nav { display: none !important; }
+    /* keep get-started button hidden too */
+    .get-started-fixed { display: none !important; }
+
+    /* Profile / toast overlays — keep them working */
+    .profile-btn-wrap { display: none !important; }
+
+    /* ── MOBILE: collapse sidebar ── */
+    @media (max-width: 700px) {
+      .bs-sidebar { width: 200px; }
+      .bs-scroll { padding: 20px 18px 60px; }
+    }
+    @media (max-width: 520px) {
+      .bs-sidebar { display: none; }
+      body { overflow: auto; }
+      .bs-main { height: 100vh; }
+    }
+
 :root {
   --blue: #00bfff;
   --bg: #121212;
@@ -634,7 +939,7 @@ html, body {
     .profile-btn.signed-in { border-color: var(--blue); color: var(--blue); }
     .profile-btn .supporter-ring { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid #fbbf24; animation: pulse-ring 2s ease-in-out infinite; }
     @keyframes pulse-ring { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
-    .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: flex-start; justify-content: flex-end; z-index: 3500; padding: 68px 16px 0; }
+    .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: none; align-items: flex-start; justify-content: flex-end; z-index: 3500; padding: 44px 16px 0; }
     .profile-overlay.active { display: flex; }
     .profile-modal { background: var(--panel); border: 1.5px solid #333; border-radius: 14px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: profileSlideIn 0.22s ease-out; overflow: hidden; max-height: 88vh; overflow-y: auto; }
     @keyframes profileSlideIn { from{opacity:0;transform:translateY(-12px);} to{opacity:1;transform:translateY(0);} }
@@ -680,11 +985,85 @@ html, body {
     .profile-toast.show { opacity: 1; }
     .profile-toast.error { border-color: #ef4444; color: #ef4444; }
 
+
+    /* ===== PROFILE SCORE CARD ===== */
+    .profile-score-card { margin: 14px 16px 0; background: rgba(0,191,255,0.07); border: 1px solid rgba(0,191,255,0.25); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .profile-score-card .psc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+    .profile-score-card .psc-score { font-size: 2.4rem; font-weight: 900; color: var(--blue); line-height: 1; }
+    .profile-score-card .psc-denom { font-size: 0.8rem; color: var(--muted); }
+    .profile-score-card .psc-rank { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+    .profile-score-card .psc-run-btn { font-size: 0.75rem; color: var(--muted); text-align: right; }
   </style>
 </head>
 
 <body>
-  <!-- Profile Button -->
+  <!-- ── SPLIT LAYOUT ── -->
+  <div class="bs-wrapper">
+    <!-- Sidebar -->
+    <div class="bs-sidebar">
+    <div class="bs-sidebar-top">
+      <span class="dot"></span>
+      ByteSavior
+    </div>
+    <a href="index.html" class="bs-brand">
+      <img src="fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png" class="bs-brand-logo" alt="logo">
+      <div class="bs-brand-text">
+        <div class="bs-brand-name">Byte<span class="accent">Savior</span></div>
+        <div class="bs-brand-tagline">Rescue · Reduce · Protect</div>
+      </div>
+    </a>
+    <nav class="bs-nav">
+      <div class="bs-nav-section">Navigation</div>
+      <a href="index.html" class="bs-nav-item ">
+        <span class="bs-nav-icon"><i class="fas fa-home"></i></span>
+        <span class="bs-nav-label">Home</span>
+        <span class="bs-nav-arrow"><i class="fas fa-chevron-right"></i></span>
+      </a>
+      <a href="optimization.html" class="bs-nav-item ">
+        <span class="bs-nav-icon"><i class="fas fa-sliders-h"></i></span>
+        <span class="bs-nav-label">Optimization</span>
+        <span class="bs-nav-arrow"><i class="fas fa-chevron-right"></i></span>
+      </a>
+      <a href="anonymity.html" class="bs-nav-item ">
+        <span class="bs-nav-icon"><i class="fas fa-user-shield"></i></span>
+        <span class="bs-nav-label">Anonymity</span>
+        <span class="bs-nav-arrow"><i class="fas fa-chevron-right"></i></span>
+      </a>
+      <a href="extras.html" class="bs-nav-item active">
+        <span class="bs-nav-icon"><i class="fas fa-tools"></i></span>
+        <span class="bs-nav-label">Extras</span>
+        <span class="bs-nav-arrow"><i class="fas fa-chevron-right"></i></span>
+      </a>
+      <a href="opsec.html" class="bs-nav-item ">
+        <span class="bs-nav-icon"><i class="fas fa-shield-alt"></i></span>
+        <span class="bs-nav-label">OpSec</span>
+        <span class="bs-nav-arrow"><i class="fas fa-chevron-right"></i></span>
+      </a>
+    </nav>
+    <div class="bs-sidebar-footer">
+      <a href="diagnostics.html" class="bs-cta">
+        <i class="fas fa-play-circle"></i> Run Diagnostics
+      </a>
+    </div>
+  </div>
+
+    <!-- Main content pane -->
+    <div class="bs-main">
+      <div class="bs-main-topbar">
+      <div class="bs-breadcrumb">
+        <span>ByteSavior</span>
+        <span class="sep">›</span>
+        <span class="current">Extras</span>
+      </div>
+      <div class="bs-topbar-right">
+        <span class="bs-version">v3.5</span>
+        <div class="bs-profile-pill" id="profileBtn" onclick="toggleProfileModal()" title="Account">
+          <i class="fas fa-user" id="profileBtnIcon"></i>
+        </div>
+      </div>
+    </div>
+      <div class="bs-scroll">
+        <!-- Profile Button -->
   <div class="profile-btn-wrap">
     <button class="profile-btn" id="profileBtn" onclick="toggleProfileModal()" title="Account">
       <i class="fas fa-user" id="profileBtnIcon"></i>
@@ -1091,7 +1470,7 @@ ${source ? `### Source/Reference\n${source}` : ''}
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
     const cfg={apiKey:"AIzaSyARwtwhjVgDAYM6zY5N2cq9dxFGvLXBCLU",authDomain:"bytesavior-6da1f.firebaseapp.com",projectId:"bytesavior-6da1f",storageBucket:"bytesavior-6da1f.firebasestorage.app",messagingSenderId:"27072163055",appId:"1:27072163055:web:98f302a7de4d944802bf1a"};
     const app=initializeApp(cfg);
     const auth=getAuth(app);
@@ -1101,7 +1480,23 @@ ${source ? `### Source/Reference\n${source}` : ''}
     function initials(name,email){if(name)return name.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);return email?email[0].toUpperCase():'?';}
     async function ensureDoc(user){const r=doc(db,'users',user.uid);const s=await getDoc(r);if(!s.exists())await setDoc(r,{email:user.email,displayName:user.displayName||'',createdAt:serverTimestamp(),isSupporter:false,quizResults:null,checklistProgress:[]});return(await getDoc(r)).data();}
     function renderOut(mode='login'){const m=document.getElementById('profileModal');m.innerHTML=`<div class="profile-auth-wrap"><h3>Welcome to ByteSavior</h3><p>Sign in to save your progress and scores.</p><div class="profile-tabs"><button class="profile-tab ${mode==='login'?'active':''}" onclick="window._pm('login')">Sign In</button><button class="profile-tab ${mode==='signup'?'active':''}" onclick="window._pm('signup')">Create Account</button></div>${mode==='signup'?'<input type="text" class="profile-input" id="pDisplayName" placeholder="Display name"/>':''}<input type="email" class="profile-input" id="pEmail" placeholder="Email address" autocomplete="email"/><input type="password" class="profile-input" id="pPassword" placeholder="Password" autocomplete="${mode==='login'?'current-password':'new-password'}"/><div class="profile-error" id="pError"></div><button class="profile-submit-btn" id="pSubmitBtn" onclick="window._ps('${mode}')">${mode==='login'?'Sign In':'Create Account'}</button><div class="profile-divider"><span>or</span></div><button class="profile-google-btn" onclick="window._pg()"><svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>Continue with Google</button></div>`;setTimeout(()=>document.getElementById('pEmail')?.focus(),50);}
-    async function renderIn(user){const m=document.getElementById('profileModal');let ud={};try{ud=await ensureDoc(user);}catch(e){}const sup=ud.isSupporter||false;const ini=initials(user.displayName,user.email);const dn=user.displayName||user.email.split('@')[0];m.innerHTML=`<div class="profile-user-header"><div class="profile-user-avatar">${ini}</div><div><div class="profile-user-name">${dn}</div><div class="profile-user-email">${user.email}</div>${sup?'<div class="profile-supporter-badge"><i class="fas fa-star"></i> Supporter</div>':''}</div></div><div class="profile-menu"><a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()"><i class="fas fa-tasks"></i> My Checklist Progress</a><button class="profile-menu-item" onclick="window._openRank()"><i class="fas fa-trophy"></i> Check Your Rank</button><button class="profile-menu-item" onclick="window.location.href='index.html#openquiz'"><i class="fas fa-magic"></i> Build My Setup</button><div class="profile-menu-sep"></div>${!sup?`<div class="profile-donate-section"><p>Support ByteSavior for <strong style="color:var(--text)">$3.50/year</strong> — removes ads and shows a Supporter badge.</p><a href="https://ko-fi.com/bytesavior/membership" target="_blank" class="profile-donate-btn" rel="noopener"><i class="fas fa-heart"></i> Become a Supporter</a></div>`:'<div class="profile-donate-section" style="background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2);"><p style="color:#fbbf24;font-weight:600;margin-bottom:0;">⭐ Thank you for supporting ByteSavior!</p></div>'}<div class="profile-menu-sep"></div><button class="profile-menu-item danger" onclick="window._pso()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></div>`;const btn=document.getElementById('profileBtn');btn.classList.add('signed-in');if(sup)btn.innerHTML='<i class="fas fa-user"></i><span class="supporter-ring"></span>';}
+    const TIERS_P=[{min:0,max:9,name:'Unsecured',color:'#ef4444'},{min:10,max:24,name:'Default User',color:'#f97316'},{min:25,max:49,name:'Aware',color:'#fbbf24'},{min:50,max:69,name:'Hardened',color:'#a3e635'},{min:70,max:84,name:'Optimized',color:'#4ade80'},{min:85,max:94,name:'Advanced',color:'#22d3ee'},{min:95,max:100,name:'ByteSavior Elite',color:'#a78bfa'}];
+    const tierP=s=>TIERS_P.find(r=>s>=r.min&&s<=r.max)||TIERS_P[0];
+    async function renderIn(user){
+      const m=document.getElementById('profileModal');
+      let ud={},savedScore=null;
+      try{ud=await ensureDoc(user);}catch(e){}
+      try{const snap=await getDoc(doc(db,'diagScores',user.uid));if(snap.exists())savedScore=snap.data().score;}catch(e){}
+      const sup=ud.isSupporter||false;
+      const ini=initials(user.displayName,user.email);
+      const dn=user.displayName||user.email.split('@')[0];
+      const t=savedScore!==null?tierP(savedScore):null;
+      const scoreCard=savedScore!==null
+        ?`<div class="profile-score-card"><div><div class="psc-label">Diagnostic Score</div><div class="psc-score">${savedScore}<span class="psc-denom"> /100</span></div><span class="psc-rank" style="background:${t.color}22;color:${t.color};border:1px solid ${t.color}44">${t.name}</span></div><div class="psc-run-btn"><a href="diagnostics.html" style="color:var(--blue);text-decoration:none;font-weight:600">Run again</a></div></div>`
+        :`<div class="profile-score-card" style="background:rgba(255,255,255,0.03);border-color:#333"><div><div class="psc-label">Diagnostic Score</div><div style="font-size:1rem;color:var(--muted);margin-top:4px">Not run yet</div></div><div class="psc-run-btn"><a href="diagnostics.html" style="color:var(--blue);text-decoration:none;font-weight:600">Run now</a></div></div>`;
+      m.innerHTML=`<div class="profile-user-header"><div class="profile-user-avatar">${ini}</div><div><div class="profile-user-name">${dn}</div><div class="profile-user-email">${user.email}</div>${sup?'<div class="profile-supporter-badge"><i class="fas fa-star"></i> Supporter</div>':''}</div></div>${scoreCard}<div class="profile-menu"><a href="optimization.html" class="profile-menu-item" onclick="closeProfileModal()"><i class="fas fa-tasks"></i> My Checklist Progress</a><button class="profile-menu-item" onclick="window._openRank()"><i class="fas fa-trophy"></i> Check Your Rank</button><button class="profile-menu-item" onclick="window.location.href='index.html#openquiz'"><i class="fas fa-magic"></i> Build My Setup</button><div class="profile-menu-sep"></div>${!sup?`<div class="profile-donate-section"><p>Support ByteSavior for <strong style="color:var(--text)">$3.50/year</strong> — removes ads and shows a Supporter badge.</p><a href="https://ko-fi.com/bytesavior/membership" target="_blank" class="profile-donate-btn" rel="noopener"><i class="fas fa-heart"></i> Become a Supporter</a></div>`:'<div class="profile-donate-section" style="background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2);"><p style="color:#fbbf24;font-weight:600;margin-bottom:0;">⭐ Thank you for supporting ByteSavior!</p></div>'}<div class="profile-menu-sep"></div><button class="profile-menu-item danger" onclick="window._pso()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></div>`;
+      const btn=document.getElementById('profileBtn');btn.classList.add('signed-in');if(sup)btn.innerHTML='<i class="fas fa-user"></i><span class="supporter-ring"></span>';
+    }
     window._pm=m=>renderOut(m);
     window._ps=async mode=>{const email=document.getElementById('pEmail')?.value.trim();const pw=document.getElementById('pPassword')?.value;const err=document.getElementById('pError');const btn=document.getElementById('pSubmitBtn');if(!email||!pw){err.textContent='Please fill in all fields.';return;}btn.disabled=true;btn.textContent=mode==='login'?'Signing in...':'Creating...';err.textContent='';try{if(mode==='signup'){const dn=document.getElementById('pDisplayName')?.value.trim();const c=await createUserWithEmailAndPassword(auth,email,pw);if(dn)await updateProfile(c.user,{displayName:dn});await ensureDoc(c.user);toast('Account created — welcome!');}else{await signInWithEmailAndPassword(auth,email,pw);toast('Signed in.');}closeProfileModal();}catch(e){btn.disabled=false;btn.textContent=mode==='login'?'Sign In':'Create Account';const msgs={'auth/email-already-in-use':'Email already registered.','auth/invalid-email':'Invalid email.','auth/weak-password':'Password needs 6+ chars.','auth/wrong-password':'Wrong password.','auth/user-not-found':'No account with that email.','auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts.'};err.textContent=msgs[e.code]||'Something went wrong.';}};
     window._pg=async()=>{try{const r=await signInWithPopup(auth,gp);await ensureDoc(r.user);toast('Signed in with Google.');closeProfileModal();}catch(e){if(e.code!=='auth/popup-closed-by-user')document.getElementById('pError').textContent='Google sign-in failed.';}};
@@ -1109,5 +1504,9 @@ ${source ? `### Source/Reference\n${source}` : ''}
     window._openRank=()=>{window.location.href='diagnostics.html';};
     onAuthStateChanged(auth,async user=>{const l=document.getElementById('profileLoading');if(l)l.style.display='none';if(user)await renderIn(user);else renderOut('login');});
   </script>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
