@@ -1044,6 +1044,15 @@ html, body {
       <a href="diagnostics.html" class="bs-cta">
         <i class="fas fa-play-circle"></i> Run Diagnostics
       </a>
+      <div style="text-align:center;margin-top:10px;">
+        <a href="javascript:void(0)" onclick="BSConsentBanner.show()"
+           style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;
+                  text-transform:uppercase;color:var(--muted);text-decoration:none;
+                  display:inline-flex;align-items:center;gap:5px;transition:color 0.15s;"
+           onmouseover="this.style.color='#a0a0b0'" onmouseout="this.style.color=''">
+          <i class="fas fa-shield-halved"></i> Privacy Settings
+        </a>
+      </div>
     </div>
   </div>
 
@@ -1507,6 +1516,10 @@ ${source ? `### Source/Reference\n${source}` : ''}
       </div>
     </div>
   </div>
+
+
+  <!-- ── Privacy Consent Manager ── -->
+  <script src="consent.js"></script>
 
 </body>
 </html>
