@@ -3,7 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ByteSavior — System Diagnostics</title>
+<title>ByteSavior — System Diagnostics | Free PC Benchmark Tool</title>
+<meta name="description" content="Run a full system diagnostic in your browser — no downloads. Benchmark your CPU, GPU, RAM, network speed, and storage. Get a score out of 100 with personalised optimisation tips.">
+<meta name="keywords" content="PC benchmark, system diagnostics, CPU test, GPU test, RAM benchmark, network speed test, Windows optimization, free benchmark tool">
+<meta name="author" content="ByteSavior">
+<meta property="og:title" content="ByteSavior System Diagnostics — Free In-Browser PC Benchmark">
+<meta property="og:description" content="Benchmark your CPU, GPU, RAM, and network in 30 seconds. No installs. Scores out of 100 with personalised fixes.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bytesavior.github.io/diagnostics.html">
+<meta property="og:image" content="https://bytesavior.github.io/fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ByteSavior — Free System Diagnostics">
+<meta name="twitter:description" content="Benchmark your PC in 30 seconds. CPU, GPU, RAM, network — scored and explained.">
+<link rel="canonical" href="https://bytesavior.github.io/diagnostics.html">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -916,51 +928,56 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
     </div>
   </div>
 
-  <!-- Ad sits below the info grid, collapses on skip -->
-  <div class="ad-wrap" id="adWrap">
-    <div class="ad-box">
-      <div class="ad-progress-bar" id="adBar" style="width:100%"></div>
-      <div class="ad-tag">Advertisement</div>
-      <div class="ad-headline">Advertise Here</div>
-      <p class="ad-sub">
-        Reach thousands of privacy-focused power users and hardware enthusiasts.
-        This slot is available — get in touch and let's talk numbers.
-      </p>
-      <div class="ad-email"><i class="fas fa-envelope"></i> &nbsp;bytesavior@proton.me</div>
-      <div class="ad-countdown-text">
-        Diagnostics unlock in <span id="adCountdown">30</span>s
-      </div>
-      <div class="donate-line">
-        <i class="fas fa-heart" style="color:var(--green)"></i>
-        <strong>Donate to ByteSavior</strong> to remove ads from diagnostics across all sessions.
-      </div>
-      <button class="skip-btn" id="skipBtn" disabled onclick="skipAd()">
-        Skip (<span id="skipTimer">30</span>s)
-      </button>
-    </div>
-  </div>
-
 </section>
 
-<!-- ===== MAIN DIAG CONTENT (unlocked after ad) ===== -->
-<div id="diagContent">
+<!-- ===== MAIN DIAG CONTENT ===== -->
+<div id="diagContent" class="visible">
 
   <div class="diag-container">
 
-    <!-- Run section -->
-    <div class="run-hero">
+    <!-- Run section (shown before test starts) -->
+    <div class="run-hero" id="runHero">
       <h2>Ready to analyse.</h2>
       <p>Takes about 30 seconds — multiple passes collect more accurate data.</p>
-      <button class="run-btn pulse" id="runBtn" onclick="startFullDiagnostics()">
+      <button class="run-btn pulse" id="runBtn" onclick="launchDiagnostics()">
         <i class="fas fa-play-circle"></i> Run Full Diagnostics
       </button>
       <p class="run-note">All processing is local &bull; Nothing is sent anywhere &bull; ~30 second runtime</p>
     </div>
 
-    <!-- Progress -->
-    <div class="progress-section" id="progressSection">
-      <div class="progress-title"><i class="fas fa-spinner fa-spin"></i> Running diagnostics…</div>
-      <div id="progressList"></div>
+    <!-- Ad + live progress (revealed when test starts) -->
+    <div id="adAndProgress" style="display:none">
+
+      <!-- Ad shown during test -->
+      <div class="ad-wrap" id="adWrap">
+        <div class="ad-box">
+          <div class="ad-progress-bar" id="adBar" style="width:100%"></div>
+          <div class="ad-tag">Advertisement — your results are loading below</div>
+          <div class="ad-headline">Advertise Here</div>
+          <p class="ad-sub">
+            Reach thousands of privacy-focused power users and hardware enthusiasts.
+            This slot is available — get in touch and let's talk numbers.
+          </p>
+          <div class="ad-email"><i class="fas fa-envelope"></i> &nbsp;bytesavior@proton.me</div>
+          <div class="ad-countdown-text">
+            Ad closes in <span id="adCountdown">30</span>s &bull; results continue below
+          </div>
+          <div class="donate-line">
+            <i class="fas fa-heart" style="color:var(--green)"></i>
+            <strong>Donate to ByteSavior</strong> to skip ads on every future run.
+          </div>
+          <button class="skip-btn" id="skipBtn" disabled onclick="skipAd()">
+            Skip (<span id="skipTimer">30</span>s)
+          </button>
+        </div>
+      </div>
+
+      <!-- Live progress always visible below the ad -->
+      <div class="progress-section visible" id="progressSection">
+        <div class="progress-title"><i class="fas fa-spinner fa-spin"></i> Running diagnostics…</div>
+        <div id="progressList"></div>
+      </div>
+
     </div>
 
     <!-- ===== SCORES SUMMARY — appears first after run, sticky-ish at top ===== -->
@@ -1046,32 +1063,58 @@ hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 32px 0; }
 
 <script>
 // ============================================================
-//  AD TIMER
+//  AD TIMER — starts when test starts, not on page load
 // ============================================================
 let adSeconds = 30;
-const adBar       = document.getElementById('adBar');
-const adCountdown = document.getElementById('adCountdown');
-const skipTimer   = document.getElementById('skipTimer');
-const skipBtn     = document.getElementById('skipBtn');
+let adInterval = null;
 
-const adInterval = setInterval(() => {
-  adSeconds--;
-  adCountdown.textContent = adSeconds;
-  skipTimer.textContent   = adSeconds;
-  adBar.style.width = ((adSeconds / 30) * 100) + '%';
-  if (adSeconds <= 0) {
-    clearInterval(adInterval);
-    skipBtn.classList.add('ready');
-    skipBtn.disabled = false;
-    skipBtn.textContent = 'Skip Ad';
-    setTimeout(skipAd, 3000);
-  }
-}, 1000);
+function startAdTimer() {
+  const adBar       = document.getElementById('adBar');
+  const adCountdown = document.getElementById('adCountdown');
+  const skipTimer   = document.getElementById('skipTimer');
+  const skipBtn     = document.getElementById('skipBtn');
+  if (!adBar) return;
+
+  adBar.style.width = '100%';
+  adInterval = setInterval(() => {
+    adSeconds--;
+    if (adCountdown) adCountdown.textContent = adSeconds;
+    if (skipTimer)   skipTimer.textContent   = adSeconds;
+    if (adBar)       adBar.style.width = ((adSeconds / 30) * 100) + '%';
+    if (adSeconds <= 0) {
+      clearInterval(adInterval);
+      if (skipBtn) {
+        skipBtn.classList.add('ready');
+        skipBtn.disabled = false;
+        skipBtn.textContent = 'Skip Ad';
+      }
+      // Auto-collapse ad after 3 more seconds, results stay visible
+      setTimeout(skipAd, 3000);
+    }
+  }, 1000);
+}
 
 function skipAd() {
-  clearInterval(adInterval);
-  document.getElementById('adWrap').style.display = 'none';
-  document.getElementById('diagContent').classList.add('visible');
+  if (adInterval) clearInterval(adInterval);
+  const adWrap = document.getElementById('adWrap');
+  if (adWrap) adWrap.style.display = 'none';
+}
+
+// launchDiagnostics: shows the ad+progress panel, starts ad timer AND test simultaneously
+function launchDiagnostics() {
+  // Hide the run hero
+  const hero = document.getElementById('runHero');
+  if (hero) hero.style.display = 'none';
+
+  // Show the ad + live progress panel
+  const panel = document.getElementById('adAndProgress');
+  if (panel) panel.style.display = 'block';
+
+  // Start ad countdown
+  startAdTimer();
+
+  // Start diagnostics immediately — progress shows below the ad in real time
+  startFullDiagnostics();
 }
 
 // ============================================================
@@ -1944,8 +1987,6 @@ async function startFullDiagnostics(){
   const scrollHint=document.getElementById('scrollHint');
   if(scrollHint) scrollHint.style.display='none';
 
-  const prog=document.getElementById('progressSection');
-  prog.classList.add('visible');
   buildProgressUI();
 
   const TARGET_MS = 30000; // 30 seconds total
@@ -2085,13 +2126,14 @@ async function startFullDiagnostics(){
   document.getElementById('recsSection').classList.add('visible');
   document.getElementById('detailBelow').style.display='block';
 
+  // ---- Save score via Firebase module bridge (before re-enabling button) ----
+  window._latestScore = scores.overall; // store immediately for profile to pick up
+  if (window._saveDiagScore) window._saveDiagScore(scores.overall);
+  else window._pendingScore = scores.overall; // queued until auth ready
+
   runBtn.disabled=false;
   runBtn.classList.add('pulse');
   runBtn.innerHTML='<i class="fas fa-redo"></i> Re-Run Diagnostics';
-
-  // ---- Save score via Firebase module bridge ----
-  if (window._saveDiagScore) window._saveDiagScore(scores.overall);
-  else window._pendingScore = scores.overall; // auth not ready yet, module will pick it up
 }
 </script>
 
