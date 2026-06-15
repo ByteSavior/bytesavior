@@ -2191,34 +2191,44 @@ async function ensureDoc(user) {
 
 // ---- Save diagnostic score ----
 async function doSaveScore(user, score) {
+  // Always store in memory first — profile reads this instantly
+  window._latestScore = score;
+
   try {
-    const ref = doc(db, 'diagScores', user.uid);
+    const ref  = doc(db, 'diagScores', user.uid);
     const snap = await getDoc(ref);
     const prev = snap.exists() ? (snap.data().score || 0) : 0;
+
+    // Write if this score is >= previous best
     if (score >= prev) {
       await setDoc(ref, {
-        uid: user.uid,
-        email: user.email || '',
+        uid:         user.uid,
+        email:       user.email || '',
         displayName: user.displayName || user.email?.split('@')[0] || 'User',
         score,
-        updatedAt: serverTimestamp(),
+        updatedAt:   serverTimestamp(),
       });
     }
+
     // Update the save nudge
     const nudge = document.getElementById('saveNudge');
     if (nudge) {
       nudge.style.display = 'flex';
       nudge.innerHTML = `<i class="fas fa-check-circle" style="color:var(--green)"></i> Score saved &bull; <a href="javascript:void(0)" onclick="openLbModal()" style="color:var(--blue);text-decoration:none;font-weight:600">Check Your Rank</a>`;
       nudge.style.borderColor = 'rgba(74,222,128,0.3)';
-      nudge.style.background = 'rgba(74,222,128,0.06)';
+      nudge.style.background  = 'rgba(74,222,128,0.06)';
     }
-    // Store locally so profile can show it without another fetch
-    window._latestScore = score;
-    // If profile is open, re-render logged-in state to show new score
+
+    // Re-render profile if it's open right now
     if (document.getElementById('profileOverlay')?.classList.contains('active')) {
-      renderIn(user);
+      await renderIn(user);
     }
-  } catch(e) { console.warn('Score save error:', e); }
+
+  } catch(e) {
+    console.warn('Score save error:', e);
+    // Even if Firestore fails, _latestScore is set so profile shows the score locally
+    toast('Score saved locally — will sync when reconnected.', false);
+  }
 }
 
 // Expose save function to regular script
@@ -2227,15 +2237,23 @@ window._doSaveScore = doSaveScore;
 
 // Bridge: called by the runner script
 window._saveDiagScore = function(score) {
+  window._latestScore = score;   // set immediately, sync, before any async
   window._pendingScore = score;
-  if (window._diagAuthUser) doSaveScore(window._diagAuthUser, score);
+  if (window._diagAuthUser) {
+    doSaveScore(window._diagAuthUser, score);
+  }
 };
 
 // ---- Profile modal controls ----
-window.toggleProfileModal = () => {
+window.toggleProfileModal = async () => {
   const ov = document.getElementById('profileOverlay');
+  const isOpening = !ov.classList.contains('active');
   ov.classList.toggle('active');
   document.body.style.overflow = ov.classList.contains('active') ? 'hidden' : 'auto';
+  // Always re-render when opening so score is fresh
+  if (isOpening && window._diagAuthUser) {
+    await renderIn(window._diagAuthUser);
+  }
 };
 window.closeProfileModal = () => {
   document.getElementById('profileOverlay').classList.remove('active');
@@ -2503,13 +2521,16 @@ onAuthStateChanged(auth, async user => {
   const loading = document.getElementById('profileLoading');
   if (loading) loading.style.display = 'none';
   if (user) {
-    await renderIn(user);
-    // If a score was run before auth was ready, save it now
+    // If a test was completed before sign-in resolved, save the score first
+    // so renderIn() picks it up from Firestore or from _latestScore
     if (window._pendingScore !== undefined) {
+      window._latestScore = window._pendingScore;
       await doSaveScore(user, window._pendingScore);
       window._pendingScore = undefined;
     }
+    await renderIn(user);
   } else {
+    window._diagAuthUser = null;
     renderOut('login');
   }
 });
