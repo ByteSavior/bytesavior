@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ByteSavior</title>
+<title>ByteSavior — Rescue Performance. Reduce Exposure.</title>
+<meta name="description" content="Free guides to optimise your PC, protect your privacy, and stay secure. BIOS tweaks, GPU tuning, anonymity tools, OpSec practices, and a full system benchmark.">
+<meta name="author" content="ByteSavior">
+<meta property="og:title" content="ByteSavior — Rescue Performance. Reduce Exposure.">
+<meta property="og:description" content="Free guides to optimise your PC, protect your privacy, and stay secure. BIOS tweaks, GPU tuning, anonymity tools, OpSec practices, and a full system benchmark.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bytesavior.github.io/">
+<meta property="og:image" content="https://bytesavior.github.io/fa28acf4-ac03-4411-a2d4-d1bd0ed4fe1b.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ByteSavior — Rescue Performance. Reduce Exposure.">
+<meta name="twitter:description" content="Free guides to optimise your PC, protect your privacy, and stay secure. BIOS tweaks, GPU tuning, anonymity tools, OpSec practices, and a full system benchmark.">
+<link rel="canonical" href="https://bytesavior.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1588,6 +1599,8 @@ body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:
       try { userData = await ensureUserDoc(user); } catch(e) {}
       let savedScore = null;
       try { const scoreSnap = await getDoc(doc(db,'diagScores',user.uid)); if(scoreSnap.exists()) savedScore = scoreSnap.data().score; } catch(e) {}
+      // localStorage fallback — written by diagnostics.html after every run
+      if(savedScore===null){try{const ls=localStorage.getItem('bs_last_score');if(ls!==null)savedScore=Number(ls);}catch(e){}}
       const isSupporter = userData.isSupporter || false;
       const initials = getInitials(user.displayName, user.email);
       const displayName = user.displayName || user.email.split('@')[0];

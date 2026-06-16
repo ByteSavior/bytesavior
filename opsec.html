@@ -1630,6 +1630,8 @@ ${source ? `### Source/Reference\n${source}` : ''}
       let ud={},savedScore=null;
       try{ud=await ensureDoc(user);}catch(e){}
       try{const snap=await getDoc(doc(db,'diagScores',user.uid));if(snap.exists())savedScore=snap.data().score;}catch(e){}
+      // localStorage fallback — score written here by diagnostics.html after every run
+      if(savedScore===null){try{const ls=localStorage.getItem('bs_last_score');if(ls!==null)savedScore=Number(ls);}catch(e){}}
       const sup=ud.isSupporter||false;
       const ini=initials(user.displayName,user.email);
       const dn=user.displayName||user.email.split('@')[0];

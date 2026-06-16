@@ -2479,6 +2479,8 @@ ${source ? `### Source/Reference\n${source}` : ''}
       let userData = {}, savedScore = null;
       try { userData = await ensureUserDoc(user); } catch(e) {}
       try { const snap = await getDoc(doc(db,'diagScores',user.uid)); if(snap.exists()) savedScore = snap.data().score; } catch(e) {}
+      // localStorage fallback — written by diagnostics.html after every run
+      if(savedScore===null){try{const ls=localStorage.getItem('bs_last_score');if(ls!==null)savedScore=Number(ls);}catch(e){}}
       const isSupporter = userData.isSupporter || false;
       const initials = getInitials(user.displayName, user.email);
       const displayName = user.displayName || user.email.split('@')[0];

@@ -2239,6 +2239,8 @@ window._doSaveScore = doSaveScore;
 window._saveDiagScore = function(score) {
   window._latestScore = score;   // set immediately, sync, before any async
   window._pendingScore = score;
+  // Persist to localStorage so other pages can read it even after navigation
+  try { localStorage.setItem('bs_last_score', score); } catch(e) {}
   if (window._diagAuthUser) {
     doSaveScore(window._diagAuthUser, score);
   }
@@ -2300,6 +2302,13 @@ async function renderIn(user) {
   // Use in-memory score if it's newer/higher
   if (window._latestScore !== undefined && (savedScore === null || window._latestScore >= savedScore)) {
     savedScore = window._latestScore;
+  }
+  // Final fallback: localStorage (survives page navigation)
+  if (savedScore === null) {
+    try {
+      const ls = localStorage.getItem('bs_last_score');
+      if (ls !== null) savedScore = Number(ls);
+    } catch(e) {}
   }
 
   const sup = ud.isSupporter || false;
