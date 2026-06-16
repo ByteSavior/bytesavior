@@ -2446,25 +2446,46 @@ async function loadLeaderboard() {
 
   try {
     const me = auth.currentUser;
-    const q  = query(collection(db, 'diagScores'), orderBy('score','desc'), limit(15));
-    const snap = await getDocs(q);
-    const rows = [];
-    snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
 
-    let myEntry = rows.find(r => me && r.uid === me.uid) || null;
-    if (!myEntry && me) {
+    // ── Fetch YOUR score first — individual doc, never needs an index ──
+    let myEntry = null;
+    if (me) {
       try {
-        const s2 = await getDoc(doc(db, 'diagScores', me.uid));
-        if (s2.exists()) myEntry = { id: s2.id, ...s2.data() };
+        const mySnap = await getDoc(doc(db, 'diagScores', me.uid));
+        if (mySnap.exists()) myEntry = { id: mySnap.id, ...mySnap.data() };
       } catch(e) {}
+
+      // localStorage fallback if Firestore fetch failed or returned nothing
+      if (!myEntry) {
+        const ls = localStorage.getItem('bs_last_score');
+        if (ls !== null) {
+          myEntry = {
+            uid:         me.uid,
+            displayName: me.displayName || me.email?.split('@')[0] || 'You',
+            email:       me.email || '',
+            score:       Number(ls),
+          };
+        }
+      }
+    }
+
+    // ── Fetch Top 15 — requires composite index; handle gracefully if missing ──
+    let rows = [];
+    try {
+      const q    = query(collection(db, 'diagScores'), orderBy('score','desc'), limit(15));
+      const snap = await getDocs(q);
+      snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+    } catch(e) {
+      // Index likely missing — still show the user's own score card
+      console.warn('Leaderboard query failed (index may be missing):', e.message);
     }
 
     // Build HTML
     let html = '';
 
-    // Your card
+    // ── Your score card ──
     if (me && myEntry) {
-      const t = tier(myEntry.score || 0);
+      const t   = tier(myEntry.score || 0);
       const pos = rows.findIndex(r => r.uid === me.uid);
       html += `<div style="background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div>
@@ -2474,7 +2495,7 @@ async function loadLeaderboard() {
         </div>
         <div style="text-align:right">
           <div style="font-size:2rem;font-weight:900;color:var(--blue);line-height:1">${myEntry.score}</div>
-          <div style="font-size:0.7rem;color:var(--muted)">${pos >= 0 ? '#'+(pos+1)+' overall' : 'outside top 15'}</div>
+          <div style="font-size:0.7rem;color:var(--muted)">${pos >= 0 ? '#'+(pos+1)+' overall' : rows.length > 0 ? 'outside top 15' : 'score saved'}</div>
         </div>
       </div>`;
     } else if (me) {
@@ -2486,11 +2507,15 @@ async function loadLeaderboard() {
     html += '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Top 15 Scores</div>';
 
     if (rows.length === 0) {
-      html += '<div style="text-align:center;color:var(--muted);padding:24px">No scores yet — you could be first!</div>';
+      // Show helpful message — either no scores yet, or index not set up
+      html += `<div style="text-align:center;color:var(--muted);padding:24px;font-size:0.85rem;line-height:1.7">
+        ${me && myEntry ? 'You\'re on the board! The full leaderboard will appear once more users submit scores.' : 'No scores yet — be the first to run diagnostics!'}
+        <br><span style="font-size:0.72rem;opacity:0.6">If this persists, the database index may still be building.</span>
+      </div>`;
     } else {
       html += '<ul style="list-style:none;display:flex;flex-direction:column;gap:8px">';
       rows.forEach((r, i) => {
-        const t = tier(r.score || 0);
+        const t    = tier(r.score || 0);
         const isMe = me && r.uid === me.uid;
         const pl   = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
         const nm   = r.displayName || r.email?.split('@')[0] || 'Anonymous';
