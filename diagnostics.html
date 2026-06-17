@@ -2140,7 +2140,7 @@ async function startFullDiagnostics(){
 <!-- ===== FIREBASE: Profile + Score Save + Leaderboard ===== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const cfg = {
@@ -2392,16 +2392,53 @@ window._ps = async mode => {
       const c  = await createUserWithEmailAndPassword(auth, email, pw);
       if (dn) await updateProfile(c.user, { displayName: dn });
       await ensureDoc(c.user);
-      toast('Account created — welcome!');
+      // Send verification email
+      await sendEmailVerification(c.user);
+      // Show confirmation screen instead of closing
+      const m = document.getElementById('profileModal');
+      m.innerHTML = `
+        <div style="padding:28px;text-align:center">
+          <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,191,255,0.1);border:1px solid rgba(0,191,255,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.4rem;color:var(--blue)">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:8px">Check your email</div>
+          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:20px">
+            We sent a verification link to<br>
+            <strong style="color:var(--text)">${email}</strong><br><br>
+            Click the link in that email to verify your account.
+            You can sign in now but some features require a verified email.
+          </div>
+          <button onclick="closeProfileModal()" style="background:var(--blue);color:#001a26;border:none;border-radius:6px;padding:10px 24px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">
+            Got it
+          </button>
+          <div style="margin-top:12px">
+            <button onclick="window._resendVerification()" style="background:transparent;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;text-decoration:underline;font-family:inherit">
+              Resend verification email
+            </button>
+          </div>
+        </div>`;
     } else {
       await signInWithEmailAndPassword(auth, email, pw);
       toast('Signed in.');
+      closeProfileModal();
     }
-    closeProfileModal();
   } catch(e) {
     btn.disabled=false; btn.textContent=mode==='login'?'Sign In':'Create Account';
     const msgs = {'auth/email-already-in-use':'Email already registered.','auth/invalid-email':'Invalid email.','auth/weak-password':'Password needs 6+ characters.','auth/wrong-password':'Wrong password.','auth/user-not-found':'No account found.','auth/invalid-credential':'Wrong email or password.','auth/too-many-requests':'Too many attempts — try later.'};
     errEl.textContent = msgs[e.code] || 'Something went wrong.';
+  }
+};
+
+// Resend verification email
+window._resendVerification = async () => {
+  try {
+    const user = auth.currentUser;
+    if (user && !user.emailVerified) {
+      await sendEmailVerification(user);
+      toast('Verification email resent.');
+    }
+  } catch(e) {
+    toast('Could not resend — try again in a minute.', true);
   }
 };
 
